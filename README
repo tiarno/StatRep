@@ -10,7 +10,9 @@ The generated SAS program includes calls to macros that use the SAS
 Output Delivery System (ODS) document to capture the output as external files.
 These SAS macros are included in this package (statrep_macros.sas).
 
-The package is available at http://support.sas.com/StatRepPackage
+The package is available at 
+    http://support.sas.com/StatRepPackage
+    http://github.com/tiarno/StatRep
 
 Bundled with the StatRep package is the longfigure package for
 multipage figures.
