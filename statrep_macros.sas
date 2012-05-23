@@ -1,4 +1,3 @@
-
                          /*---------------------------------------------*/
                          /* The WRITE macro displays one or more pieces */
                          /* of output (tables, notes, graphs, and so    */
