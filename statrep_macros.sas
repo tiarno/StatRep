@@ -1386,3 +1386,18 @@ options &savenote;
    %mend;
 
 *------------------------------------------------------------------------;
+
+* This macro deletes the contents of the listingdir and graphicdir 
+  directories. It decides which operating system command to give 
+  based on the SYSSCP macro variable.;
+  
+%macro hostdel;
+   %if &sysscp = WIN or &sysscp = DNTHOST %then %do;
+      options noxwait;
+      x "del %nrstr(%%)CD%nrstr(%%)\&listingdir\*.lst %nrstr(%%)CD%nrstr(%%)\&graphicdir\*.png"; 
+   %end;
+   %else %do;
+      x "rm &listingdir/*.lst &graphicdir/*.png"; 
+   %end;
+%mend;
+  

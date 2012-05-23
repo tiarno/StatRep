@@ -10,9 +10,7 @@ The generated SAS program includes calls to macros that use the SAS
 Output Delivery System (ODS) document to capture the output as external files.
 These SAS macros are included in this package (statrep_macros.sas).
 
-The package is available at 
-    http://support.sas.com/StatRepPackage
-    http://github.com/tiarno/StatRep
+The package is available at http://support.sas.com/StatRepPackage
 
 Bundled with the StatRep package is the longfigure package for
 multipage figures.
@@ -24,6 +22,7 @@ The distribution(statrep.zip) consists of the following files:
    statrepmanual.tex     StatRep Package User's Guide (source)
    quickstart.tex        Example and tutorial LaTeX file
    statrep.dtx           Package source file
+   statrep.ins           Install file (for MikTeX Users)
 
 INSTALL
 
@@ -39,10 +38,17 @@ Step 1: Install the StatRep SAS Macros
 
 Step 2: Install the StatRep LaTeX Package
 
-   These instructions show how to install the StatRep package
-   for your personal use. If you maintain a LaTeX distribution and
-   you want to make StatRep available to all users, see more
-   detailed information about how to install LaTeX packages at
+   If you are working with the MikTeX distribution on Windows and it is
+   configured to download and install packages automatically, you can
+   skip this step. Otherwise, see these instructions for installing
+   packages for MikTeX:
+   http://docs.miktex.org/manual/localadditions.html
+
+   These instructions show how to install the StatRep package in the
+   TeXLive LaTeX distribution for your personal use. If you maintain a
+   system-wide LaTeX distribution and you want to make StatRep
+   available to all users, see more detailed information about how
+   to install LaTeX packages at
    http://www.tex.ac.uk/cgi-bin/texfaq2html?label=what-TDS
 
    a)
@@ -166,8 +172,8 @@ This work consists of the files:
    statrepmanual.pdf
    quickstart.tex
    statrep.dtx
+      statrep.ins
       statrep.pdf
       statrep.sty
       statrep.cfg
       longfigure.sty
-
