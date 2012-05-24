@@ -2156,6 +2156,7 @@ Table \ref{ziptable} shows the contents:
 \hline
 \textbf{Filename}          &  \textbf{Description}\\
 \Code{statrepmanual.pdf}   & The \textit{\StatRep User's Guide} (this manual)\\
+\Code{statrep.ins}         & The \LaTeX\ package installer file\\
 \Code{statrep.dtx}         & The \LaTeX\ package itself\\
 \Code{statrep\_macros.sas} & The \StatRep SAS macros \\
 \Code{quickstart.tex}      & A template and tutorial sample \LaTeX\ file\\
@@ -2176,19 +2177,23 @@ perform the following steps:
 \subsubsection{Step 2: Install the StatRep LaTeX Package}
 
    These instructions show how to install the StatRep package
-   for your personal use with the \TeX Live distribution.
-   If you are using Mik\TeX, or if you maintain a system-wide 
-   LaTeX distribution and
-   you want to make StatRep available to all users, see more
-   detailed information about how to install \LaTeX packages at
-   \url{http://www.tex.ac.uk/cgi-bin/texfaq2html?label=what-TDS}
-   
-   If you use Mik\TeX{} and have configured the package manager to 
-   automatically download and install packages from CTAN, you can
-   skip this step.
+   in your \LaTeX\ distribution for your personal use.
    
   \begin{enumerate}[a)]
    \item
+   \textbf{Mik\TeX\ users}: If you do not have a directory for your own 
+   packages, choose a directory name to contain your packages 
+   (for example, c:\textbackslash{}localtexmf).
+     
+   In the following instructions, this directory is referred to as the
+   "root directory".
+   
+   \textbf{\TeX{}Live users}:
+   If you maintain a system-wide LaTeX distribution and you want to 
+      make StatRep available to all users, see more detailed information 
+      about how to install LaTeX packages at:
+      \url{http://www.tex.ac.uk/cgi-bin/texfaq2html?label=what-TDS}
+   
    Determine the location that LaTeX uses to load packages. At a
    command-line prompt, enter the following command:\\
    \texttt{kpsewhich -var-value=TEXMFHOME}
@@ -2196,38 +2201,49 @@ perform the following steps:
    The command returns the root directory name in which LaTeX can
    find your personally installed packages.
 
+    In the following instructions, this directory is referred to as the
+    "root directory".
+
    \item
    Create the directory if it does not exist, and create the additional
    subdirectories \Code{tex/latex/statrep}.
    Your directory tree will have the following structure:
-\clearpage
 \begin{verbatim}
       ---------------
-      root directory/  (given by kpsewhich command in 2a)
+      root directory/
          tex/
             latex/
               statrep/
 \end{verbatim}
   \item
-   Copy the files \Code{statrep.dtx}, \Code{statrepmanual.pdf}, and \Code{statrepmanual.tex} to
+   Copy the files \Code{statrep.dtx}, \Code{statrep.ins}, \Code{statrepmanual.pdf}, 
+   and \Code{statrepmanual.tex} to
    the \Code{statrep} subdirectory. Your directory tree will have the following structure:
 \begin{verbatim}
       ---------------
-      root directory/  (given by kpsewhich command in 2a)
+      root directory/  
          tex/
             latex/
                  statrep/
                        statrep.dtx
+                       statrep.ins
                        statrepmanual.pdf
                        statrepmanual.tex
       ---------------
 \end{verbatim}
    \item
    Change to the \Code{statrep} directory and enter the following command:\\
-   \texttt{pdflatex statrep.dtx}
+   \texttt{pdftex statrep.ins}
 
    The command creates several files, one of which is the configuration
    file, \Code{statrep.cfg}.
+   
+   \textbf{Mik\TeX\ users}:
+   Add the root directory name from Step 2a according to these instructions 
+   for installing packages for MikTeX 
+   (\textit{Register a user-managed TEXMF directory}):
+   \url{http://docs.miktex.org/manual/localadditions.html}
+   
 \end{enumerate}
 
 \subsubsection{Step 3: Tell the StatRep Package the Location of the StatRep SAS Macros}
@@ -2276,7 +2292,9 @@ If you ever want to uninstall the \StatRep package,
 delete the \Code{statrep} directory that you created
 in the installation step 2d and remove the SAS macro file \Code{statrep\_macros.sas}
 that you copied in installation step 1.
-
+   Mik\TeX\ users must additionally update the filename database.\\
+   \Code{(MikTeX Options dialog: General-> Refresh FNDB)}
+   
 \section{The \texttt{longfigure} Package}\label{longfigure}
  
   The \Code{longfigure} package is a modified version of the popular \Code{longtable} 
