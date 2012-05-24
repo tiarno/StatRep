@@ -11,6 +11,8 @@ Output Delivery System (ODS) document to capture the output as external files.
 These SAS macros are included in this package (statrep_macros.sas).
 
 The package is available at http://support.sas.com/StatRepPackage
+It is also available on the Comprehensive TeX Archive Network at
+http://www.ctan.org/tex-archive/macros/latex/contrib/statrep
 
 Bundled with the StatRep package is the longfigure package for
 multipage figures.
@@ -22,7 +24,7 @@ The distribution(statrep.zip) consists of the following files:
    statrepmanual.tex     StatRep Package User's Guide (source)
    quickstart.tex        Example and tutorial LaTeX file
    statrep.dtx           Package source file
-   statrep.ins           Install file (for MikTeX Users)
+   statrep.ins           Install file 
 
 INSTALL
 
@@ -37,58 +39,69 @@ Step 1: Install the StatRep SAS Macros
    the file into that directory.
 
 Step 2: Install the StatRep LaTeX Package
-
-   If you are working with the MikTeX distribution on Windows and it is
-   configured to download and install packages automatically, you can
-   skip this step. Otherwise, see these instructions for installing
-   packages for MikTeX:
-   http://docs.miktex.org/manual/localadditions.html
-
-   These instructions show how to install the StatRep package in the
-   TeXLive LaTeX distribution for your personal use. If you maintain a
-   system-wide LaTeX distribution and you want to make StatRep
-   available to all users, see more detailed information about how
-   to install LaTeX packages at
-   http://www.tex.ac.uk/cgi-bin/texfaq2html?label=what-TDS
-
+   These instructions show how to install the StatRep package in 
+   your LaTeX distribution for your personal use. 
+   
    a)
-   Determine the location that LaTeX uses to load packages. From a
-   command-line prompt, give the following command:
-   kpsewhich -var-value=TEXMFHOME
+      MikTeX Users:
+      If you do not have a directory for your own packages, choose
+      a directory name to contain your packages (for example, c:\localtexmf).
+     
+      In the following instructions, this directory is referred to as the
+      "root directory"
+      
+      TeXLive Users:
+      If you maintain a system-wide LaTeX distribution and you want to 
+      make StatRep available to all users, see more detailed information 
+      about how to install LaTeX packages at:
+      http://www.tex.ac.uk/cgi-bin/texfaq2html?label=what-TDS
 
-   The command will return the root directory name in which LaTeX can
-   find your personally installed packages.
+      Determine the location that LaTeX uses to load packages. From a
+      command-line prompt, give the following command:
+      kpsewhich -var-value=TEXMFHOME
+
+      The command will return the root directory name in which LaTeX can
+      find your personally installed packages.
+      
+      In the following instructions, this directory is referred to as the
+      "root directory"
 
    b)
    Create the directory if it does not exist and create the additional
    subdirectories tex/latex/statrep
    Your directory tree will have the following structure:
       ---------------
-      root directory/  (given by kpsewhich command in 2a)
+      root directory/  
          tex/
             latex/
               statrep/
 
-   d)
-   Copy the files statrep.dtx, statrepmanual.pdf, and statrepmanual.tex to
-   the statrep subdirectory. Your directory tree will have the following structure:
+   c)
+   Copy the files statrep.dtx, statrep.ins, statrepmanual.pdf, and statrepmanual.tex 
+   to the statrep subdirectory. Your directory tree will have the following structure:
       ---------------
-      root directory/  (given by kpsewhich command in 2a)
+      root directory/  
          tex/
             latex/
                  statrep/
                        statrep.dtx
+                       statrep.ins
                        statrepmanual.pdf
                        statrepmanual.tex
       ---------------
 
-   e)
+   d)
    Change to the statrep directory and give the following command:
-   pdflatex statrep.dtx
+   pdftex statrep.ins
 
    The command creates several files, one of which is the configuration
    file, statrep.cfg.
 
+   MikTeX Users:
+   Add the root directory name from Step 2a according to these instructions 
+   for installing packages for MikTeX ("Register a user-managed TEXMF directory"):
+      http://docs.miktex.org/manual/localadditions.html
+  
 Step 3: Let the StatRep Package Know the Location of the StatRep SAS Macros
 
    Edit the statrep.cfg file generated in Step 2d so that the macro SRmacropath contains
@@ -134,6 +147,9 @@ UNINSTALL
    To uninstall the package, delete the statrep directory that you created
    in the installation step 2d and remove the SAS macro file statrep_macros.sas
    that you copied in Installation step 1.
+   
+   MikTeX users: After removing the directory, update the filename database
+   (MikTeX Options dialog: General-> Refresh FNDB)
 
 LICENSE
 
