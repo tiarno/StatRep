@@ -334,7 +334,8 @@ ods document close; run;
 ods _all_ close;
 
 proc document name=&store;
-   ods output properties=_ads_doclist(where=(type ne "Dir"));
+   ods output properties=_ads_doclist(where=(not (type eq "Dir" or
+                                      (type =: 'R' and index(type, 'p.')))));
    list / details levels=all;
    run; quit;
 
@@ -476,7 +477,7 @@ data _null_;
          end;
       objects = ' ' || compbl(objects);
 
-      * Move brackets next to names.  
+      * Move brackets next to names.
         For example, change '< name' to '<name' and 'name >' to 'name>'.;
       done = 0;
       do i = 1 to 32500 until(done);
@@ -532,6 +533,33 @@ data _null_;
 
 data _ads_doclist(drop=i p);
    set _ads_doclist;
+
+   /*-------------Translate: Special characters not shown-------------
+   English  German       Spanish      French                Italian
+   Batch    Batch        Batch        Traitement par lots   Batch
+   Crosstab Kreuztabelle TablaCruzada Table a double entr*e Campi incr.
+   Dir      Dir          Dir          Rép.                  Dir
+   File     file         Archivo      Fichier               File
+   Graph    Grafik       Gr*fico      Graphique             Grafico
+   Note     Hinweis      Nota         Note                  Nota
+   Report   Bericht      Informe      Rapport               Report
+   Table    Tabelle      Tabla        Tableau               Tabella
+   Text     Text         Texto        Texte                 Testo
+   Tree     Baum         *rbol        Arbre                 Struttura
+   */
+
+   if trim(type) in ('Hinweis', 'Nota') then type = 'Note';
+   else if type =: 'Kreuz' or type =: 'Tabla' or type =: 'Campi' or
+      index(trim(type), 'double') then type = 'Crosstab';
+   else if type =: 'Tab'    then type = 'Table';
+   else if type =: 'Gra'    then type = 'Graph';
+   else if type =: 'Traite' then type = 'Batch';
+   else if type =: 'Te'     then type = 'Text';
+   else if type =: 'Fi' or type =: 'fi' or type =: 'Archi' then type = 'File';
+   else if trim(type) in ('Bericht', 'Informe', 'Rapport') then type ='Report';
+   else if trim(type) in ('Baum', 'Arbre', 'Struttura') or index(type, 'rbol')
+      then type ='Tree';
+
    ObjNum = _n_;
    * The variable ourpath is used for group subsetting and display in the SAS log.
      It is not used for actual selection (beyond group selection).;
@@ -657,7 +685,7 @@ data _ads_select(keep=path type left right object ourpath label pagebreak);
 
          if object ne ' ' then do;
 
-            * For an object has n levels, 
+            * For an object has n levels,
               store in pathpart the last n levels from the path.;
             %ads_extr_path(pathpart, path, object)
 
@@ -695,7 +723,6 @@ data _ads_select(keep=path type left right object ourpath label pagebreak);
 
 * Omit the first or last object from the selection list with SKIPFIRST or SKIPLAST.;
 %if &skipfirst or &skiplast %then %do;
-   
    data _ads_select;
       set _ads_select end=eof;
 
@@ -875,7 +902,7 @@ options source &savenote;
          %else %do;
             ods listing file="&listingdir/_tmp";
           %end;
-   
+
          %if not %index(&flow, notes) %then %do; options nonotes; %end;
 
          proc document name=&store;
@@ -1191,7 +1218,7 @@ options &savenote;
                          /* variable _ads_debug is defined.             */
                          /*---------------------------------------------*/
 
-run; quit; 
+run; quit;
 options obs=max nosyntaxcheck;
 ods document close;
 
@@ -1316,10 +1343,10 @@ proc printto log="&listingdir/__tmp" new; run;
 %mend;
 
 
-                         /*---------------------------------------------*/ 
+                         /*---------------------------------------------*/
                          /* The ENDLOG macro ends the capture of the    */
                          /* SAS log.                                    */
-                         /*---------------------------------------------*/ 
+                         /*---------------------------------------------*/
 %macro endlog(store=1,   /* set STORE=0 to capture messages only and    */
                          /* not code.                                   */
               range=1);; /* Specify a Boolean expression to select only */
@@ -1344,7 +1371,7 @@ data _null_;
       if index(line, '%endlog') = 0;
       %end;
    %else %do;
-      if not (n(input(scan(line, 1, ' +'), ?? 12.)) and 
+      if not (n(input(scan(line, 1, ' +'), ?? 12.)) and
               compress(line, ' 0123456789') =: '+');
       %end;
    if &range;
@@ -1360,7 +1387,7 @@ options &savenote;
 
 *------------------------------------------------------------------------;
 
-* This utility macro stores in the out macro variable the 
+* This utility macro stores in the out macro variable the
   object name with pounds and such to match the name in the document.;
 %macro ads_expand_obj(out, in);
    length _w $ 200;
@@ -1375,7 +1402,7 @@ options &savenote;
    &out = substr(&out, 3);
    %mend;
 
-* This utility macro stores in the out macro variable the last n levels 
+* This utility macro stores in the out macro variable the last n levels
   (for an object with n levels) from the path.;
 %macro ads_extr_path(out, path, object);
    _levs = 1 + length(&object) - length(compress(&object, '.'));
@@ -1386,19 +1413,18 @@ options &savenote;
 
 *------------------------------------------------------------------------;
 
-* This macro deletes the contents of the listingdir and graphicdir 
-  directories. It decides which operating system command to give 
+* This macro deletes the contents of the listingdir and graphicdir
+  directories. It decides which operating system command to give
   based on the SYSSCP macro variable.;
-  
+
 %macro hostdel;
    %if &sysscp = WIN or &sysscp = DNTHOST %then %do;
       options noxwait;
       x "mkdir &graphicdir &listingdir";
-      x "del %nrstr(%%)CD%nrstr(%%)\&listingdir\*.lst %nrstr(%%)CD%nrstr(%%)\&graphicdir\*.png"; 
+      x "del %nrstr(%%)CD%nrstr(%%)\&listingdir\*.lst %nrstr(%%)CD%nrstr(%%)\&graphicdir\*.png";
    %end;
    %else %do;
       x "mkdir &graphicdir &listingdir";
-      x "rm &listingdir/*.lst &graphicdir/*.png"; 
+      x "rm &listingdir/*.lst &graphicdir/*.png";
    %end;
 %mend;
-  
