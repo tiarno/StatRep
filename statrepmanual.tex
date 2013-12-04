@@ -1314,8 +1314,32 @@ The first object in the stream to capture is the first object produced by the
   
   See page \pageref{skiplast} for an alternate method of controlling breaks
   with the \Code{options=nopage} and \Code{options=onebox} options.
-  
- \section{ODS Graphics and GRSEG Graphics}
+ 
+ \section{ODS Graphics}
+
+ In SAS 9.3 and later, ODS Graphics is enabled by default in the SAS windowing environment.  
+ ODS Graphics is not enabled by default in batch mode and in the SAS windowing environment in SAS 9.2.
+ When ODS Graphics is not enabled by default, you can enable ODS Graphics by specifying the following statement:
+
+\begin{snugshade}
+\begin{verbatim}
+   ods graphics on;
+\end{verbatim}
+\end{snugshade}
+
+
+You can enable ODS Graphics in \StatRep for all steps by providing this code block at the 
+beginning of your LaTeX document:
+
+\begin{snugshade}
+\begin{verbatim}
+   \begin{Sascode}[program]
+      ods graphics on;
+   \end{Sascode}
+\end{verbatim}
+\end{snugshade}
+
+ \subsection{ODS Graphics and GRSEG Graphics}
  \label{grseg}
  
   When you create a graph with ODS Graphics, the style and dots per inch (DPI) can be changed
