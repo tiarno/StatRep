@@ -2163,8 +2163,102 @@ Figure \ref{interact} shows how to capture output from the interactive
   The fact that two of the \cs{Listing} lines come before any of the output is 
   created does not pose a problem.
   
-  
+\section{Capturing and Displaying Numerical Results in Text}
 
+This example shows how you can capture SAS output values and display them in text.
+For example, suppose you want to capture the R-square values from a PROC REG 
+step and a PROC GLM step and then display those values 
+(but not display the steps) in your document.
+
+Use the following steps to capture the values and display them in text:
+
+\begin{enumerate}
+\item In your document source file, anywhere before you want to display the 
+      captured values, include the following command to 
+      input a \LaTeX\ file (named\newline\texttt{myconstants.tex} in this example) 
+      to contain the \LaTeX\ definitions of the captured values:
+\begin{snugshade}
+\begin{verbatim}
+   \input{myconstants}
+\end{verbatim}
+\end{snugshade}
+
+The \texttt{myconstants.tex} file is actually generated in step 3, 
+but you can include the preceding command before the file is generated 
+because the SAS output capture program will create the file and write
+the definitions before pdf\LaTeX\ generates the final PDF file.
+
+\item Include one or more procedure steps, such as the following 
+      PROC REG and PROC GLM steps, which produce tables of fit statistics 
+      that are named \texttt{fsr} and \texttt{fsg}, respectively: 
+\begin{snugshade}
+\begin{verbatim}
+   \begin{Sascode}
+   proc reg data=sashelp.class;
+      model weight = height;
+   %*;ods output fitstatistics=fsr;
+   run; quit;
+   
+   proc glm data=sashelp.class;
+      class sex;
+      model weight = sex | height;
+   %*;ods output fitstatistics=fsg;
+   run; quit;
+   \end{Sascode}
+\end{verbatim}
+\end{snugshade}
+
+Include a null macro comment at the beginning of the ODS OUTPUT statement
+in each step to cause the step to be run in the capture program but not be 
+displayed in the text.
+
+\item Near the end of your document source file, include code such as the 
+      following to generate the \texttt{myconstants.tex} file, extract the 
+      R-square values from the \texttt{fsr} and \texttt{fsg} tables of fit statistics that were 
+      generated in step 2, and write those values to \texttt{myconstants.tex}. 
+      The \texttt{Sascode} environment option, \texttt{program}, 
+      runs the code without displaying it in the text. 
+\begin{snugshade}
+\begin{verbatim}
+   \begin{Sascode}[program]
+   data _null_;
+      file 'myconstants.tex' termstr=nl;
+      set fsr(keep=label2 nvalue2 where=(label2='R-Square'));
+      put '\def \regrsq{' nvalue2 6.4 '}';
+      set fsg(keep=rsquare);
+      put '\def \glmrsq{' rsquare 6.4 '}';
+   run;
+   \end{Sascode}
+\end{verbatim}
+\end{snugshade}
+
+\item Include the tags that are contained 
+     in the \texttt{myconstants.tex} file when you want to display 
+     the values of those tags, as follows:
+\begin{snugshade}
+\begin{verbatim}
+   The R-square values are \regrsq\ and \qlmrsq, respectively.
+\end{verbatim}
+\end{snugshade}
+   Include a backslash after the tag when you need to include a space after the value.
+\end{enumerate}
+
+When you execute the generated SAS program, SAS writes the 
+following tags in the \texttt{myconstants.tex} file:
+\begin{snugshade}
+\begin{verbatim}
+   \def \regrsq{0.7705}
+   \def \glmrsq{0.7930}
+\end{verbatim}
+\end{snugshade}
+
+When pdf\LaTeX\ processes the file, it replaces the 
+\verb+\regrsq+ and \verb+\glmrsq+ tags with the values that were 
+written to the \texttt{myconstants.tex} file and produces the 
+following:
+\begin{snugshade}
+   The R-square values are 0.7705 and 0.7930, respectively.
+\end{snugshade}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
