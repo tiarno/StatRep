@@ -303,6 +303,9 @@
 %let savetime = %sysfunc(getoption(stimer));
 %let savesize = ls=%sysfunc(getoption(ls)) ps=%sysfunc(getoption(ps));
 %let holdlast = &syslast;
+%let graphtype = %qlowcase(&graphtype);
+%if %nrbquote(&graphtype) ne pdf %then %let graphtype = png;
+
 options nostimer %if &pagesize ne %then ps=&pagesize;
                  %if &linesize ne %then ls=&linesize;;
 
@@ -315,6 +318,7 @@ options nostimer %if &pagesize ne %then ps=&pagesize;
 %if &dpi eq %then %let dpi = &defaultDPI;
 
 %let gdevice = %substr(png300, 1, 3 * (1 + (&dpi eq 300)));
+%if %nrbquote(&graphtype) eq pdf %then %let gdevice = pdf;
 
 * Find out what is in the document.  Store the list in a SAS data set.;
 %if %symexist(documentlabel) %then %do;
@@ -889,15 +893,16 @@ options source &savenote;
 
          %if &&_gtype&i eq G %then %do; /* if graph replay */
             ods listing style=&style image_dpi=&dpi gpath="&graphicdir";
-            ods graphics / reset=index imagename="&fname&jl"
+            ods graphics / reset=index imagename="&fname&jl" &odsgraphopts
                 %if %nrbquote(&width)  ne %then width=&width;
-                %if %nrbquote(&height) ne %then height=&height;;
+                %if %nrbquote(&height) ne %then height=&height;
+                %if %nrbquote(&graphtype) eq pdf %then outputfmt=pdf;;
             goptions dev=&gdevice fileonly gsfname=gsasfile gsfmode=replace
                      hsize=%if %nrbquote(&width) ne %then &width;
                      %else 6.4in;
                      vsize=&h border;
-            filename gsasfile "&graphicdir/&fname&jl..png";
-            %put NOTE: Writing Graph file: &graphicdir/&fname&jl..png;
+            filename gsasfile "&graphicdir/&fname&jl..&graphtype";
+            %put NOTE: Writing Graph file: &graphicdir/&fname&jl..&graphtype;
             %end;
          %else %do;
             ods listing file="&listingdir/_tmp";
@@ -913,7 +918,7 @@ options source &savenote;
          options &savenote;
 
          %if &&_gtype&i eq G %then %do; /* if graph replay */
-            filename gsasfile "&graphicdir/_tmp.png";
+            filename gsasfile "&graphicdir/_tmp.&graphtype";
             %end;
 
          ods _all_ close;
@@ -1040,7 +1045,7 @@ proc datasets nolist; delete _ads_select _ads_doclist _ads_objects; run; quit;
 run;
 
 filename __f1 "&listingdir/_tmp";
-filename __f2 "&graphicdir/_tmp.png";
+filename __f2 "&graphicdir/_tmp.&graphtype";
 data _null_; rc = fdelete('__f1'); rc = fdelete('__f2'); run;
 
 options obs=max nosyntaxcheck &savenote &savetime &savesize;
@@ -1143,7 +1148,11 @@ options obs=max nosyntaxcheck &savenote &savetime &savesize;
 * Set the default DPI using DPI= and a DefaultDPI macro variable;
 %if &dpi eq %then %let dpi = &defaultDPI;
 
+%let graphtype = %qlowcase(&graphtype);
+%if %nrbquote(&graphtype) ne pdf %then %let graphtype = png;
 %let gdevice = %substr(png300, 1, 3 * (1 + (&dpi eq 300)));
+%if %nrbquote(&graphtype) eq pdf %then %let gdevice = pdf;
+
 %if not (&dpi eq 96 or &dpi eq 100 or &dpi eq 300)
    %then %put NOTE: DPI=96 will be used for GRSEG graphics.;
 
@@ -1203,7 +1212,7 @@ ods document name  = &label(write) cat=sasuser.__&label;
 
 * Specify 300 DPI for GRSEG graphics (gdevice = png or png300).;
 goptions dev=&gdevice fileonly gsfname=gsasfile gsfmode=replace border;
-filename gsasfile "&graphicdir/_tmp.png";
+filename gsasfile "&graphicdir/_tmp.&graphtype";
 options &savenote;
 %mend;
 
@@ -1421,10 +1430,10 @@ options &savenote;
    %if &sysscp = WIN or &sysscp = DNTHOST %then %do;
       options noxwait;
       x "mkdir &graphicdir &listingdir";
-      x "del %nrstr(%%)CD%nrstr(%%)\&listingdir\*.lst %nrstr(%%)CD%nrstr(%%)\&graphicdir\*.png";
+      x "del %nrstr(%%)CD%nrstr(%%)\&listingdir\*.lst %nrstr(%%)CD%nrstr(%%)\&graphicdir\*.p*";
    %end;
    %else %do;
       x "mkdir &graphicdir &listingdir";
-      x "rm &listingdir/*.lst &graphicdir/*.png";
+      x "rm &listingdir/*.lst &graphicdir/*.p*";
    %end;
 %mend;
