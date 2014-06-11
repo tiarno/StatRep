@@ -2070,42 +2070,55 @@ and the derived files
 %    \section{\textsf{\small longfigure} Usage}
 %    \label{longfigure}
 %    \index{longfigure package|usage}
-%    The |longfigure| package differs  slightly from the well-known |longtable| package
-%    written by David Carlisle. The |longtable| package defines a |longtable| environment,
-%    which produces tables that can be broken by \TeX's standard page-breaking algorithm.
-%    Similarly, the |longfigure| package defines a |longfigure| environment that produces
-%    figures that can be broken by \TeX's standard page-breaking algorithm.
 %
+%    The |longfigure| package uses and relabels components of the
+%    well-known |longtable| package, written by David Carlisle, to
+%    provide a table-like environment that can display a stream
+%    of subfigures as a single figure that can break across pages.
+%
+%    The |longtable| package defines a |longtable| environment,
+%    which produces tables that can be broken by \TeX's standard page-breaking algorithm.
+%    Similarly, the |longfigure| package defines a |longfigure| environment, which produces
+%    figures that can be broken by \TeX's standard page-breaking algorithm.
+%    The internal structure of a long figure is similar to a long table.
+%    Rows might contain (for example) tables or graphics. Page breaks
+%    can occur only between rows.
 %
 %     The |longfigure| package differs from the |longtable| package in the following ways:
 %    \begin{itemize}
-%    \item The counters and macros that start with \cs{LT}  are renamed
-%    to start with \cs{LF} to avoid
-%    namespace conflicts when the two packages are used together.
-%    The generic macros that are defined in the |longtable| package
-%  (\cs{endfirsthead}, \cs{endhead}, \cs{endfoot}, \cs{endlastfoot}) are
-%  also renamed with \cs{LF} as a prefix.
-%
-%    \item The |longfigure| package supports two additional key-value options:
+%      \item The |longfigure| package supports two additional key-value options:
 %      \begin{itemize}
-%        \item |figname=| specifies the counter for numbering |longfigure| environments.
-%        The default is |figure|, but you can specify
-%             any string. If the counter is not already defined,
-%             it is created.\index{figname option|usage}
+%        \item The |figname=| option specifies the counter for numbering |longfigure| environments.
+%              You can specify any string; the default is |figure|.
+%              When you specify a |figname=| value for which no counter already exists, the
+%              |longfigure| package loads the |tocloft| package and creates the counter.
+%              \index{figname option|usage}
 %
-%       \item |resetby=| specifies a counter (for example, |resetby=chapter|) such
-%    that output numbering is reset with each change in the counter value.
-%    Refer to the |tocloft| package documentation for information about how the
-%    lists are typeset.\index{list of outputs, creating|usage}
+%       \item The |resetby=| option specifies a counter (for example, |resetby=chapter|) such
+%             that output numbering is reset each time the counter value changes.
+%             If a counter is specified that does not exist, the |tocloft| package is
+%             loaded to create the new counter.
+%             \index{tocloft package|usage}%
+%             For information about how the lists are typeset,
+%             \index{list of outputs, creating|usage}%
+%             see the |tocloft| package documentation.
 %      \end{itemize}
+%      \item The counters and macros that start with \cs{LT} in the |longtable| package
+%            are renamed to start with \cs{LF} in the |longfigure| pacakge to avoid
+%            namespace conflicts when the two packages are used together.
+%            The generic macros that are defined in the |longtable| package
+%            (\cs{endfirsthead}, \cs{endhead}, \cs{endfoot}, and \cs{endlastfoot}) are
+%            also renamed with \cs{LF} as a prefix in the |longfigure| package.
 %
-%      If a counter is specified that does not exist,
-%      the |tocloft| package is
-%      loaded to create the new counter.\index{tocloft package|usage}
+%      \item The \cs{LF@name} macro is based on the \cs{fnum@table} macro from
+%            the |longtable| package. The  \cs{LF@name} macro returns the capitalized
+%            counter name and value. For example, if the counter is |figure| and the
+%            macro is processing the second |longfigure|, the \cs{LF@name} macro
+%            would contain the value ``Figure 2.''
 %
 %  \end{itemize}
-%    You can produce a \emph{List of Figures} by using the package defaults
-%    and inserting the following tag in your document at the point where you want
+%    You can use the |longfigure| package defaults to produce a \emph{List of Figures}
+%    by inserting the following tag in your document at the point where you want
 %    the list to appear:
 % \iffalse
 %<*example>
@@ -2117,13 +2130,11 @@ and the derived files
 %</example>
 % \fi
 %
-%    The default counter that is used to display figures
-%    is the |figure| counter. However, you can specify a different counter.
-%    For example, if you want to label your
-%    figures as ``Display'', specify |figname=display| when you
-%    load the longfigure package; to display the \emph{List of Displays}, insert the following
-%    command in your document at the point where you want
-%    the list to appear:
+%    The default counter used to display figures is the |figure| counter,
+%    but you can specify a different counter. For example, if you want your
+%    figures to be labeled as ``Display,'' specify |figname=display| when you
+%    load the |longfigure| package; to display a \emph{List of Displays}, insert the following
+%    command in your document at the point where you want the list to appear:
 % \iffalse
 %<*example>
 % \fi
@@ -2133,30 +2144,77 @@ and the derived files
 % \iffalse
 %</example>
 % \fi
-%    When you specify a |figname| for which no counter exists, the
-%    |longfigure| package loads the |tocloft| package
-%    and creates the counter.
-%    If you want to use more advanced features of the |tocloft| package,
-%    load it before loading |longfigure|. Then the |longfigure|
-%    package sees that the counter you specified in
-%    the |figname=| option is already defined and does not attempt to create it.
-%
-%    \textbf{Note:}  An auxiliary file with extension |.lft| is created to contain the information
+%    \textbf{Note:}  If you specify a counter that does not exist,
+%    an auxiliary file with extension |.lft| is created to contain the information
 %    needed to create the list.
 %
-%  The \cs{fnum@table} macro from the |longtable| package is replaced with the
-%  \cs{LF@name} macro. It returns the capitalized counter name with the value of
-%  the counter. For example, if the counter is |figure| and the macro is processing
-%  the second |longfigure|, the \cs{LF@name} macro would contain the value
-%  ``Figure 2''.
+%    If you want to use more advanced features of the |tocloft| package,
+%    load it before you load the |longfigure| package so that the |longfigure|
+%    package sees that the counters specified by the |figname=| and |resetby=|
+%    options are already defined and does not attempt to create them.
 %
 %
-%    \section{\textsf{longfigure} Implementation}
+%\subsection{Example}
+% The following lines produce a single figure that contains three images and
+% one tabular environment. Each element is a row of the |longfigure| environment.
+% Page breaks can occur between rows.
 %
-%    This section describes the implementation of the |longfigure| package. The comments
-%    describe only the changes from the |longtable| package code. For complete details
-%    about the logic and usage of the environment, see the |longtable| documentation.
+%\begin{verbatim}
+%\documentclass{book}
+%\usepackage{graphicx}
+%\usepackage{longfigure}
 %
+%\begin{document}
+%  \begin{longfigure}{c}
+%    \caption{My Long Figure}\label{mlfig}\\
+%    \includegraphics[width=3in]{myfig1}\\
+%    \includegraphics[width=3in]{myfig2}\\
+%    \includegraphics[width=3in]{myfig3}\\
+%    \begin{tabular}{ll}
+%      one & two \\
+%      three & four\\
+%    \end{tabular}
+%  \end{longfigure}
+%\end{document}
+%\end{verbatim}
+%
+%  In this example, the |{c}| argument in the |\begin{longfigure}| command
+%  specifies only a single centered column. You can also specify multiple columns and,
+%  if needed, use the \cs{multicolumn} command for more flexibility.
+%
+% The following lines display another example that specifies a 'continued' heading
+% when the figure breaks over a page. It also displays a double horizontal line at the
+% end of the figure.
+%\begin{verbatim}
+%\documentclass{book}
+%\usepackage{graphicx}
+%\usepackage{longfigure}
+%
+%\begin{document}
+%  \begin{longfigure}{c}
+%    \caption{My Long Figure}\label{mlfig2}\\
+%    \hline\endLFfirsthead
+%    \caption{continued}\\
+%    \hline\endLFhead
+%    \hline\endLFfoot
+%    \hline\hline\endLFlastfoot
+%    \includegraphics[width=3in]{myfig1}\\
+%    \includegraphics[width=3in]{myfig2}\\
+%    \includegraphics[width=3in]{myfig3}\\
+%    \begin{tabular}{ll}
+%      one & two \\
+%      three & four\\
+%    \end{tabular}
+%  \end{longfigure}
+%\end{document}
+%\end{verbatim}
+%
+%    \section{Implementation}
+%
+%    This section describes the implementation of the |longfigure| package.
+%    The comments describe only the changes from the |longtable| package code.
+%    For complete details about the logic and usage of the |longtable| environment,
+%    see Carlisle (2004).
 %\iffalse
 %<*longfigure>
 %\fi
