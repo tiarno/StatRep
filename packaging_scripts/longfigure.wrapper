@@ -1,0 +1,148 @@
+% \iffalse meta-comment
+%<*internal>
+\iffalse
+%</internal>
+%<*readme>
+----------------------------------------------------------------
+longfigure --- A LaTeX package providing a table-like environment
+               that can display a stream of subfigures as a single
+               figure that can be broken by \TeX's
+               standard page-breaking algorithm.
+
+               Nearly identical to David Carlisle's |longtable| package,
+               but with some obvious changes to use figures instead of
+               tables. All credit goes to David Carlisle; this package
+               represents small changes to his code and logic.
+               I am responsible for the changes.
+
+E-mail: tim.arnold@sas.com
+Released under the LaTeX Project Public License v1.3c or later
+See http://www.latex-project.org/lppl.txt
+----------------------------------------------------------------
+
+This work consists of the file longfigure.dtx
+and the derived files:
+   README (this file)
+   longfigure.ins
+   longfigure.pdf
+   longfigure.sty
+%</readme>
+%<*internal>
+\fi
+\def\nameofplainTeX{plain}
+\ifx\fmtname\nameofplainTeX\else
+  \expandafter\begingroup
+\fi
+%</internal>
+%<*install>
+\input docstrip.tex
+\keepsilent
+\askforoverwritefalse
+\preamble
+----------------------------------------------------------------
+longfigure --- A LaTeX package providing a table-like environment
+               that can display a stream of subfigures as a single
+               figure that can be broken by \TeX's
+               standard page-breaking algorithm.
+
+E-mail: tim.arnold@sas.com
+----------------------------------------------------------------
+\endpreamble
+\postamble
+Copyright (C) 2014 by SAS Institute Inc. <tim.arnold@sas.com>
+
+This work may be distributed and/or modified under the
+conditions of the LaTeX Project Public License (LPPL), either
+version 1.3c of this license or any later version.
+The latest version of this license is in the file:
+http://www.latex-project.org/lppl.txt
+
+This work is "maintained" (as per LPPL maintenance status) by
+Tim Arnold.
+
+This work consists of the file longfigure.dtx
+and the derived files:
+   README (this file)
+   longfigure.ins
+   longfigure.pdf
+   longfigure.sty
+\endpostamble
+\generate{\file{longfigure.sty}{\from{longfigure.dtx}{longfigure}}}
+%</install>
+%<install>\endbatchfile
+%<*internal>
+\generate{\file{longfigure.ins}{\from{longfigure.dtx}{install}}}
+\nopreamble\nopostamble
+\generate{\file{README}{\from{longfigure.dtx}{readme}}}
+\ifx\fmtname\nameofplainTeX
+  \expandafter\endbatchfile
+\else
+  \expandafter\endgroup
+\fi
+%</internal>
+%<*longfigure>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{longfigure}[2014/1/06 v1.0]
+%</longfigure>
+%<*driver>
+\documentclass{ltxdoc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{\jobname}
+\usepackage[numbered]{hypdoc}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\begin{document}
+  \DocInput{\jobname.dtx}
+\end{document}
+%</driver>
+% \fi
+%\GetFileInfo{\jobname.sty}
+% \def\fileversion{v1.0}
+%
+%\title{^^A
+%  The \textsf{longfigure} Package\thanks{^^A
+%    This file describes version \fileversion, last revised \filedate.^^A
+%  }^^A
+%}
+%\author{^^A
+%  Tim Arnold\thanks{E-mail: tim.arnold@sas.com}^^A
+%}
+%\date{Released \filedate}
+%
+%\maketitle
+%
+%\changes{v1.0}{2014/1/06}{First public release}
+%    \section{Usage}
+%    \label{longfigure}
+%    \subsection{References}
+%    \begin{description}
+%    \item[\textmd{Carlisle, D. 2004.}]
+%    \emph{The longtable Package}.
+%    Included in the ``Comprehensive \TeX\ Archive Network.'' \url{http://ctan.org}.
+%
+%    \item[\textmd{Lazarides, Y. 2010.}]
+%    \TeX stackexchange, online forum. \url{http://tex.stackexchange.com/questions/7992}.
+%
+%    \item[\textmd{Sch\"opf, R., B. Raichle, and C. Rowley. 2001.}]
+%    \emph{A New Implementation of \LaTeX's \texttt{verbatim} and \texttt{verbatim*} Environments}.
+%    Originally appeared in TUGboat 1990, 11(2), 284--296.
+%
+%    \item[\textmd{Thanh, H., S. Rahtz, H. Hagen, and H. Henkel. 2009.}]
+%    ``The pdf\TeX\ User's Manual'' Revision 655, corresponding to pdf\TeX\ 1.40.11.
+%    \url{www.tug.org/applications/pdftex}
+%
+%    \item[\textmd{Wilson, Peter. 2001.}]
+%    \emph{Glisterings} in TUGboat 22(4), 339--340.
+%    \end{description}
+%
+%\StopEventually{^^A
+%  \PrintChanges
+%  \PrintIndex
+%}
+%
+%    \begin{macrocode}
+%</longfigure>
+%    \end{macrocode}
+%\Finale
