@@ -5,7 +5,7 @@
 %<*readme>
 ----------------------------------------------------------------
 longfigure --- A LaTeX package providing a table-like environment
-               that can display a stream of subfigures as a single
+               that can display a stream of figures as a single
                figure that can be broken by \TeX's
                standard page-breaking algorithm.
 
@@ -13,7 +13,6 @@ longfigure --- A LaTeX package providing a table-like environment
                but with some obvious changes to use figures instead of
                tables. All credit goes to David Carlisle; this package
                represents small changes to his code and logic.
-               I am responsible for the changes.
 
 E-mail: tim.arnold@sas.com
 Released under the LaTeX Project Public License v1.3c or later
@@ -73,7 +72,7 @@ and the derived files:
 %<*internal>
 \generate{\file{longfigure.ins}{\from{longfigure.dtx}{install}}}
 \nopreamble\nopostamble
-\generate{\file{README}{\from{longfigure.dtx}{readme}}}
+\generate{\file{README.}{\from{longfigure.dtx}{readme}}}
 \ifx\fmtname\nameofplainTeX
   \expandafter\endbatchfile
 \else

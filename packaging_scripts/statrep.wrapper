@@ -15,10 +15,11 @@ The generated SAS program includes calls to macros that use the SAS
 Output Delivery System (ODS) document to capture the output as external files.
 These SAS macros are included in this package (statrep_macros.sas).
 
-The package is available at http://support.sas.com/StatRepPackage
+The package is available in two locations:
 
-Bundled with the StatRep package is the longfigure package for
-multipage figures.
+    * http://support.sas.com/StatRepPackage
+    * http://www.ctan.org/tex-archive/macros/latex/contrib/statrep
+
 
 The distribution(statrep.zip) consists of the following files:
    README.txt            (this file)
@@ -166,7 +167,6 @@ REQUIREMENTS
 
   LaTeX packages
      verbatim, graphicx, xkeyval, calc, ifthen
-
   SAS 9.2 or later
 
 See the StatRep User's Guide, included in this package, for complete details.
@@ -182,7 +182,6 @@ This work consists of the files:
       statrep.pdf
       statrep.sty
       statrep.cfg
-      longfigure.sty
 %</readme>
 %<*internal>
 \fi
@@ -237,7 +236,7 @@ and the derived files
 %</internal>
 %<*statrep>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{statrep}[2014/6/16 v1.02 The statrep package]
+\ProvidesPackage{statrep}[2014/6/16 v1.03 The statrep package]
 %</statrep>
 %<*driver>
 \documentclass[11pt]{ltxdoc}
@@ -270,9 +269,9 @@ and the derived files
 %</driver>
 %\fi
 %\def\filename{statrep.dtx}
-%\def\fileversion{1.01}
+%\def\fileversion{1.03}
 %\def\filedate{\today}
-%\CheckSum{0}
+%\CheckSum{2067}
 %\StopEventually{\PrintChanges\PrintIndex}
 %
 % \CharacterTable
@@ -295,6 +294,7 @@ and the derived files
 %\changes{v1.0}{2011/11/15}{Initial version}
 %\changes{v1.01}{2012/05/23}{Updated README for MikTeX users}
 %\changes{v1.02}{2014/06/16}{Added options for graphtype and odsgraphopts}
+%\changes{v1.03}{2014/06/19}{Added support for PDF graphics}
 %\GetFileInfo{statrep.sty}
 %
 %
@@ -1505,7 +1505,7 @@ and the derived files
 {\endverbatim%
   \setlength{\SR@scratchlength}{-2\topsep-\partopsep-2\parskip}
   \vspace*{\SR@scratchlength}%
-  \ifSR@program\vspace*{-2\baselineskip}\fi
+  \ifSR@program\vspace*{-\baselineskip}\fi
   %
   \ifSR@display\else%
     \ifthenelse{\equal{\SR@store}{\@empty}}%
@@ -1796,14 +1796,10 @@ and the derived files
 %  \index{png graphics|usage}
 %  \index{pdf graphics|usage}
 %
-%  The macro first checks whether the PNG file exists.
+%  The macro first checks whether the file exists.
 %  If it does, it sets the global variable \cs{SR@insertname} to the full name.
-%  Otherwise, it checks whether the PDF file exists and if that file exists,
-%  it sets the global variable to the full name.
-%
-%  If the file does not exist in either PNG or PDF format,
-%   \cs{SR@insertname} is defined to be
-%   \cs{@empty}.
+%  If the file does not exist,
+%   \cs{SR@insertname} is defined to be \cs{@empty}.
 %
 %   If the global variable \cs{SR@insertname} is empty,
 %   then \cs{SR@filebox} is defined to be a framed box with
