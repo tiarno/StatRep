@@ -18,7 +18,7 @@ These SAS macros are included in this package (statrep_macros.sas).
 The package is available in two locations:
 
     * http://support.sas.com/StatRepPackage
-    * http://www.ctan.org/tex-archive/macros/latex/contrib/statrep
+    * http://mirror.ctan.org/macros/latex/contrib/statrep/
 
 
 The distribution(statrep.zip) consists of the following files:
