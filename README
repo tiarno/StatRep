@@ -6,6 +6,9 @@ generate the SAS program that produces those results. The two environments
 (Datastep and Sascode) display SAS code. The two tags (Listing and Graphic)
 display SAS output.
 
+
+Brief documenation and a getting-started example is available here: http://tiarno.github.io/StatRep/
+
 The generated SAS program includes calls to macros that use the SAS
 Output Delivery System (ODS) document to capture the output as external files.
 These SAS macros are included in this package (statrep_macros.sas).
