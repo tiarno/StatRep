@@ -1,54 +1,236 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Statrep : The StatRep package is a LaTeX package that provides two environments and two tags that work together to display your SAS code and results and to generate the SAS program that produces those results. The two environments (Datastep and Sascode) display SAS code. The two tags (Listing and Graphic) display SAS output." />
+<head>
+  <meta charset='utf-8' />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <meta name="description" content="Statrep : The StatRep package is a LaTeX package that provides two environments and two tags that work together to display your SAS code and results and to generate the SAS program that produces those results. The two environments (Datastep and Sascode) display SAS code. The two tags (Listing and Graphic) display SAS output." />
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Statrep</title>
-  </head>
+  <title>Statrep</title>
+</head>
 
-  <body>
+<body>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/tiarno/StatRep">View on GitHub</a>
+  <!-- HEADER -->
+  <div id="header_wrap" class="outer">
+    <header class="inner">
+      <a id="forkme_banner" href="https://github.com/tiarno/StatRep">View on GitHub</a>
 
-          <h1 id="project_title">Statrep</h1>
-          <h2 id="project_tagline">The StatRep package is a LaTeX package that provides two environments and two tags that work together to display your SAS code and results and to generate the SAS program that produces those results. The two environments (Datastep and Sascode) display SAS code. The two tags (Listing and Graphic) display SAS output.</h2>
+      <h1 id="project_title">Statrep</h1>
+      <h2 id="project_tagline">
+        The StatRep package is a LaTeX package that provides two environments and two tags that work together to display your SAS code and results and to generate the SAS program that produces those results. The two environments (Datastep and Sascode) display SAS code. The two tags (Listing and Graphic) display SAS output.
+      </h2>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/tiarno/StatRep/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/tiarno/StatRep/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>
-<a name="welcome-to-the-statrep-documentation" class="anchor" href="#welcome-to-the-statrep-documentation"><span class="octicon octicon-link"></span></a>Welcome to the StatRep Documentation.</h3>
-
-<p>The pdf documentation is the most complete; this page will get you started. See <code>statrepmanual.pdf</code> for full usage details and <code>statrep.pdf</code> for the implementation.</p>
-
-<p>Getting started example coming soon.</p>
+      <section id="downloads">
+        <a class="zip_download_link" href="https://github.com/tiarno/StatRep/zipball/master">Download this project as a .zip file</a>
+        <a class="tar_download_link" href="https://github.com/tiarno/StatRep/tarball/master">Download this project as a tar.gz file</a>
       </section>
-    </div>
+    </header>
+  </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Statrep maintained by <a href="https://github.com/tiarno">tiarno</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
+  <!-- MAIN CONTENT -->
+  <div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+      <h3>
+        <a name="welcome-to-the-statrep-documentation" class="anchor" href="#welcome-to-the-statrep-documentation">
+          <span class="octicon octicon-link"></span>
+        </a>
+        Welcome to the StatRep Documentation.
+      </h3>
 
-    
+      <p>
+        The pdf documentation is the most complete; this page will get you started. See
+        <code>statrepmanual.pdf</code>
+        for full usage details and
+        <code>statrep.pdf</code>
+        for the implementation.
+      </p>
+      <h3>Getting Started</h3>
+      <p>
+        Assuming you have a fairly recent TeX distribution and SAS 9.2 or later installed, and
+        that you have installed the StatRep package, consider the LaTeX document called
+        <code>quickstart.tex</code>; it is part of the distribution so you already have a copy.
+      </p>
+      <p>
+        The main parts of the file are described in the following sections.
+        <p>
+          Load the class you want and the StatRep package:
+          <pre>\documentclass{article}
+\usepackage{statrep}
+\title{Example and Tutorial for the StatRep Package}
+\author{Tim Arnold and Warren F. Kuhfeld\\SAS Institute Inc., Cary, NC}
+\date{April 25, 2012}
+\begin{document}
+\maketitle
+\section{Introduction}
+This article provides an example and a
+tutorial that show how to use the StatRep LaTeX package.
+</pre>
+        </p>
+        <p>
+          The purpose of the
+          <code>Datastep</code>
+          environment is to read in data.
+It produces no output. Its contents are written to the generated
+SAS program as-is.
+          <pre>
+\begin{Datastep}
+data Wine;
+   input WineType $ VisitLength @@;
+   datalines;
+white  80 white  98 white 115 white  89 white 103
+white  91 white 119 white  31 white 109 white  95
+white  71 white 105 white  66 white 141 white  79
+white 113 white  69 white 120 white  87 red    93
+red    87 red   106 red    76 red   121 red   143
+red    81 red    97 red    74 red   107 red   112
+red    67 red   107 red    72 red   116 red    99
+red   104 red    91 red   132 red    78 red   107
+red   101 red    92
+;
+\end{Datastep}
+</pre>
+          <p>
+            The purpose of the
+            <code>Sascode</code>
+            environment is to generate output.
+You use the
+            <code>store=</code>
+            option so that
+later in your document you can refer to output that is created in the
+            <code>Sascode</code>
+            environment. In this example, all output that is generated by the analysis is
+stored in the ODS document
+            <code>wineA</code>
+            .
+          </p>
+          <p>
+            With no other options or commands inside the
+            <code>Sascode</code>
+            environment,
+its contents are written to the generated SAS program as-is.
+            <pre>
+\begin{Sascode}[store=wineA]
+ods graphics on;
+proc anova data=Wine;
+   class WineType;
+   model VisitLength = WineType;
+run;
+ods graphics off;
+\end{Sascode}
+</pre>
+          </p>
+          <p>
+            The
+            <code>Listing</code>
+            and
+            <code>Graphic</code>
+            tags specify the output to be displayed.
+The purpose of the
+            <code>Listing</code>
+            tag is to display tabular output and notes.
+The purpose of the
+            <code>Graphic</code>
+            tag is to display graphical output.
+          </p>
+          <p>
+            The
+            <code>Listing</code>
+            tag selects three output tables from the wineA ODS document:
+            <code>ClassLevels</code>
+            ,
+            <code>NObs</code>
+            , and
+            <code>OverallANOVA</code>
+            .
 
-  </body>
-</html>
+The
+            <code>Graphic</code>
+            tag selects the
+            <code>BoxPlot</code>
+            graph from the wineA ODS document.
+          </p>
+          <p>
+            The tags are parsed by the
+            <code>StatRep</code>
+            package and appropriate SAS code is written
+  to the generated program to write the outputs to an external file. Once the files have
+  been created, the tags include the outputs into the document.
+            <pre>
+\Listing[store=wineA,
+   objects=ClassLevels NObs OverallANOVA,
+   caption={Analysis of Variance for Visit Length}]{tsta}
+
+\Graphic[store=wineA,
+   objects=BoxPlot,
+caption={Box Plots for Visit Length}]{tstb}
+</pre>
+          </p>
+          <p>
+            When you generate
+the SAS program by compiling your document with pdfLaTeX,
+the
+            <code>StatRep</code>
+            package does the following:
+            <ul>
+              <li>
+                The lines in the
+                <code>Datastep</code>
+                environment are passed unchanged to the program.
+              </li>
+              <li>
+                The lines in the
+                <code>Sascode</code>
+                environment are parsed for line commands and passed
+to the program.
+              </li>
+              <li>
+                Each
+                <code>Listing</code>
+                tag  selects the specified notes and tables.
+              </li>
+
+              <li>
+                Each
+                <code>Graphic</code>
+                tag selects the specified graphs.
+              </li>
+
+            </ul>
+          </p>
+          <p>
+            When you execute the generated SAS program, the output that is
+specified in the
+            <code>Listing</code>
+            and
+            <code>Graphic</code>
+            tags is automatically captured.
+
+When you recompile your document, the
+            <code>Listing</code>
+            and
+            <code>Graphic</code>
+            tags
+insert the requested SAS results and page breaks are handled automatically.
+          </p>
+        </section>
+      </div>
+
+      <!-- FOOTER  -->
+      <div id="footer_wrap" class="outer">
+        <footer class="inner">
+          <p class="copyright">
+            Statrep maintained by
+            <a href="https://github.com/tiarno">tiarno</a>
+          </p>
+          <p>
+            Published with
+            <a href="http://pages.github.com">GitHub Pages</a>
+          </p>
+        </footer>
+      </div>
+
+</body>
+    </html>
