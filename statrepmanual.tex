@@ -121,13 +121,14 @@ are reproducible. Any SAS user can reproduce your analysis with your \LaTeX\ doc
 and the supplemental files that are described in this manual.
 
 \section{Requirements for the \StatRep Package}
+\index{package!requirements}
 To use the \StatRep package, you need SAS 9.2 or later,
 the \LaTeX\ typesetting system
 (the  pdf\LaTeX\ typesetting engine must be version 1.30 or later), and the \StatRep package itself.
 
 For complete step-by-step instructions for installation, see section \ref{install}.
 \section{Package Usage}
-\index{StatRep package, usage}
+\index{package!usage}
   To use the \StatRep package, include it in your document preamble after you
   declare the \Code{documentclass}.
   Figure \ref{fig:usage} displays an example of how you can use the \StatRep package.
@@ -142,7 +143,7 @@ For complete step-by-step instructions for installation, see section \ref{instal
 \caption{Example of Using the \StatRep Package}\label{fig:usage}
 \end{figure}
 
- The \StatRep package supports the following options:
+ The \StatRep package supports the following options:\index{package!options}
      \begin{itemize}
      \item \Code{generate} specifies whether a SAS program
      is generated at compile time. \index{generate option}
@@ -152,11 +153,11 @@ For complete step-by-step instructions for installation, see section \ref{instal
      that is used for numbering outputs\index{figname option}.
      The default is \Code{figure}. If you specify a value for the \Code{figname}
      option for which no counter exists,
-     a counter is created.
+     a counter is created.\index{figure names}\index{figname option}
 
      \item \Code{resetby=} specifies that the counter for output numbering be reset with
      each change in the specified counter value. For example, if \Code{resetby=chapter},
-     all output numbering is reset when the chapter value changes.
+     all output numbering is reset when the chapter value changes.\index{resetby= option}
      \end{itemize}
 
      The options \Code{figname=} and \Code{resetby=} are not used directly by the \StatRep
@@ -183,7 +184,7 @@ to produce a document with reproducible results.
   the necessary output files.
 
   The code from the \Code{Datastep} environment is passed unchanged to the
-  generated SAS program.
+  generated SAS program.\index{Datastep environment}
 \begin{figure}[H]
 \begin{snugshade}
 \begin{verbatim}
@@ -201,7 +202,7 @@ run;
 \end{figure}
 
   The code in the \Code{Sascode} environment is parsed by the \StatRep package before it is
-  written to the generated SAS program.
+  written to the generated SAS program.\index{Sascode environment}
 
 \begin{figure}[H]
 \begin{snugshade}
@@ -220,7 +221,7 @@ run;
   The tags specify the names of the output files to insert into the document
   and the captions for the output.
   Additionally, they specify the names of the output files to create and which
-  ODS objects to capture.
+  ODS objects to capture.\index{Listing tag}\index{Graphic tag}
 
 \begin{figure}[H]
 \begin{snugshade}
@@ -279,9 +280,10 @@ run;
   the lines in the \Code{Sascode}
   environment are wrapped between two SAS macros (\Code{\%output} and \Code{\%endoutput}),
   whose definitions accompany this package (\texttt{statrep\_macros.sas}).
+  \index{statrep\_macros.sas}\index{SAS macros!output}\index{SAS macros!endoutput}
   The macros and their options are discussed in detail in section \ref{macros}.
 
-  The \cs{Listing} tag results in a call to the \Code{\%write} macro that selects all notes and tables from the ODS document.
+  The \cs{Listing} tag results in a call to the \Code{\%write} macro that selects all notes and tables from the ODS document.\index{SAS macros!write}
   The \cs{Graphic} tag results in a call to the \Code{\%write} macro that selects all graphs from the ODS document.
 
   When you execute the generated SAS program that is displayed
@@ -324,7 +326,7 @@ run;
      The environments and tags are described in detail in the following sections.
 
 
-     \subsection{Datastep Environment}
+     \subsection{Datastep Environment}\index{Datastep environment}
 
 The purpose of the \Code{Datastep} environment is to read in data.
 It produces no SAS results.
@@ -337,7 +339,7 @@ It produces no SAS results.
 
   Because you begin the \Code{Datastep} data lines in the
   first column, formatted or column input statements will work correctly when
-  pasted into a SAS session.\index{copy and paste}
+  pasted into a SAS session.\index{copy and paste}\index{interactive SAS session}
 
 
   Although the purpose of the \Code{Datastep} environment is to read in data,
@@ -349,6 +351,9 @@ It produces no SAS results.
 
 
 Table \ref{dsopt} summarizes the \Code{Datastep} environment options.
+\index{Datastep environment!options}
+\index{program option}\index{display option}\index{first= option}\index{last= option}%
+\index{fontsize= option}
 
 \begin{table}[H]
 \caption{Commonly Used \Code{Datastep} Environment Options}\label{dsopt}
@@ -404,7 +409,7 @@ Table \ref{dsopt} summarizes the \Code{Datastep} environment options.
 
 See the section \titleref{dsex} for an example.
 
-  \subsection{Sascode Environment}
+  \subsection{Sascode Environment}\index{Sascode environment}
 
 The purpose of the \Code{Sascode} environment is to generate output.
 In addition to the environment options, it supports
@@ -418,9 +423,11 @@ line commands that enable you to specify certain lines as display-only or progra
 
   Because all line commands are valid SAS statements,
   you can copy \Code{Sascode} blocks and paste them directly
-  into a SAS session.
+  into a SAS session.\index{copy and paste}\index{interactive SAS session}
 
 Table \ref{scopt} summarizes the \Code{Sascode} environment options.
+\index{Sascode environment!options}\index{store= option}\index{program option}%
+\index{display option}\index{fontsize= option}%
 
 \begin{table}[H]
 \caption{Commonly Used \Code{Sascode} Environment Options}\label{scopt}
@@ -433,7 +440,7 @@ Table \ref{scopt} summarizes the \Code{Sascode} environment options.
          Specifies the name of the ODS document to contain the SAS output.
          When you specify the \Code{store=} option, the \StatRep package writes the
          appropriate \Code{\%output} and \Code{\%endoutput} macros to the generated file.
-
+         \index{SAS macros!output}\index{SAS macros!endoutput}
          If you are writing the macros yourself, you must omit the \Code{store=} option
          and call the \Code{\%output} (and optionally the \Code{\%endoutput}) macros from within the
          \Code{Sascode} environment.
@@ -441,7 +448,7 @@ Table \ref{scopt} summarizes the \Code{Sascode} environment options.
          When you want to display output from the ODS document, you refer
          to the \Code{store=} name from a \cs{Listing} tag, a \cs{Graphic} tag, or by
          an explicit call to the \Code{\%write} macro. You can refer to the name in
-         \cs{Listing} and \cs{Graphic} tags
+         \cs{Listing} and \cs{Graphic} tags\index{SAS macros!write}
          anywhere in your document, even in sections before, after, and far removed from
          the \Code{Sascode} block that generated the output.
 \\[0.5\baselineskip]
@@ -475,6 +482,8 @@ a finer degree of control with line-based commands to identify lines that should
 be only displayed or only passed to the generated program.
 
 Table \ref{lcmd} summarizes the line commands you can use in the \Code{Sascode} environment.
+\index{Sascode environment!line commands}
+\index{program line command}\index{display line command}
 
 \begin{table}[H]
 \caption{\Code{Sascode} Line Commands}\label{lcmd}
@@ -502,6 +511,7 @@ See the section \titleref{scex} for an example.
   complete control over the displayed code and the generated program contents.
 
      \subsection{Listing and Graphic Tags}
+     \index{SAS ODS outputs}\index{Listing tag}\index{Graphic tag}
 The \cs{Listing} and \cs{Graphic} tags specify the outputs to be displayed.
 The purpose of the \cs{Listing} tag is to display tabular output and notes.
 The purpose of the \cs{Graphic} tag is to display graphical output.
@@ -527,8 +537,11 @@ The purpose of the \cs{Graphic} tag is to display graphical output.
      the \StatRep \LaTeX\ package and by the \StatRep SAS macros.
 
      \subsubsection{Options Used by the \textsf{StatRep} \LaTeX\ Package}
-
+     \index{Listing tag!options}\index{Graphic tag!options}
   The following options are used by the \StatRep \LaTeX\ package.
+  \index{caption= option}\index{fontsize= option}\index{linesize= option}%
+  \index{scale= option}\index{store= option}\index{width= option}
+
   \begin{description}
      \item[\Code{caption=}] specifies the caption to use for an output.
 
@@ -544,8 +557,8 @@ The purpose of the \cs{Graphic} tag is to display graphical output.
      For extremely wide output tables, you can use the \Code{linesize} and \Code{fontsize}
      options together (for example, \Code{linesize=120} and \Code{fontsize=scriptsize}).
      The \Code{linesize} option affects how SAS captures the table. The \Code{fontsize}
-     option specifies how \LaTeX\ displays the table.\index{linesize option}%
-     \index{fontsize option}\index{wide output}
+     option specifies how \LaTeX\ displays the table.\index{linesize= option}%
+     \index{fontsize= option}\index{wide output}
 
      \item[\Code{scale=}] specifies a factor by which to scale a \Code{Graphic} image.
      For example, specify \Code{scale=0.5} to scale the image to half its original size,
@@ -562,10 +575,11 @@ The purpose of the \cs{Graphic} tag is to display graphical output.
   \end{description}
 
   \subsubsection{Options Passed to the  \textsf{StatRep} SAS Macros}\label{sasopts}
-
+  \index{SAS macro options}
 The \Code{store=}, \Code{linesize=}, and \Code{width=} options described in the previous
 section are passed to the \StatRep SAS macros.
-
+\index{dpi= option}\index{firstobj= option}\index{height= option}\index{lastobj= option}
+\index{linesize= option}\index{objects= option}\index{options= option}
 In addition, the following options are passed to the \StatRep SAS macros:
   \begin{description}
     \item[\Code{dpi=}] specifies dots per inch (DPI) to use in generating graphs.
@@ -609,38 +623,40 @@ In addition, the following options are passed to the \StatRep SAS macros:
   Page breaks also occur at other places where the procedure
   explicitly sets a page break. The \Code{autopage} value is the default.
   See also the \Code{nopage} and \Code{newpage} values.
+  \index{autopage option}
 
  \item[\Code{graph}] specifies that only graphs be selected.
-  You can alternatively specify \Code{type=graph}.
+  You can alternatively specify \Code{type=graph}.\index{graph option}
 
   \item[\Code{list}] specifies that the contents of the ODS document be listed
-  in the SAS log. This value does not run PROC DOCUMENT to replay the output.
+  in the SAS log. This value does not run PROC DOCUMENT to replay the output.\index{list option}
 
   \item[\Code{newpage}] specifies that SAS force a new page for the first object.
+  \index{newpage option}
 
-  \item[\Code{nopage}] suppresses page breaks.
+  \item[\Code{nopage}] suppresses page breaks.\index{nopage option}
 
   \item[\Code{onebox}] groups all tables, notes, reports, and so on into a
   single piece of SAS output. You cannot specify this option to group graphs.
-  See section \ref{selection} for more information about grouping.
+  See section \ref{selection} for more information about grouping.\index{onebox option}
 
   \item[\Code{skipfirst}] modifies the \Code{firstobj=} option so that the first object in the
   list is not selected. This enables you to select all objects after the one
-  specified in \Code{firstobj=}.
+  specified in \Code{firstobj=}.\index{skipfirst option}
 
   \item[\Code{skiplast}] modifies the \Code{lastobj=} option so that the last object
   in the list is not selected. This enables you to select all objects before
-  the one specified in \Code{lastobj=}.\label{skiplast}
+  the one specified in \Code{lastobj=}.\label{skiplast}\index{skiplast option}
 
   \item[\Code{table}] selects all objects
   (tables, notes, reports, and so on) except graphs. You can
-  alternatively specify \Code{type=listing}.
+  alternatively specify \Code{type=listing}.\index{table option}
 
   \end{description}
 
   \item[\Code{pagesize=}] specifies the page size. The default is the page size currently in effect.
   This specification lasts for the
-  duration of this step. The current page size is restored at the end.
+  duration of this step. The current page size is restored at the end.\index{pagesize= option}
 
   If you have not changed the page size, the default page size set by the \StatRep
   package is 500. This large page size is the default so that output is generated with
@@ -650,18 +666,18 @@ In addition, the following options are passed to the \StatRep SAS macros:
   to use the \Code{pagesize=} option with large tables.
 
   \item[\Code{pattern=}] provides an optional and additional selection criterion.
-  Specify part of a path (for example, a group name).
+  Specify part of a path (for example, a group name).\index{pattern= option}
   Only objects whose name includes the specified value are selected.
 
     \item[\Code{store=}] specifies the name of the ODS document that is created in a
      \Code{Sascode} environment. When you specify the \Code{store=} option,
      the \StatRep package adds the appropriate SAS macro calls to the
-     generated program.
+     generated program.\index{store= option}
 
   \item[\Code{style=}] specifies the ODS style to use in generating output.
     The default is \mbox{\Code{style=Statistical}}. You can change the default style
     (for example, to \Code{HTMLBlue}) by inserting the following line into a \Code{Sascode}
-    or \Code{Datastep} environment:
+    or \Code{Datastep} environment:\index{style= option}
 
 \begin{snugshade}
 \begin{verbatim}
@@ -687,7 +703,7 @@ In addition, the following options are passed to the \StatRep SAS macros:
   \end{description}
 
 \section{\StatRep SAS Macros}\label{macros}
-
+\index{SAS macros}
   SAS programs created by the \StatRep package
   run SAS macros to capture output. The macros depend on the ODS document.
   The ODS document is a destination or repository for the results
@@ -716,6 +732,7 @@ In addition, the following options are passed to the \StatRep SAS macros:
   beginning and end of a \Code{Sascode} block, respectively.
   You can manually call the macros at any time within
   a \Code{Sascode} block by prefixing the call with a null SAS macro comment (\Code{\%*;}).
+  \index{SAS macros!output}\index{SAS macros!endoutput}
 
   \item The \Code{\%write}  macro writes ODS objects that are contained in an ODS document to
   one or more external files.
@@ -723,18 +740,21 @@ In addition, the following options are passed to the \StatRep SAS macros:
   a \cs{Listing} or \cs{Graphic} tag is encountered. You can manually call the macro
   at any time within a \Code{Sascode} block by prefixing the call with a null
   SAS macro comment (\Code{\%*;}).
+  \index{SAS macros!write}
 
   \item The \Code{\%startlist} and \Code{\%endlist} macros capture printed content
   (for example, a PROC PRINT or DATA step) to an external file. To use these macros,
   you must manually call the macro
   within a \Code{Sascode} block and prefix the call with a null
   SAS macro comment (\Code{\%*;}).
+  \index{SAS macros!startlist}\index{SAS macros!endlist}
 
   \item The \Code{\%startlog} and \Code{\%endlog} macros capture content from the
   SAS log to an external file. To use these macros,
   you must manually call the macro
   within a \Code{Sascode} block and prefix the call with a null
   SAS macro comment (\Code{\%*;}).
+  \index{SAS macros!startlog}\index{SAS macros!endlog}
   \end{itemize}
 
 
@@ -746,6 +766,7 @@ In addition, the following options are passed to the \StatRep SAS macros:
   yourself by omitting the \Code{store=} option in the \Code{Sascode} environment and
   call the macros within the \Code{Sascode} environment. Each call must be prefixed
   with a null SAS macro comment (\Code{\%*;}).
+  \index{SAS macros!output}\index{SAS macros!endoutput}
 
   The \Code{\%output} macro supports two other options (\Code{style=} and \Code{dpi=}) that are used to
   set parameters for GRSEG graphs. These options are not supported in the
@@ -775,7 +796,7 @@ In addition, the following options are passed to the \StatRep SAS macros:
   yourself by omitting the \Code{store=} option in the \cs{Listing} or \cs{Graphic}
   tag and call the macro within a \Code{Sascode} environment. Each call must be prefixed
   with a null SAS macro comment (\Code{\%*;}).
-
+  \index{SAS macros!write}
 See the section \titleref{sasopts} for more information about the options used in the
 \cs{Listing} and \cs{Graphic} tags that are passed to the \Code{\%write} macro.
 
@@ -800,6 +821,7 @@ capturing output.
   They are also used when you use the
   \Code{DATA \_NULL\_} and \Code{PUT \_ODS\_} SAS statements to
   manually capture output.
+  \index{SAS macros!startlist}\index{SAS macros!endlist}
 
   These macros are not automatically generated by the \StatRep package.
   You must call them
@@ -848,6 +870,7 @@ capturing output.
   The \Code{\%startlog} and \Code{\%endlog} macros capture SAS notes
   or error messages from the SAS log. They also capture output
   from some SAS/IML functions that write to the SAS log rather than using ODS.
+  \index{SAS macros!startlog}\index{SAS macros!endlog}
 
   These macros are not automatically generated by the \StatRep package.
   To capture content from the SAS log, you must call these macros
@@ -873,6 +896,8 @@ capturing output.
   \end{description}
 
   \subsection{Macro Variable Defaults}\label{secdefaults}
+  \index{macro variables}\index{default settings}\index{package!defaults}
+  \index{SAS macros!variables}
 
   The SAS macro defaults are set globally in the file \Code{statrep.cfg}.
   See section \ref{custom} for details. You can also reset the
@@ -897,7 +922,8 @@ capturing output.
    \end{tabular}
   \end{table}
 
-  You can edit the \Code{statrep.cfg} file
+  You can edit the \Code{statrep.cfg} file\index{customizing}\index{statrep.cfg}
+  \index{configuration}%
   to globally reset the defaults, or you can specify commands to change the default anywhere
   in your document. For example, the following lines change all of the macro variable
   default settings for the duration of the program. The \Code{program} option specifies
@@ -957,6 +983,7 @@ The following sections provide you with this information.
 
 
  \section{Customizing \StatRep}\label{custom}
+ \index{customizing}\index{configuration}
 
   You can modify the configuration file \Code{statrep.cfg} to change
 the following settings used by the \StatRep package.
@@ -965,6 +992,7 @@ the following settings used by the \StatRep package.
     \begin{description}
      \item[\cs{SRcaptionfont}] specifies the font for the output captions.
      The default is \cs{sffamily} (\textsf{sans serif}).
+     \index{caption font}
 
      \item[\cs{SRcaptioncontinuedfont}] specifies the font for the \Code{continued} name
      for outputs that break across pages.
@@ -976,18 +1004,22 @@ the following settings used by the \StatRep package.
 
     \item[\cs{SRdpi}] specifies the default dots per inch (DPI) for SAS to use in generating
     graphical output. The default is \Code{300}.
+    \index{dpi}
 
     \item[\cs{SRgraphicdir}] specifies the name of the directory that contains the SAS
      generated graphical output files. The default is \Code{png}.
+     \index{graphic directory}
 
     \item[\cs{SRgraphtype}] specifies the format of the SAS
      generated graphical output. You can specify either
      \Code{png} or \Code{pdf}. The default is \Code{png}.
+     \index{graphics type}\index{PNG graphics}\index{PDF graphics}
 
     \item[\cs{SRodsgraphopts}] specifies a string that is passed as
     ODS GRAPHICS statement options. For a complete explanation of all available options,
     see the documentation of the ODS GRAPHICS statement in
     \textit{SAS Output Delivery System: User's Guide}.
+    \index{ODS graphics options}
 
     \item[\cs{SRintertext}] specifies the text to insert in
     \Code{Datastep} environments that specify
@@ -995,12 +1027,14 @@ the following settings used by the \StatRep package.
 
     \item[\cs{SRlinesize}] specifies the default line size to use in generating tabular
     output and centering it for display. The default is \Code{80}.
+    \index{output width}\index{linesize}
 
      \item[\cs{SRlistingdir}] specifies the name of the directory that contains the SAS
      generated listing (tabular) output files. The default is \Code{lst}.
 
      \item[\cs{SRmacropath}] specifies the path to the location of the
      SAS macros that are bundled with the \Code{StatRep} package.
+     \index{SAS macro location}
      For example, if  you installed the \Code{statrep\_macros.sas} file to a directory named
     \Code{C:\textbackslash mymacros},
     then define macro \cs{SRmacropath} as follows:
@@ -1050,6 +1084,7 @@ the following settings used by the \StatRep package.
 
     \item[\cs{SRstyle}] specifies the default ODS style for SAS to use to generate
     graphical output. The default is \Code{Statistical}.
+    \index{ODS output style}
 
      \item[\cs{SRtempfilename}] specifies the name of a temporary file
      that is used as a scratch file in the current working directory.
@@ -1058,6 +1093,7 @@ the following settings used by the \StatRep package.
      \item[\cs{SRverbfont}] specifies the font to use for code within \Code{Datastep} and
      \Code{Sascode} blocks. The default is \cs{ttfamily}\cs{bfseries}
      (\texttt{\textbf{typewriter text, bold}}).
+     \index{verbatim font}
 
      \end{description}
 
@@ -1268,7 +1304,7 @@ To select and display ODS objects, you specify options in the \cs{Listing} tag, 
 \label{optionopt}
 By default, when you omit object selection options, the \Code{\%write} macro selects all ODS objects,
 the \cs{Listing} tag selects all ODS tables and notes, and the \cs{Graphic} tag selects all ODS graphs.
-
+\index{ODS object selection}
   Table \ref{tabselect} summarizes how you select ODS objects.
   \begin{table}[H]
   \centering\caption{ODS Object Selection Options}\label{tabselect}
@@ -1328,6 +1364,7 @@ The first object in the stream to capture is the first object produced by the
   with the \Code{options=nopage} and \Code{options=onebox} options.
 
  \section{ODS Graphics}
+ \index{ODS graphics}
 
  In SAS 9.3 and later, ODS Graphics is enabled by default in the SAS windowing environment.
  ODS Graphics is not enabled by default in batch mode and in the SAS windowing environment in SAS 9.2.
@@ -1353,7 +1390,7 @@ beginning of your LaTeX document:
 
  \subsection{ODS Graphics and GRSEG Graphics}
  \label{grseg}
-
+  \index{ODS graphics}\index{GRSEG graphics}
   When you create a graph with ODS Graphics, the style and dots per inch (DPI) can be changed
   after the graph is created. The style and DPI are set when the
   graph is written to the external file. This enables you to specify the options
@@ -1396,7 +1433,7 @@ beginning of your LaTeX document:
 \chapter{Examples}
 
 \section{Using the Datastep Environment}\label{dsex}
-
+\index{Datastep environment}
   Figure \ref{fig:sd2} displays an example \Code{Datastep} environment. The left margin for
   the environment is in the first column, which is where the data lines themselves begin.
   This ensures that the variables will be read correctly.
@@ -1477,7 +1514,7 @@ Female     35    0
 \end{figure}
 
 
-\section{Using the Sascode Environment}\label{scex}
+\section{Using the Sascode Environment}\label{scex}\index{Sascode environment}
 Figure \ref{sb} displays an example \Code{Sascode} environment.
 
 \begin{figure}[H]
@@ -1510,6 +1547,7 @@ quit;
 \end{figure}
 
 \section{Using the Sascode Environment with Line Commands}\label{scexlc}
+\index{Sascode environment!line commands}
 Figure \ref{sblc} displays an example
   \Code{Sascode} environment that contains line commands.
 
@@ -1570,6 +1608,7 @@ quit;
 \end{figure}
 
 \section{Selecting ODS Objects by Default}\label{odsdefault}
+\index{ODS object selection}
 
   When you use the \cs{Graphic} tag, all graph objects are automatically selected.
   When you use the \cs{Listing} tag, all non-graph objects such as tables and notes
@@ -1644,7 +1683,7 @@ run;
 
 
 \section{Specifying and Capturing ODS Objects by Name}
-
+\index{ODS object selection}
   To capture particular ODS objects or ODS group output, you
   must specify the appropriate names in the \cs{Listing} tag,
   the \cs{Graphic} tag, or the \Code{\%write} macro.
@@ -1782,7 +1821,7 @@ Figure \ref{loginfo}.
   order in which they are generated, not the order in which they are
   specified in the \Code{objects=} option.
 
-\section{Capturing PRINT Output}
+\section{Capturing PRINT Output}\index{SAS macros!startlist}\index{SAS macros!endlist}
   Figure \ref{printoutput} shows simple use of the \Code{\%startlist} and \Code{\%endlist}
   macros.
 
@@ -1975,6 +2014,7 @@ run;
 \end{figure}
 
 \section{Capturing Log Output}
+  \index{SAS macros!startlog}\index{SAS macros!endlog}
 
   The SAS/IML example shown in Figure \ref{logout} illustrates
   the use of the macros that capture log output. In this example, the goal is to
@@ -2276,7 +2316,7 @@ following:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Appendix}
 
-\section{Installation and Requirements}\label{install}
+\section{Installation and Requirements}\label{install}\index{installing}
 You can install the \StatRep package by downloading \Code{statrep.zip} from \url{support.sas.com/StatRepPackage}.
 
 Table \ref{ziptable} shows the contents:
@@ -2425,7 +2465,7 @@ that you copied in installation step 1.
    Mik\TeX\ users must additionally update the filename database.\\
    \Code{(MikTeX Options dialog: General-> Refresh FNDB)}
 
-\section{The \texttt{longfigure} Package}\label{longfigure}
+\section{The \texttt{longfigure} Package}\label{longfigure}\index{longfigure package}
 
 
     The \Code{longfigure} package uses and relabels components of the
@@ -2450,16 +2490,16 @@ that you copied in installation step 1.
               You can specify any string; the default is \Code{figure}.
               When you specify a \Code{figname=} value for which no counter already exists, the
               \Code{longfigure} package loads the \Code{tocloft} package and creates the counter.
-              \index{figname option|usage}
+              \index{figname option}
 
        \item The \Code{resetby=} option specifies a counter (for example,
              \Code{resetby=chapter}) such
              that output numbering is reset each time the counter value changes.
              If a counter is specified that does not exist, the \Code{tocloft} package is
              loaded to create the new counter.
-             \index{tocloft package|usage}%
+             \index{tocloft package}%
              For information about how the lists are typeset,
-             \index{list of outputs, creating|usage}%
+             \index{list of outputs, creating}%
              see the \Code{tocloft} package documentation.
       \end{itemize}
       \item The counters and macros that start with \cs{LT} in the \Code{longtable} package
@@ -2500,7 +2540,7 @@ that you copied in installation step 1.
     needed to create the list.
 
     If you want to use more advanced features of the \Code{tocloft} package,
-    load it before you load the |longfigure| package so that the \Code{longfigure}
+    load it before you load the \Code{longfigure} package so that the \Code{longfigure}
     package sees that the counters specified by the \Code{figname=} and \Code{resetby=}
     options are already defined and does not attempt to create them.
 
@@ -2534,5 +2574,5 @@ that you copied in installation step 1.
   if needed, use the \cs{multicolumn} command for more flexibility.
 
 
-
+\printindex
 \end{document}

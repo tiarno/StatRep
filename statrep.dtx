@@ -15,10 +15,11 @@ The generated SAS program includes calls to macros that use the SAS
 Output Delivery System (ODS) document to capture the output as external files.
 These SAS macros are included in this package (statrep_macros.sas).
 
-The package is available at http://support.sas.com/StatRepPackage
+The package is available in two locations:
 
-Bundled with the StatRep package is the longfigure package for
-multipage figures.
+    * http://support.sas.com/StatRepPackage
+    * http://mirror.ctan.org/macros/latex/contrib/statrep/
+
 
 The distribution(statrep.zip) consists of the following files:
    README.txt            (this file)
@@ -146,7 +147,7 @@ LICENSE
 statrep.dtx
 statrep_macros.sas
 
-Copyright (c) 2012 SAS Institute Inc.
+Copyright (c) 2014 SAS Institute Inc.
 
 Permission is granted to copy, distribute, and/or modify this software
 under the terms of the LaTeX Project Public License (LPPL), version 1.3.
@@ -166,7 +167,6 @@ REQUIREMENTS
 
   LaTeX packages
      verbatim, graphicx, xkeyval, calc, ifthen
-
   SAS 9.2 or later
 
 See the StatRep User's Guide, included in this package, for complete details.
@@ -182,7 +182,6 @@ This work consists of the files:
       statrep.pdf
       statrep.sty
       statrep.cfg
-      longfigure.sty
 %</readme>
 %<*internal>
 \fi
@@ -205,7 +204,7 @@ E-mail: tim.arnold@sas.com
 ----------------------------------------------------------------
 \endpreamble
 \postamble
-Copyright (C) 2012 by SAS Institute Inc. <tim.arnold@sas.com>
+Copyright (C) 2014 by SAS Institute Inc. <tim.arnold@sas.com>
 
 This work consists of the files
     statrep.dtx,
@@ -237,7 +236,7 @@ and the derived files
 %</internal>
 %<*statrep>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{statrep}[2014/6/16 v1.02 The statrep package]
+\ProvidesPackage{statrep}[2014/9/08 v1.04 The statrep package]
 %</statrep>
 %<*driver>
 \documentclass[11pt]{ltxdoc}
@@ -270,9 +269,9 @@ and the derived files
 %</driver>
 %\fi
 %\def\filename{statrep.dtx}
-%\def\fileversion{1.01}
+%\def\fileversion{1.04}
 %\def\filedate{\today}
-%\CheckSum{0}
+%\CheckSum{2071}
 %\StopEventually{\PrintChanges\PrintIndex}
 %
 % \CharacterTable
@@ -295,6 +294,8 @@ and the derived files
 %\changes{v1.0}{2011/11/15}{Initial version}
 %\changes{v1.01}{2012/05/23}{Updated README for MikTeX users}
 %\changes{v1.02}{2014/06/16}{Added options for graphtype and odsgraphopts}
+%\changes{v1.03}{2014/06/19}{Added support for PDF graphics}
+%\changes{v1.04}{2014/09/08}{Fixed ligatures appearing in Listings}
 %\GetFileInfo{statrep.sty}
 %
 %
@@ -1505,7 +1506,7 @@ and the derived files
 {\endverbatim%
   \setlength{\SR@scratchlength}{-2\topsep-\partopsep-2\parskip}
   \vspace*{\SR@scratchlength}%
-  \ifSR@program\vspace*{-2\baselineskip}\fi
+  \ifSR@program\vspace*{-\baselineskip}\fi
   %
   \ifSR@display\else%
     \ifthenelse{\equal{\SR@store}{\@empty}}%
@@ -1732,7 +1733,12 @@ and the derived files
   \IfFileExists{\SR@insertname}%
     {%
       \savebox{\SR@filebox}{%
-          \def\verbatim@font{\@nameuse{\SR@fontsize}\SRverbfont}%
+          \def\verbatim@font{%
+                \@nameuse{\SR@fontsize}%
+                \SRverbfont%
+                \hyphenchar\font\m@ne%
+                \@noligs%
+                }%
           \parbox{\SR@verbwidth}{%
             \vspace*{0.25\baselineskip}%
             \noindent\verbatiminput{\SR@insertname}%
@@ -1748,6 +1754,7 @@ and the derived files
 %    \end{macrocode}
 %
 %  \begin{macro}{\Boxlisting}
+%  \changes{1.04}{2014/09/08}{Added noligs to verbatim font definition}
 %  The \cs{Boxlisting} macro takes a single argument, the \marg{filename}
 %  of the listing output to be boxed (the filename without the extension).
 %  If the file exists, the macro places the content of the file
@@ -1756,6 +1763,12 @@ and the derived files
 %  as described in section \ref{listing}.
 %  White space at the top and bottom of the box is
 %  inserted (0.25\cs{baselineskip}).
+%
+%  The \cs{verbatim@font} is set to the user-defined \cs{SR@fontsize} (from the
+%  options on the Listing tag) and the \cs{SRverbfont} in the configuration. Furthermore,
+%  ligatures and the hyphenation character are both turned off. If you omit this
+%  step, ligatures will appear in the listing output (the case which prompted this
+%  bug-fix was a dashed line; the emdash ligature was applied to each pair of dashes).
 %
 %  Note that \cs{SR@verbwidth} is the width that is used to create the \cs{parbox}
 %  that contains the output. \cs{SR@scratchlength} is used to center
@@ -1796,14 +1809,10 @@ and the derived files
 %  \index{png graphics|usage}
 %  \index{pdf graphics|usage}
 %
-%  The macro first checks whether the PNG file exists.
+%  The macro first checks whether the file exists.
 %  If it does, it sets the global variable \cs{SR@insertname} to the full name.
-%  Otherwise, it checks whether the PDF file exists and if that file exists,
-%  it sets the global variable to the full name.
-%
-%  If the file does not exist in either PNG or PDF format,
-%   \cs{SR@insertname} is defined to be
-%   \cs{@empty}.
+%  If the file does not exist,
+%   \cs{SR@insertname} is defined to be \cs{@empty}.
 %
 %   If the global variable \cs{SR@insertname} is empty,
 %   then \cs{SR@filebox} is defined to be a framed box with
