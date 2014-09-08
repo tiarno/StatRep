@@ -90,10 +90,13 @@ def copyfiles(package):
     if package == 'statrep':
         for dname in [CTAN, TESTING]:
             tgtdir = os.path.join(dname, package)
-            for name in os.listdir(EXTRAS):
-                src = os.path.join(EXTRAS, name)
-                tgt = os.path.join(tgtdir, name)
-                shutil.copy(src, tgt)
+            if os.path.isdir(EXTRAS):
+                for name in os.listdir(EXTRAS):
+                    src = os.path.join(EXTRAS, name)
+                    tgt = os.path.join(tgtdir, name)
+                    shutil.copy(src, tgt)
+            else:
+                print 'No "extra" files present.'
 
 def main():
     start_clean()
