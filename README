@@ -1,4 +1,15 @@
-ABOUT
+CAUTION
+----------
+
+This GitHub repository contains code to build and package the StatRep
+LaTeX package. If you want the package itself, please download from
+one of these locations.
+
+  * SAS (http://support.sas.com/StatRepPackage)
+  * CTAN (http://www.ctan.org/pkg/statrep)
+
+
+ABOUT THE PACKAGE
 
 The StatRep package is a LaTeX package that provides two environments and
 two tags that work together to display your SAS code and results and to
