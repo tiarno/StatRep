@@ -16,6 +16,9 @@
                          /* %*;%write(crsi1a, objects=inertias)         */
                          /* \Listing[caption={... caption ...}]{crsi1a} */
                          /*                                             */
+             dest=,      /* specifies destination: latex or listing.    */
+                         /* Null uses the defaultdests macro.           */
+                         /*                                             */
              width=,     /* specifies the width of graphs.              */
                          /* Example: WIDTH=5.4in.                       */
              height=,    /* specifies the height of graphs.             */
@@ -378,6 +381,29 @@ data _null_;
       call symputx('h', trim(put(0.75 * input(translate(lowcase(w), '    ',
                    'incm'), 12.), 12.)) || substr(w, length(w) - 1, 2), 'L');
    else call symputx('h', trim(h), 'L');
+
+   options = lowcase(symget('defaultdests'));
+   options = compbl(options);
+   call symputx('defaultdests', options, 'G');
+   i = index(options, 'listing');       if i then substr(options, i,  7) = ' ';
+   i = index(options, 'latex');         if i then substr(options, i,  5) = ' ';
+
+   if options ne ' ' then do;
+      put 'ERROR: %LET ' "DEFAULTDESTS=&defaultdests is invalid.";
+      put 'WARNING: Choose from: listing latex.';
+      call symputx('error', '1', 'L');
+      end;
+
+   options = lowcase(symget('dest'));
+   options = compbl(options);
+
+   if not (options eq ' ' or options eq 'listing' or options eq 'latex') then do;
+      put "ERROR: DESTS=&dest is invalid.";
+      put 'WARNING: Choose from: listing latex.';
+      call symputx('error', '1', 'L');
+      end;
+   if options eq ' ' then options = symget('defaultdests');
+   call symputx('dest', options, 'L');
 
    * Flag which options were specified.;
 
@@ -905,7 +931,15 @@ options source &savenote;
             %put NOTE: Writing Graph file: &graphicdir/&fname&jl..&graphtype;
             %end;
          %else %do;
-            ods listing file="&listingdir/_tmp";
+            %if %index(&dest, listing) %then %do;
+               ods listing file="&listingdir/_tmp";
+               %end;
+            %if %index(&dest, latex) %then %do;
+               ods tagsets.statreplatex 
+                   file="&latexdir/&fname&jh..tex" (notop nobot) 
+                   stylesheet="sas.sty"(url="sas")
+                   newfile=output ;
+               %end;
           %end;
 
          %if not %index(&flow, notes) %then %do; options nonotes; %end;
@@ -924,7 +958,8 @@ options source &savenote;
          ods _all_ close;
          ods graphics / reset=index imagename="" reset=width;
 
-         %if &&_gtype&i ne G %then %do; /* if not graph */
+         %if &&_gtype&i ne G and        /* if not graph */
+             %index(&dest, listing) %then %do; 
             /* break up big listing files */
             options nonotes;
 
