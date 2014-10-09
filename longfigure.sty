@@ -4,14 +4,17 @@
 %%
 %% The original source files were:
 %%
-%% statrep.dtx  (with options: `longfigure')
+%% longfigure.dtx  (with options: `longfigure')
 %% ----------------------------------------------------------------
-%% StatRep --- A LaTeX package to generate documentation and a SAS program that
-%%             generates the SAS results used in the source document.
-%%             The package helps to support reproducible research.
+%% longfigure --- A LaTeX package providing a table-like environment
+%%                that can display a stream of subfigures as a single
+%%                figure that can be broken by T\kern -.1667em\lower .5ex\hbox {E}\kern -.125emX\spacefactor \@m 's
+%%                standard page-breaking algorithm.
 %% 
 %% E-mail: tim.arnold@sas.com
 %% ----------------------------------------------------------------
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{longfigure}[2014/1/06 v1.0]
 \ProvidesPackage{longfigure}[2014/01/06 longfigure]
 \RequirePackage{xkeyval}
 \newcommand*{\LFcounter}{figure}
@@ -449,19 +452,22 @@
 \def\LF@p@ftntext#1{%
   \edef\@tempa{\the\LF@p@ftn\noexpand\footnotetext[\the\c@footnote]}%
   \global\LF@p@ftn\expandafter{\@tempa{#1}}}%
-
-%% Copyright (C) 2012 by SAS Institute Inc. <tim.arnold@sas.com>
+%% Copyright (C) 2014 by SAS Institute Inc. <tim.arnold@sas.com>
 %% 
-%% This work consists of the files
-%%     statrep.dtx,
-%%     statrep_macros.sas,
-%%     statrepmanual.tex,
-%%     quickstart.tex
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License (LPPL), either
+%% version 1.3c of this license or any later version.
+%% The latest version of this license is in the file:
+%% http://www.latex-project.org/lppl.txt
 %% 
-%% and the derived files
-%%    statrep.ins, statrep.cfg, statrep.sty, longfigure.sty,
-%%    statrep.pdf,
-%%    statrep_macros.sas,
-%%    statrepmanual.pdf
+%% This work is "maintained" (as per LPPL maintenance status) by
+%% Tim Arnold.
+%% 
+%% This work consists of the file longfigure.dtx
+%% and the derived files:
+%%    README (this file)
+%%    longfigure.ins
+%%    longfigure.pdf
+%%    longfigure.sty
 %%
 %% End of file `longfigure.sty'.

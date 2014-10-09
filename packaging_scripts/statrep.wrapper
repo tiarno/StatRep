@@ -236,7 +236,7 @@ and the derived files
 %</internal>
 %<*statrep>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{statrep}[2014/9/08 v1.04 The statrep package]
+\ProvidesPackage{statrep}[2014/10/30 v1.05 The statrep package]
 %</statrep>
 %<*driver>
 \documentclass[11pt]{ltxdoc}
@@ -458,9 +458,15 @@ and the derived files
 %    \begin{macrocode}
 \newif\ifSR@generate\SR@generatetrue
 \DeclareOptionX{generate}[true]{\@nameuse{SR@generate#1}}
+\IfFileExists{sas.sty}
+  {\DeclareOptionX{color}[true]{\PassOptionsToPackage{\CurrentOption}{sas}}}
+  {\relax}
 \DeclareOptionX{figname}{\PassOptionsToPackage{\CurrentOption}{longfigure}}
 \DeclareOptionX{resetby}{\PassOptionsToPackage{\CurrentOption}{longfigure}}
 \ProcessOptionsX
+\IfFileExists{sas.sty}
+  {\RequirePackage{sas}}
+  {\relax}
 \RequirePackage{longfigure}
 %    \end{macrocode}
 %
@@ -577,7 +583,8 @@ and the derived files
 %    and the \cs{Listing} and \cs{Graphic} macros.
 %    \begin{macrocode}
 \define@boolkeys{SR}[SR@]{display,program,continued}[true]{}
-\define@cmdkeys{SR}[SR@]{caption,first,last,fontsize,scale,label}{}
+\define@cmdkeys{SR}[SR@]{caption,first,last}{}
+\define@cmdkeys{SR}[SR@]{fontsize,scale,label}{}
 %    \end{macrocode}
 %    The keys are used for two purposes: One set of keys is used by the \Statrep
 %    package to typeset the environments or outputs that are defined in the package.
@@ -634,8 +641,10 @@ and the derived files
 %    macros, but are passed on to the generated SAS program. The following keys are
 %    used only by SAS:
 %    \begin{macrocode}
-\define@cmdkeys{SR}[SR@]{style,dpi,firstobj,lastobj,objects,pattern}{}
-\define@cmdkeys{SR}[SR@]{options,height,pagesize,type}{}
+\define@cmdkeys{SR}[SR@]{type,style,dpi}{}
+\define@cmdkeys{SR}[SR@]{dest,firstobj,lastobj}{}
+\define@cmdkeys{SR}[SR@]{objects,pattern,options}{}
+\define@cmdkeys{SR}[SR@]{height,pagesize}{}
 %    \end{macrocode}
 %
 %    \index{type option|usage}\index{height option|usage}
@@ -670,13 +679,11 @@ and the derived files
    display  = false,   program  = false,   continued = false,
    caption  = \@empty, first    = 0,       last      = 0,
    fontsize = \@empty, scale    = \@empty, label     = \@empty,
-   %
    store    = \@empty, linesize = \@empty, width     = \@empty,
-   %
    type     = \@empty, style    = \@empty, dpi       = \@empty,
-   firstobj = \@empty, lastobj  = \@empty, objects   = \@empty,
-   pattern    = \@empty, options  = \@empty, height    = \@empty,
-   pagesize = \@empty}{}
+   dest     = \@empty, firstobj = \@empty, lastobj   = \@empty,
+   objects  = \@empty, pattern  = \@empty, options   = \@empty,
+   height   = \@empty, pagesize = \@empty}{}
 %    \end{macrocode}
 %    \subsection{Customizable Settings}
 %\iffalse
@@ -727,6 +734,8 @@ and the derived files
 \def\SRgraphicdir{png}
 \def\SRgraphtype{png}
 \def\SRlistingdir{lst}
+\def\SRlatexdir{tex}
+\def\SRdefaultdests{listing}
 %    \end{macrocode}
 % \DescribeMacro{\SRgraphicdir}\DescribeMacro{\SRgraphtype}\DescribeMacro{\SRlistingdir}
 %    \begin{itemize}
@@ -866,6 +875,8 @@ and the derived files
   \SR@writepgm\SR@tempfile@stream{\@percentchar let graphicdir=\SRgraphicdir;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let graphtype=\SRgraphtype;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let odsgraphopts=\SRodsgraphopts;}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let latexdir=\SRlatexdir;}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultdests=\SRdefaultdests;}
   \SR@writepgm\SR@tempfile@stream{}
   \SR@writepgm\SR@tempfile@stream{options nodate nonumber}
   \SR@writepgm\SR@tempfile@stream{ls=&defaultlinesize ps=&defaultpagesize}
@@ -1075,7 +1086,7 @@ and the derived files
 %    If the code block is not display-only, write each line to the program file
 %    by using the \cs{SR@datastep@writeprogramline} macro, defined previously.
 %    \begin{macrocode}
-      \ifSR@display\else\SR@datastep@writeprogramline\fi
+      \ifSR@display\else\SR@datastep@writeprogramline\fi%
 %    \end{macrocode}
 %    The remainder of the macro logic is described in Algorithm \ref{algo1} on
 %    page \pageref{algo1}.
@@ -1097,24 +1108,26 @@ and the derived files
 %    and within that item, each line is a paragraph. The following statements append a
 %    \cs{par} to each
 %    \cs{the}\cs{verbatimline} to end the paragraph:
+%  \changes{1.05}{2014/10/15}{Added leavevmode; otherwise, interaction with geometry package}
+%  \changes{1.05}{2014/10/16}{Added braces around par lines; otherwise, interaction with tocloft package}
 %    \begin{macrocode}
       \ifnum\SR@first>0%
         \ifnum\theSR@currentline<\SR@first%
-          {\hskip\SRparindent\the\verbatim@line\par}%
+          {\leavevmode\hskip\SRparindent\the\verbatim@line\par}%
         \else%
           \ifnum\theSR@currentline=\SR@first%
-            \par\hskip\SRparindent\SRintertext\par%
+            {\leavevmode\par\hskip\SRparindent\SRintertext\par}%
           \else%
             \ifnum\SR@last>0%
-              \ifnum\theSR@currentline=\theSR@startinglastline\par\fi%
+              \ifnum\theSR@currentline=\theSR@startinglastline{\leavevmode\par}\fi%
               \ifnum\theSR@currentline>\theSR@startinglastline%
-                {\hskip\SRparindent\the\verbatim@line\par}%
+                {\leavevmode\hskip\SRparindent\the\verbatim@line\par}%
               \fi%
             \fi%
           \fi%
         \fi%
       \else%
-        \hskip\SRparindent\the\verbatim@line\par%
+        {\leavevmode\hskip\SRparindent\the\verbatim@line\par}%
       \fi%
       \addtocounter{SR@currentline}{1}%
     }%
@@ -1162,7 +1175,7 @@ and the derived files
 %    retrieve all vertical space that is associated with the environment:
 %    \begin{macrocode}
   \ifSR@program
-   \setlength{\SR@scratchlength}{-2\topsep-\partopsep-2\parskip-2\baselineskip}
+   \setlength{\SR@scratchlength}{-2\topsep-\partopsep-2\parskip-\baselineskip}
    \vspace*{\SR@scratchlength}%
   \fi%
 %    \end{macrocode}
@@ -1583,7 +1596,7 @@ and the derived files
   \SR@outkeyval{height}\SR@outkeyval{objects}\SR@outkeyval{pattern}
   \SR@outkeyval{style}\SR@outkeyval{dpi}\SR@outkeyval{options}
   \SR@outkeyval{pagesize}\SR@outkeyval{linesize}\SR@outkeyval{width}
-  \SR@outkeyval{type}\SR@outkeyval{firstobj}\SR@outkeyval{lastobj}
+  \SR@outkeyval{dest}\SR@outkeyval{type}\SR@outkeyval{firstobj}\SR@outkeyval{lastobj}
   }
 %    \end{macrocode}
 %    Recall that all keys are set to \cs{@empty} with the \cs{presetkeys} macro.
@@ -1729,11 +1742,16 @@ and the derived files
 % of an external listing file.
 %    \begin{macrocode}
 \newcommand*{\Boxlisting}[1]{%
-  \global\def\SR@insertname{\SRlistingdir/#1.lst}%
-  \IfFileExists{\SR@insertname}%
-    {%
-      \savebox{\SR@filebox}{%
-          \def\verbatim@font{%
+ \ifthenelse{\equal{\SR@dest}{\@empty}}
+    {\def\SR@dest{\SRdefaultdests}}
+    {\relax}
+  %
+  \ifthenelse{\equal{\SR@dest}{listing}}
+     {\global\def\SR@insertname{\SRlistingdir/#1.lst}%
+      \IfFileExists{\SR@insertname}%
+        {%
+          \savebox{\SR@filebox}{%
+            \def\verbatim@font{%
                 \@nameuse{\SR@fontsize}%
                 \SRverbfont%
                 \hyphenchar\font\m@ne%
@@ -1744,12 +1762,27 @@ and the derived files
             \noindent\verbatiminput{\SR@insertname}%
             \vspace*{0.25\baselineskip}}
           }%
+        }%
+        {\savebox{\SR@filebox}{\fbox{Missing File \SR@insertname}}%
+         \global\def\SR@insertname{\@empty}}%
     }%
-    {\global\def\SR@insertname{\@empty}%
-     \savebox{\SR@filebox}{\fbox{Missing File}}%
+    {\global\def\SR@insertname{\SRlatexdir/#1.tex}%
+     \IfFileExists{\SR@insertname}%
+      {%
+        \savebox{\SR@filebox}{%
+          \begin{minipage}{\textwidth}
+            \vspace{0.5\baselineskip}
+            \centering\input{\SR@insertname}
+            \vspace{0.5\baselineskip}
+          \end{minipage}
+        }
     }%
+    {\savebox{\SR@filebox}{\centering\fbox{Missing File \SR@insertname}}%
+    \global\def\SR@insertname{\@empty}%
+    }%
+  }
   \global\setbox\SR@filebox=\box\SR@filebox%
-  \PackageInfo{statrep}{Processing listing \SR@insertname}
+  \PackageInfo{statrep}{Processing output \SR@insertname}
 }
 %    \end{macrocode}
 %
@@ -1867,7 +1900,7 @@ and the derived files
 %    used as calculators for the actual macros used
 %    at the time of typesetting:
 %    \begin{macrocode}
-  \ifthenelse{\equal{\SR@type}{listing}}
+  \ifthenelse{\equal{\SR@dest}{listing}}
              {\def\SR@@firsthead{\hline\endLFfirsthead}
               \def\SR@@conthead{\hline\endLFhead}
               \def\SR@@endfoot{\hline\endLFfoot}}
@@ -1877,7 +1910,7 @@ and the derived files
               \def\SR@@endfoot{\endLFfoot}}
    %%%
 %    \end{macrocode}
-%    If the \cs{SR@type} is |listing|, \cs{hline} commands are used for the heading
+%    If the \cs{SR@dest} is |listing|, \cs{hline} commands are used for the heading
 %    and footer of the |longfigure|.
 %
 %    The following statements set initial values for the heading
@@ -1928,7 +1961,8 @@ and the derived files
 %    \index{output centering|usage}%
 %    \begin{macrocode}
 \def\SR@set@outmargin{%
-    \ifdim\SR@scratchlength>\textwidth%
+ \ifthenelse{\equal{\SR@dest}{listing}}
+    {\ifdim\SR@scratchlength>\textwidth%
       \dosloppy%
       \setlength{\LFleft}{(\paperwidth-\SR@scratchlength)/\real{2.0}}%
       \addtolength{\LFleft}{-1in}%
@@ -1940,6 +1974,8 @@ and the derived files
     \else
       \setlength{\LFleft}{(\textwidth-\SR@scratchlength)/\real{2.0}}%
     \fi
+    }
+    {\relax}
 }
 %    \end{macrocode}
 %    If the width of the output is narrower than the text block, it is centered
@@ -2017,7 +2053,7 @@ and the derived files
 %    The following statements center a listing or a graphic and
 %    put a vertical line on each side of a listing:
 %    \begin{macrocode}
-     \ifthenelse{\equal{\SR@type}{listing}}
+     \ifthenelse{\equal{\SR@dest}{listing}}
        {\longfigure{|c|}}{\longfigure{c}}
         \SR@firsthead\SR@conthead\SR@endfoot%
         \usebox{\SR@filebox}%
