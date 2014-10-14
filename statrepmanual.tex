@@ -22,6 +22,7 @@
    citecolor=darkblue,
    urlcolor=darkblue,
 ]{hyperref}
+\usepackage{attachfile}
 \usepackage{memhfixc}
 \raggedbottom
 \hyphenation{StatRep}
@@ -90,14 +91,16 @@ reproducible research results:
 \item Compile the document with pdf\LaTeX. You can use a LaTeX-aware
       editor such as \TeX works, or you can use the command-line command \Code{pdflatex}.
       This step generates the SAS program that is needed to produce the results.
+      If the name of your document is \textit{myarticle.tex}, the name of the generated SAS
+      program is \textit{myarticle\_SR.sas} by default.
 
 \item Execute the SAS program to capture your output.
 
-For each code block in your document,
+During execution of the SAS program, for each code block in your document,
 SAS creates a SAS Output Delivery System (ODS) document that contains the resulting output.
 For more information about ODS documents, see the
 \textit{SAS Output Delivery System User's Guide}.
-For each output request in your document, SAS replays the specified output objects
+For each output request (the included \cs{Listing} and \cs{Graphic} tags) in your document, SAS replays the specified output objects
 to external files. All of your requested output is generated and captured when you
 execute the generated SAS program.
 
@@ -173,7 +176,9 @@ more information.
 \chapter{Getting Started}\label{gs}
 
 This section provides a simple example of how you can use the \StatRep package
-to produce a document with reproducible results.
+to produce a document with reproducible results. You can extract the
+\textattachfile[color=0 0 0.6]{example.tex}{example \LaTeX\ file} that
+contains the code in this section if your PDF viewer supports file annotations.
 
   Two code environments
   (\Code{Datastep}, shown in Figure \ref{fig:d1}, and
@@ -2572,7 +2577,86 @@ that you copied in installation step 1.
   In this example, the \Code{\{c\}} argument in the \cs{begin\{longfigure\}} command
   specifies only a single centered column. You can also specify multiple columns and,
   if needed, use the \cs{multicolumn} command for more flexibility.
+%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%
 
+\section{Experimental: The ODS StatRep LaTeX Tagset}
+
+SAS provides an experimental LaTeX tagset for ODS and the StatRep package
+has support for these tables, with some caveats.
+
+First, you must run the included SAS program \Code{statrep\_latex.tagsets.sas} to
+create the template needed to produce LaTeX tabular output that will work with
+StatRep.
+
+Second, if you use an ODS style with color, specify the color option
+when you load the \texttt{statrep} package.
+
+\begin{verbatim}
+\documentclass{article}
+\usepackage[color]{statrep}
+\end{verbatim}
+
+Third, you must change the \cs{SRdefaultdests} setting. This variable
+selects the default type of tabular output; it can have the value \texttt{latex}
+or \texttt{listing}. The default is \texttt{listing}. You can change this in your
+configuration file or in your LaTeX document.  You change it with the following
+syntax:
+
+\begin{verbatim}
+   \SRdefaultdests=latex
+\end{verbatim}
+
+When you specify \texttt{latex} as the default output type, the
+output files will be written to a subdirectory named \texttt{tex} by default.
+You can change the directory name with the \cs{SRlatexdir} variable.
+
+Once you have set \cs{SRdefaultdests} to \texttt{latex}, all tabular output
+will be produced as LaTeX \texttt{tabular} environments, nested within a
+\texttt{longfigure} environment.
+
+You can also specify the output type within the \cs{Listing} tag which overrides
+the \cs{SRdefaultdests} setting for that specific \cs{Listing}. For example,
+if your \cs{SRdefaultdests} is set to \texttt{listing}, you can force a
+\cs{Listing} output to be in LaTeX format by specifying \texttt{dest=latex}
+in the \cs{Listing} options, as follows:
+
+\begin{verbatim}
+   \Listing[store=mydoc, dest=latex, caption={My Analysis}]{myoutput}
+\end{verbatim}
+
+The LaTeX destination may produce tables that are too wide to fit in
+the text block. You can force the table to the left with the
+\cs{LFleft} command. The following example sets the left side of the
+output to begin 1 inch to the left of its normal location (the left
+edge of the text block). Then the output is typeset and the margin is
+set back to its default of 0.
+
+\begin{verbatim}
+   \LFleft=-1in
+   \Listing[store=mydoc, dest=latex, caption={My Analysis}]{myoutput}
+   \LFleft=0in
+\end{verbatim}
+
+Most SAS tables will not require this workaround.
+However, there are others that will be too wide, even with the
+workaround. The only solution in those cases is to use the
+\texttt{listing} format and change the fontsize and linesize to match.
+
+\begin{Datastep}
+data one;
+input x y @@;
+1 2 3 4 1 3 2 4 4 3 2 3 1 3 2 4
+;
+\end{Datastep}
+
+\begin{Sascode}[store=mydoc]
+%*;ods tagsets statreplatex style=htmlblue;
+proc print;
+run;
+\end{Sascode}
+
+\Listing[dest=latex, caption={My Output}]{myouta}
 
 \printindex
 \end{document}

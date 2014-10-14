@@ -2030,8 +2030,8 @@ and the derived files
 %    first output in the stream:
 %    \begin{macrocode}
 \newcommand{\SR@insert}[1]{%
-  \SR@set@outheadings%
   \ifthenelse{\equal{\SR@type}{listing}}{\Boxlisting{#1}}{\Boxgraphic{#1}}
+  \SR@set@outheadings%
   \SR@set@outmargin%
 %    \end{macrocode}
 %

@@ -1,0 +1,70 @@
+\documentclass{article}
+\usepackage{statrep}
+\begin{document}
+
+This document is named \texttt{example.tex}. 
+It contains the complete \textit{Getting Started}
+example from the \textit{StatRep User's Guide}.
+You can generate the final PDF document \texttt{example.pdf} as follows:
+
+\begin{description}
+\item[Generate the SAS program]\mbox{}\newline
+Compile this document with \texttt{pdflatex}.
+The \texttt{StatRep} package automatically generates a SAS program from
+the document source. The program is named
+\texttt{example\_SR.sas} and it is created in the current directory.
+
+\item[Capture the SAS outputs]\mbox{}\newline
+Run the SAS program \texttt{example\_SR.sas}. 
+The SAS working directory must be the directory that contains this document.
+
+\item[Create the final PDF]\mbox{}\newline
+Compile this document with \texttt{pdflatex} once more. The outputs that SAS generated
+in the preceding step are now included in the final PDF \texttt{example.pdf}.
+\end{description}
+
+The code in the \texttt{Datastep} environment is written
+unchanged to the generated SAS program.
+
+\begin{Datastep}
+proc format;
+   value $sex 'F' = 'Female' 'M' = 'Male';
+data one;
+   set sashelp.class;
+   format sex $sex.;
+run;
+\end{Datastep}
+
+  The code in the \texttt{Sascode} environment is parsed before it is
+  written to the generated SAS program. For example, lines that begin with the string
+  \texttt{\%*;} are written to the SAS program and are not displayed in the 
+  final document. The other lines in this example are written to the program 
+  and are displayed in the final document.
+  
+  The first line of the following code block can be seen only
+  in the \LaTeX\ source file and in the generated SAS program. 
+  The line insures that ODS Graphics are enabled.
+
+\begin{Sascode}[store=class]
+%*; ods graphics on;
+proc reg;
+    model weight = height age;
+run;
+\end{Sascode}
+
+  The \texttt{Listing} and \texttt{Graphic} tags convey information to
+  \LaTeX\ and to SAS. The tags specify the names of the output files to
+  insert into the document and the captions for the output.
+  Additionally, they specify the names of the output files to create
+  and which ODS objects to capture.
+
+\Listing[store=class,
+         caption={Regression Analysis}]{rega}
+
+\Graphic[store=class, 
+         caption={Graphs for Regression Analysis}]{regb}
+
+In this short example only the defaults are used. That is, all output
+objects are selected and displayed.
+
+\end{document}

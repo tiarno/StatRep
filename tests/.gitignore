@@ -192,6 +192,3 @@ sasuser/
 lst/
 png/
 tex/
-*_SR.*
-*_SR_preamble.sas
-example.pdf
