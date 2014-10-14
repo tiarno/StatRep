@@ -3,7 +3,7 @@ sasuser/
 lst/
 png/
 tex/
-!pdf
-!sas
-!_SR*
+!*pdf
+!*sas
+!*_SR*
 
