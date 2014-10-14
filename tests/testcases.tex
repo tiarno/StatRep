@@ -1,0 +1,129 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{statrep}
+
+\begin{document}
+
+\begin{Datastep}
+title 'no options';
+data one;
+  set sashelp.class;
+run;
+\end{Datastep}
+
+\begin{Datastep}[program]
+title 'program only';
+data one;
+  set sashelp.class;
+run;
+\end{Datastep}
+
+\begin{Datastep}[display]
+title 'display only';
+data one;
+  set sashelp.class;
+run;
+\end{Datastep}
+
+\begin{Datastep}[first=2]
+title 'first=2';
+data one;
+  set sashelp.class;
+run;
+\end{Datastep}
+
+\begin{Datastep}[first=2, last=2]
+title 'first=2 last=2';
+data one;
+  * another line;
+  set sashelp.class;
+run;
+\end{Datastep}
+
+\begin{Datastep}[first=2, last=2, fontsize=tiny]
+title 'first=2 last=2 fontsize=tiny';
+data one;
+  set sashelp.class;
+run;
+\end{Datastep}
+
+\begin{Sascode}
+title 'no options';
+proc print data=one;
+run;
+\end{Sascode}
+
+\begin{Sascode}[program]
+title 'program only';
+proc print data=one;
+run;
+\end{Sascode}
+
+\begin{Sascode}[display]
+title 'display only';
+proc print data=one;
+run;
+\end{Sascode}
+
+
+\begin{Sascode}[store=mydoc]
+title 'store=mydoc';
+proc print data=one;
+run;
+\end{Sascode}
+
+\begin{Sascode}[store=mydoc0, fontsize=tiny]
+title 'store=mydoc0 fontsize=tiny';
+proc print data=one;
+run;
+\end{Sascode}
+
+\begin{Sascode}
+%* program 2;
+title 'no options, line command(program)';
+title2 'next title';
+proc print data=one;
+run;
+\end{Sascode}
+
+\begin{Sascode}
+%* display 2;
+title 'no options, line command(display)';
+title2 'next title';
+proc print data=one;
+run;
+\end{Sascode}
+
+\begin{Sascode}
+%*;  title 'no options, line command(inline)';
+proc print data=one;
+run;
+\end{Sascode}
+
+\Listing[caption={no option}]{mymiss}
+
+\Listing[store=mydoc, linesize=120, caption={linesize=120}]{myouta}
+
+\Listing[store=mydoc0, fontsize=tiny, caption={fontsize=tiny}]{myoutb}
+
+
+\begin{Sascode}[store=mygdoc]
+title 'store=mygdoc';
+proc reg data=one;
+model weight=age;
+run;
+\end{Sascode}
+
+
+\Graphic[store=mygdoc, scale=0.4, style=journal, caption={scale=0.4}]{mygouta}
+
+\Graphic[store=mygdoc, width=2in, caption={width=2in}]{mygoutb}
+
+\Graphic[store=mygdoc, dpi=100, caption={dpi=100}]{mygoutc}
+
+\Graphic[store=mygdoc, height=2in, caption={height=2in}]{mygoutd}
+
+\Graphic[store=mygdoc, style=brick, caption={style=brick}]{mygoute}
+
+\end{document}
+
