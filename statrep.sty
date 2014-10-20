@@ -21,9 +21,11 @@
 \RequirePackage{ifthen}
 \newif\ifSR@generate\SR@generatetrue
 \DeclareOptionX{generate}[true]{\@nameuse{SR@generate#1}}
-\IfFileExists{sas.sty}
-  {\DeclareOptionX{color}[true]{\PassOptionsToPackage{\CurrentOption}{sas}}}
+\DeclareOptionX{color}[true]{%
+  \IfFileExists{sas.sty}
+  {\PassOptionsToPackage{\CurrentOption}{sas}}
   {\relax}
+}
 \DeclareOptionX{figname}{\PassOptionsToPackage{\CurrentOption}{longfigure}}
 \DeclareOptionX{resetby}{\PassOptionsToPackage{\CurrentOption}{longfigure}}
 \ProcessOptionsX
@@ -54,9 +56,9 @@
 \define@boolkeys{SR}[SR@]{display,program,continued}[true]{}
 \define@cmdkeys{SR}[SR@]{caption,first,last}{}
 \define@cmdkeys{SR}[SR@]{fontsize,scale,label}{}
-\define@cmdkeys{SR}[SR@]{store,linesize,width}{}
+\define@cmdkeys{SR}[SR@]{store,linesize,width,dest}{}
 \define@cmdkeys{SR}[SR@]{type,style,dpi}{}
-\define@cmdkeys{SR}[SR@]{dest,firstobj,lastobj}{}
+\define@cmdkeys{SR}[SR@]{firstobj,lastobj}{}
 \define@cmdkeys{SR}[SR@]{objects,pattern,options}{}
 \define@cmdkeys{SR}[SR@]{height,pagesize}{}
 \presetkeys{SR}{%
@@ -78,6 +80,7 @@
 \def\SRpagesize{500}
 \def\SRdpi{300}
 \def\SRstyle{statistical}
+\def\SRlatexstyle{statrep}
 \def\SRodsgraphopts{}
 
 \def\SRgraphicdir{png}
@@ -125,12 +128,14 @@
   \SR@writepgm\SR@tempfile@stream{\@percentchar let graphtype=\SRgraphtype;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let odsgraphopts=\SRodsgraphopts;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let latexdir=\SRlatexdir;}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let latexstyle=\SRlatexstyle;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultdests=\SRdefaultdests;}
   \SR@writepgm\SR@tempfile@stream{}
   \SR@writepgm\SR@tempfile@stream{options nodate nonumber}
   \SR@writepgm\SR@tempfile@stream{ls=&defaultlinesize ps=&defaultpagesize}
   \SR@writepgm\SR@tempfile@stream{formchar='|----|+|---+=|-/\@backslashchar<>*';}
   \SR@writepgm\SR@tempfile@stream{}
+  \SR@writepgm\SR@tempfile@stream{ods graphics on;}
   \SR@writepgm\SR@tempfile@stream{/* Include SAS macro definitions. */}
   \SR@writepgm\SR@tempfile@stream{\SRmacroinclude}
   \SR@writepgm\SR@tempfile@stream{}
@@ -348,12 +353,13 @@
     {\SR@write@outoptions}
   \SR@insert{#2}%
 }
+
 \newcommand*{\Boxlisting}[1]{%
- \ifthenelse{\equal{\SR@dest}{\@empty}}
-    {\def\SR@dest{\SRdefaultdests}}
-    {\relax}
+ \ifthenelse{\equal{\SR@dest}{\@empty}}%
+    {\def\SR@dest{\SRdefaultdests}}%
+    {\relax}%
   %
-  \ifthenelse{\equal{\SR@dest}{listing}}
+  \ifthenelse{\equal{\SR@dest}{listing}}%
      {\global\def\SR@insertname{\SRlistingdir/#1.lst}%
       \IfFileExists{\SR@insertname}%
         {%
@@ -367,7 +373,7 @@
           \parbox{\SR@verbwidth}{%
             \vspace*{0.25\baselineskip}%
             \noindent\verbatiminput{\SR@insertname}%
-            \vspace*{0.25\baselineskip}}
+            \vspace*{0.25\baselineskip}}%
           }%
         }%
         {\savebox{\SR@filebox}{\fbox{Missing File \SR@insertname}}%
@@ -378,18 +384,21 @@
       {%
         \savebox{\SR@filebox}{%
           \begin{minipage}{\textwidth}
-            \vspace{0.5\baselineskip}
+            \vspace{0.25\baselineskip}
             \centering\input{\SR@insertname}
-            \vspace{0.5\baselineskip}
+            \vspace{0.25\baselineskip}
           \end{minipage}
-        }
+        }%
     }%
     {\savebox{\SR@filebox}{\centering\fbox{Missing File \SR@insertname}}%
     \global\def\SR@insertname{\@empty}%
     }%
-  }
+  }%
   \global\setbox\SR@filebox=\box\SR@filebox%
-  \PackageInfo{statrep}{Processing output \SR@insertname}
+  \ifthenelse{\equal{\SR@dest}{listing}}%
+    {\relax}%
+    {\setlength{\SR@scratchlength}{\wd\SR@filebox+2\tabcolsep}}%
+  \PackageInfo{statrep}{Processing output \SR@insertname}%
 }
 \newcommand*{\Boxgraphic}[1]{%
   \IfFileExists{\SRgraphicdir/#1.\SRgraphtype}%
@@ -444,8 +453,7 @@
     }
 }
 \def\SR@set@outmargin{%
- \ifthenelse{\equal{\SR@dest}{listing}}
-    {\ifdim\SR@scratchlength>\textwidth%
+    \ifdim\SR@scratchlength>\textwidth%
       \dosloppy%
       \setlength{\LFleft}{(\paperwidth-\SR@scratchlength)/\real{2.0}}%
       \addtolength{\LFleft}{-1in}%
@@ -453,12 +461,10 @@
       \addtolength{\LFleft}{-\leftskip}%
       \ifodd\c@page\addtolength{\LFleft}{-\oddsidemargin}%
       \else\addtolength{\LFleft}{-\evensidemargin}%
-      \fi
-    \else
+      \fi%
+    \else%
       \setlength{\LFleft}{(\textwidth-\SR@scratchlength)/\real{2.0}}%
-    \fi
-    }
-    {\relax}
+    \fi%
 }
 \newcommand{\SR@insert}[1]{%
   \ifthenelse{\equal{\SR@type}{listing}}{\Boxlisting{#1}}{\Boxgraphic{#1}}
@@ -490,6 +496,7 @@
 %% This work consists of the files
 %%     statrep.dtx,
 %%     statrep_macros.sas,
+%%     statrep_tagset.sas
 %%     statrepmanual.tex,
 %%     quickstart.tex
 %% 

@@ -20,10 +20,10 @@ The package is available in two locations:
     * http://support.sas.com/StatRepPackage
     * http://mirror.ctan.org/macros/latex/contrib/statrep/
 
-
 The distribution(statrep.zip) consists of the following files:
    README.txt            (this file)
    statrep_macros.sas    SAS macro file
+   statrep_tagset.sas    SAS tagset and style for LaTeX tabular output
    statrepmanual.pdf     StatRep Package User's Guide (pdf)
    statrepmanual.tex     StatRep Package User's Guide (source)
    quickstart.tex        Example and tutorial LaTeX file
@@ -50,7 +50,7 @@ Step 2: Install the StatRep LaTeX Package
    packages for MikTeX:
    http://docs.miktex.org/manual/localadditions.html
 
-   These instructions show how to install the StatRep package in the
+   The following instructions show how to install the StatRep package in the
    TeXLive LaTeX distribution for your personal use. If you maintain a
    system-wide LaTeX distribution and you want to make StatRep
    available to all users, see more detailed information about how
@@ -141,11 +141,17 @@ UNINSTALL
    in the installation step 2d and remove the SAS macro file statrep_macros.sas
    that you copied in Installation step 1.
 
+NOTE
+
+   StatRep now includes limited support for SAS ODS LaTeX output.
+   See the StatRep User's Guide for details.
 
 LICENSE
 
 statrep.dtx
 statrep_macros.sas
+statrep_tagset.sas
+statrepmanual.tex
 
 Copyright (c) 2014 SAS Institute Inc.
 
@@ -169,11 +175,12 @@ REQUIREMENTS
      verbatim, graphicx, xkeyval, calc, ifthen
   SAS 9.2 or later
 
-See the StatRep User's Guide, included in this package, for complete details.
+See the StatRep User's Guide, included with this package, for complete details.
 
 This work consists of the files:
    README (this file)
    statrep_macros.sas
+   statrep_tagset.sas
    statrepmanual.tex
    statrepmanual.pdf
    quickstart.tex
@@ -209,6 +216,7 @@ Copyright (C) 2014 by SAS Institute Inc. <tim.arnold@sas.com>
 This work consists of the files
     statrep.dtx,
     statrep_macros.sas,
+    statrep_tagset.sas
     statrepmanual.tex,
     quickstart.tex
 
@@ -271,7 +279,7 @@ and the derived files
 %\def\filename{statrep.dtx}
 %\def\fileversion{1.04}
 %\def\filedate{\today}
-%\CheckSum{2071}
+%\CheckSum{2157}
 %\StopEventually{\PrintChanges\PrintIndex}
 %
 % \CharacterTable
@@ -441,6 +449,7 @@ and the derived files
 % \subsection{Required Packages}
 %  The \Statrep package requires the following \LaTeX\ packages. Each package is available
 %  in a relatively recent \TeX{}Live distribution  (2005 or later).
+%
 %    \begin{macrocode}
 \RequirePackage{verbatim}
 \RequirePackage{graphicx}
@@ -458,9 +467,11 @@ and the derived files
 %    \begin{macrocode}
 \newif\ifSR@generate\SR@generatetrue
 \DeclareOptionX{generate}[true]{\@nameuse{SR@generate#1}}
-\IfFileExists{sas.sty}
-  {\DeclareOptionX{color}[true]{\PassOptionsToPackage{\CurrentOption}{sas}}}
+\DeclareOptionX{color}[true]{%
+  \IfFileExists{sas.sty}
+  {\PassOptionsToPackage{\CurrentOption}{sas}}
   {\relax}
+}
 \DeclareOptionX{figname}{\PassOptionsToPackage{\CurrentOption}{longfigure}}
 \DeclareOptionX{resetby}{\PassOptionsToPackage{\CurrentOption}{longfigure}}
 \ProcessOptionsX
@@ -469,6 +480,16 @@ and the derived files
   {\relax}
 \RequirePackage{longfigure}
 %    \end{macrocode}
+%
+% Declare an option for \texttt{color}; Pass the value to the \texttt{sas}
+% package if it exists, otherwise do nothing. This option has no effect if
+% the ODS Listing destination is used. It applies only to SAS-generated
+% LaTeX tabular output.
+%
+%  The file \texttt{sas.sty} is loaded if it exists. The file is created by a SAS ODS
+%  tagset that is experimental; the tagset generates SAS output as LaTeX tables. More
+%  information on this experimental support can be found in the User's Guide (appendix).
+%
 %
 %    \subsection{Programming Utilities}\label{utilities}
 %    The programming helpers described in this section are used
@@ -633,16 +654,21 @@ and the derived files
 %    typeset |Listing| output. Typical values are |80|, |96|, or |120|.
 %
 %    \item |width=| specifies the width to generate or display |Graphic| output.
+%
+%    \item |dest=| specifies the SAS ODS destination to use for tabular output.
+%    The possible values are |listing| and |latex|. The |listing| option includes verbatim
+%    text-based tables from the ODS LISTING destination. The |latex| option includes
+%    LaTeX tabular environments that use the |sas| package (generated during the SAS run).
 %   \end{itemize}
 %    \begin{macrocode}
-\define@cmdkeys{SR}[SR@]{store,linesize,width}{}
+\define@cmdkeys{SR}[SR@]{store,linesize,width,dest}{}
 %    \end{macrocode}
 %    The remaining keys are defined and accepted by the \cs{Listing} and \cs{Graphic}
 %    macros, but are passed on to the generated SAS program. The following keys are
 %    used only by SAS:
 %    \begin{macrocode}
 \define@cmdkeys{SR}[SR@]{type,style,dpi}{}
-\define@cmdkeys{SR}[SR@]{dest,firstobj,lastobj}{}
+\define@cmdkeys{SR}[SR@]{firstobj,lastobj}{}
 \define@cmdkeys{SR}[SR@]{objects,pattern,options}{}
 \define@cmdkeys{SR}[SR@]{height,pagesize}{}
 %    \end{macrocode}
@@ -715,11 +741,13 @@ and the derived files
 %%    and also specify the default ODS output style:
 % \DescribeMacro{\SRlinesize}\DescribeMacro{\SRpagesize}
 % \DescribeMacro{\SRdpi}\DescribeMacro{\SRstyle}\DescribeMacro{\SRodsgraphopts}
+% \DescribeMacro{\SRlatexstyle}
 %    \begin{macrocode}
 \def\SRlinesize{80}
 \def\SRpagesize{500}
 \def\SRdpi{300}
 \def\SRstyle{statistical}
+\def\SRlatexstyle{statrep}
 \def\SRodsgraphopts{}
 %    \end{macrocode}
 
@@ -728,7 +756,10 @@ and the derived files
 %    \item \cs{SRlinesize} specifies the default linesize to use for listing output.
 %    \item \cs{SRpagesize} specifies the default pagesize to use for listing output.
 %    \item \cs{SRdpi} specifies the default DPI setting to use for GRSEG and ODS graphics.
-%    \item \cs{SRstyle} specifies the default ODS output style to use.
+%    \item \cs{SRstyle} specifies the default ODS output style to use for ODS graphics.
+%    \item \cs{SRlatestyle} specifies the ODS output style to use for LaTeX tabular output.
+%          The default is |statrep|, which is provided in the supplmental file
+%          |statrep_tagset.sas|.
 %    \end{itemize}
 %    \begin{macrocode}
 \def\SRgraphicdir{png}
@@ -738,6 +769,7 @@ and the derived files
 \def\SRdefaultdests{listing}
 %    \end{macrocode}
 % \DescribeMacro{\SRgraphicdir}\DescribeMacro{\SRgraphtype}\DescribeMacro{\SRlistingdir}
+% \DescribeMacro{\SRdefaultdests}\DescribeMacro{\SRlatexdir}
 %    \begin{itemize}
 %    \item \cs{SRgraphicdir} specifies the name of the directory that contains the
 %    graphic output files that are generated by SAS. The default is |png|.
@@ -745,6 +777,10 @@ and the derived files
 %    The choices are |png| and |pdf|. The default is |png|.
 %    \item \cs{SRlistingdir} specifies the name of the directory that contains the
 %     listing (tabular) output files that are generated by SAS. The default is |lst|.
+%    \item \cs{SRlatexdir} specifies the name of the directory that contains the
+%     LaTeX (tabular) output files that are generated by SAS. The default is |tex|.
+%    \item \cs{SRdefaultdests} specifies the ODS destination to use for tabular output.
+%    The possible values are |listing| and |latex|. The default is |listing|.
 %    \end{itemize}
 %\changes{v1.01}{2012/05/23}{Changed SRsasprogramline to call hostdel SAS macro}
 %    \begin{macrocode}
@@ -876,12 +912,14 @@ and the derived files
   \SR@writepgm\SR@tempfile@stream{\@percentchar let graphtype=\SRgraphtype;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let odsgraphopts=\SRodsgraphopts;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let latexdir=\SRlatexdir;}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let latexstyle=\SRlatexstyle;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultdests=\SRdefaultdests;}
   \SR@writepgm\SR@tempfile@stream{}
   \SR@writepgm\SR@tempfile@stream{options nodate nonumber}
   \SR@writepgm\SR@tempfile@stream{ls=&defaultlinesize ps=&defaultpagesize}
   \SR@writepgm\SR@tempfile@stream{formchar='|----|+|---+=|-/\@backslashchar<>*';}
   \SR@writepgm\SR@tempfile@stream{}
+  \SR@writepgm\SR@tempfile@stream{ods graphics on;}
   \SR@writepgm\SR@tempfile@stream{/* Include SAS macro definitions. */}
   \SR@writepgm\SR@tempfile@stream{\SRmacroinclude}
   \SR@writepgm\SR@tempfile@stream{}
@@ -1544,6 +1582,8 @@ and the derived files
 % Listing output is inserted in the same way, but the output is framed.
 % The frame is created with the help of the |longfigure| package and the
 % \cs{hline} command.
+% If the ODS destination is LaTeX, the resulting output blocks are put into
+% a minipage of \cs{textwidth} width and are not framed.
 %
 % The following helper macros are used only in writing to the generated program:
 % \begin{description}
@@ -1671,7 +1711,8 @@ and the derived files
                                  \SRverbfont\selectfont~}%
 %    \end{macrocode}
 %
-%    The following statements control the line size:
+%    The following statements control the line size for ODS Listing output
+% (ODS LaTeX output is handled differently, later on):
 %    \begin{macrocode}
   \ifthenelse{\equal{\SR@linesize}{\@empty}}
     {\def\SR@linesize{\SRlinesize}}{\relax}
@@ -1739,14 +1780,29 @@ and the derived files
 %
 % \subsubsection{The \cs{Boxlisting} Macro}
 % The \cs{Boxlisting} macro creates a box that contains the verbatim content
-% of an external listing file.
+% of an external listing file. If the \cs{SRdest} value has been set for this
+% listing, we will use it; otherwise set it to the value given for \cs{SRdefaultdests},
+% which is the global default (set to |listing| by the package itself, but
+% possibly overridden by the user).
+%
+% Now if the current destination is |listing|, put the content of the specified file
+% into a box as verbatim input. If the file doesn't exist, place a marker in the document.
+%
+% If the current destination is |latex|, put the contents of the specified file
+% into a minipage and then into the box. Also set \cs{SR@scratchlen} to the width of
+% the box. Yes, it will always be the text width (for now). Still we need the length since
+% it gets used later to center the enclosing |longfigure|.
+
+% When the destination is |latex|, this length is reset for each piece of output
+% in this Listing. When the destination is |listing| it is set once for the entire Listing,
+% and is not touched here.
 %    \begin{macrocode}
 \newcommand*{\Boxlisting}[1]{%
- \ifthenelse{\equal{\SR@dest}{\@empty}}
-    {\def\SR@dest{\SRdefaultdests}}
-    {\relax}
+ \ifthenelse{\equal{\SR@dest}{\@empty}}%
+    {\def\SR@dest{\SRdefaultdests}}%
+    {\relax}%
   %
-  \ifthenelse{\equal{\SR@dest}{listing}}
+  \ifthenelse{\equal{\SR@dest}{listing}}%
      {\global\def\SR@insertname{\SRlistingdir/#1.lst}%
       \IfFileExists{\SR@insertname}%
         {%
@@ -1760,7 +1816,7 @@ and the derived files
           \parbox{\SR@verbwidth}{%
             \vspace*{0.25\baselineskip}%
             \noindent\verbatiminput{\SR@insertname}%
-            \vspace*{0.25\baselineskip}}
+            \vspace*{0.25\baselineskip}}%
           }%
         }%
         {\savebox{\SR@filebox}{\fbox{Missing File \SR@insertname}}%
@@ -1771,18 +1827,21 @@ and the derived files
       {%
         \savebox{\SR@filebox}{%
           \begin{minipage}{\textwidth}
-            \vspace{0.5\baselineskip}
+            \vspace{0.25\baselineskip}
             \centering\input{\SR@insertname}
-            \vspace{0.5\baselineskip}
+            \vspace{0.25\baselineskip}
           \end{minipage}
-        }
+        }%
     }%
     {\savebox{\SR@filebox}{\centering\fbox{Missing File \SR@insertname}}%
     \global\def\SR@insertname{\@empty}%
     }%
-  }
+  }%
   \global\setbox\SR@filebox=\box\SR@filebox%
-  \PackageInfo{statrep}{Processing output \SR@insertname}
+  \ifthenelse{\equal{\SR@dest}{listing}}%
+    {\relax}%
+    {\setlength{\SR@scratchlength}{\wd\SR@filebox+2\tabcolsep}}%
+  \PackageInfo{statrep}{Processing output \SR@insertname}%
 }
 %    \end{macrocode}
 %
@@ -1956,13 +2015,13 @@ and the derived files
 %     \DescribeMacro{\SR@set@outmargin}
 %    The \cs{SR@set@outmargin} macro sets the |longfigure| parameter |LFleft| based
 %    on the output dimensions. The output width is set in the
-%    \cs{Listing} or \cs{Boxgraphic} macros. The length
+%    \cs{Listing} (|listing| destination), \cs{Boxlisting} (|latex| destination),
+%    or \cs{Boxgraphic} macros. The length
 %    parameter \cs{SR@scratchlength} contains the output width.
 %    \index{output centering|usage}%
 %    \begin{macrocode}
 \def\SR@set@outmargin{%
- \ifthenelse{\equal{\SR@dest}{listing}}
-    {\ifdim\SR@scratchlength>\textwidth%
+    \ifdim\SR@scratchlength>\textwidth%
       \dosloppy%
       \setlength{\LFleft}{(\paperwidth-\SR@scratchlength)/\real{2.0}}%
       \addtolength{\LFleft}{-1in}%
@@ -1970,12 +2029,10 @@ and the derived files
       \addtolength{\LFleft}{-\leftskip}%
       \ifodd\c@page\addtolength{\LFleft}{-\oddsidemargin}%
       \else\addtolength{\LFleft}{-\evensidemargin}%
-      \fi
-    \else
+      \fi%
+    \else%
       \setlength{\LFleft}{(\textwidth-\SR@scratchlength)/\real{2.0}}%
-    \fi
-    }
-    {\relax}
+    \fi%
 }
 %    \end{macrocode}
 %    If the width of the output is narrower than the text block, it is centered
@@ -2030,8 +2087,8 @@ and the derived files
 %    first output in the stream:
 %    \begin{macrocode}
 \newcommand{\SR@insert}[1]{%
-  \SR@set@outheadings%
   \ifthenelse{\equal{\SR@type}{listing}}{\Boxlisting{#1}}{\Boxgraphic{#1}}
+  \SR@set@outheadings%
   \SR@set@outmargin%
 %    \end{macrocode}
 %
@@ -2051,7 +2108,9 @@ and the derived files
        {\setboolean{SR@multifile}{true}}%
 %    \end{macrocode}
 %    The following statements center a listing or a graphic and
-%    put a vertical line on each side of a listing:
+%    put a vertical line on each side of a listing (|listing| destination).
+%    No horizontal or vertical lines (no box) are drawn for graphics or
+%    outputs using the |latex| destination.
 %    \begin{macrocode}
      \ifthenelse{\equal{\SR@dest}{listing}}
        {\longfigure{|c|}}{\longfigure{c}}
@@ -2203,26 +2262,30 @@ and the derived files
 % The following lines produce a single figure that contains three images and
 % one tabular environment. Each element is a row of the |longfigure| environment.
 % Page breaks can occur between rows.
-%
-%\begin{verbatim}
-%\documentclass{book}
-%\usepackage{graphicx}
-%\usepackage{longfigure}
-%
-%\begin{document}
-%  \begin{longfigure}{c}
-%    \caption{My Long Figure}\label{mlfig}\\
-%    \includegraphics[width=3in]{myfig1}\\
-%    \includegraphics[width=3in]{myfig2}\\
-%    \includegraphics[width=3in]{myfig3}\\
-%    \begin{tabular}{ll}
-%      one & two \\
-%      three & four\\
-%    \end{tabular}
-%  \end{longfigure}
-%\end{document}
-%\end{verbatim}
-%
+%% \iffalse
+%<*example>
+% \fi
+\begin{verbatim}
+\documentclass{book}
+\usepackage{graphicx}
+\usepackage{longfigure}
+
+\begin{document}
+  \begin{longfigure}{c}
+    \caption{My Long Figure}\label{mlfig}\\
+    \includegraphics[width=3in]{myfig1}\\
+    \includegraphics[width=3in]{myfig2}\\
+    \includegraphics[width=3in]{myfig3}\\
+    \begin{tabular}{ll}
+      one & two \\
+      three & four\\
+    \end{tabular}
+  \end{longfigure}
+\end{document}
+\end{verbatim}
+% \iffalse
+%</example>
+% \fi
 %  In this example, the |{c}| argument in the |\begin{longfigure}| command
 %  specifies only a single centered column. You can also specify multiple columns and,
 %  if needed, use the \cs{multicolumn} command for more flexibility.
@@ -2230,30 +2293,35 @@ and the derived files
 % The following lines display another example that specifies a 'continued' heading
 % when the figure breaks over a page. It also displays a double horizontal line at the
 % end of the figure.
-%\begin{verbatim}
-%\documentclass{book}
-%\usepackage{graphicx}
-%\usepackage{longfigure}
-%
-%\begin{document}
-%  \begin{longfigure}{c}
-%    \caption{My Long Figure}\label{mlfig2}\\
-%    \hline\endLFfirsthead
-%    \caption{continued}\\
-%    \hline\endLFhead
-%    \hline\endLFfoot
-%    \hline\hline\endLFlastfoot
-%    \includegraphics[width=3in]{myfig1}\\
-%    \includegraphics[width=3in]{myfig2}\\
-%    \includegraphics[width=3in]{myfig3}\\
-%    \begin{tabular}{ll}
-%      one & two \\
-%      three & four\\
-%    \end{tabular}
-%  \end{longfigure}
-%\end{document}
-%\end{verbatim}
-%
+% \iffalse
+%<*example>
+% \fi
+\begin{verbatim}
+\documentclass{book}
+\usepackage{graphicx}
+\usepackage{longfigure}
+
+\begin{document}
+  \begin{longfigure}{c}
+    \caption{My Long Figure}\label{mlfig2}\\
+    \hline\endLFfirsthead
+    \caption{continued}\\
+    \hline\endLFhead
+    \hline\endLFfoot
+    \hline\hline\endLFlastfoot
+    \includegraphics[width=3in]{myfig1}\\
+    \includegraphics[width=3in]{myfig2}\\
+    \includegraphics[width=3in]{myfig3}\\
+    \begin{tabular}{ll}
+      one & two \\
+      three & four\\
+    \end{tabular}
+  \end{longfigure}
+\end{document}
+\end{verbatim}
+% \iffalse
+%</example>
+% \fi
 %    \section{Implementation}
 %
 %    This section describes the implementation of the |longfigure| package.

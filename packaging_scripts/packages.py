@@ -21,7 +21,7 @@ EXTRAS = os.path.join(ROOT, 'extras')
 
 #
 CTAN = os.path.join(ROOT, 'ctan')
-TESTING = os.path.join(ROOT, 'testing')
+WORKING = os.path.join(ROOT, 'working')
 
 
 def run_pdf(name):
@@ -34,12 +34,12 @@ def run_pdf(name):
         p = subprocess.Popen(shlex.split(cmd), cwd=cwd)
         p.wait()
 
-    cwd = os.path.join(TESTING, name)
+    cwd = os.path.join(WORKING, name)
     pdf();pdf()
     idx();pdf()
 
 def start_clean():
-    for d in [CTAN, TESTING]:
+    for d in [CTAN, WORKING]:
         if os.path.isdir(d):
             for f in os.listdir(d):
                 fname = os.path.join(d, f)
@@ -65,8 +65,8 @@ def insert(wrapper, content):
     return newlines
 
 def write_dtx(package, lines):
-    dname = os.path.join(TESTING, package)
-    fname = os.path.join(TESTING, package, '%s.dtx' % package)
+    dname = os.path.join(WORKING, package)
+    fname = os.path.join(WORKING, package, '%s.dtx' % package)
     if not os.path.isdir(dname):
         os.mkdir(dname)
 
@@ -78,23 +78,32 @@ def copyfiles(package):
     if not os.path.isdir(tgtdir):
         os.mkdir(tgtdir)
 
-    src =  os.path.join(TESTING, package, 'README.')
+    src =  os.path.join(WORKING, package, 'README.')
     tgt = os.path.join(tgtdir, 'README')
     shutil.copy(src, tgt)
 
     for ext in ['dtx', 'ins', 'pdf']:
-        src = os.path.join(TESTING, package, '%s.%s' % (package, ext))
+        src = os.path.join(WORKING, package, '%s.%s' % (package, ext))
         tgt = os.path.join(tgtdir, '%s.%s' % (package, ext))
         shutil.copy(src, tgt)
 
     if package == 'statrep':
-        for dname in [CTAN, TESTING]:
+        for dname in [CTAN, WORKING]:
             tgtdir = os.path.join(dname, package)
             if os.path.isdir(EXTRAS):
                 for name in os.listdir(EXTRAS):
-                    src = os.path.join(EXTRAS, name)
-                    tgt = os.path.join(tgtdir, name)
-                    shutil.copy(src, tgt)
+                    if name == 'images':
+                        if not os.path.isdir(os.path.join(tgtdir, 'images')):
+                            os.mkdir(os.path.join(tgtdir, 'images'))
+
+                        for iname in os.listdir(os.path.join(EXTRAS, 'images')):
+                            src = os.path.join(EXTRAS, 'images', iname)
+                            tgt = os.path.join(tgtdir, 'images', iname)
+                            shutil.copy(src, tgt)
+                    else:
+                        src = os.path.join(EXTRAS, name)
+                        tgt = os.path.join(tgtdir, name)
+                        shutil.copy(src, tgt)
             else:
                 print 'No "extra" files present.'
 

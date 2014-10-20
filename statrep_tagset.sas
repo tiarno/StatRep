@@ -1,5 +1,63 @@
 proc template;
-define tagset Tagsets.StatRepLatex;
+   define style styles.StatRep;
+      parent = styles.statistical;
+      class colors /
+         'link2' = cx0000FF
+         'link1' = cx800080
+         'docbg' = cxFFFFFF
+         'contentbg' = cxFFFFFF
+         'systitlebg' = cxFFFFFF
+         'titlebg' = cxFFFFFF
+         'proctitlebg' = cxFFFFFF
+         'headerbg' = cxFFFFFF
+         'captionbg' = cxFFFFFF
+         'captionfg' = cx000000
+         'bylinebg' = cxFFFFFF
+         'notebg' = cxFFFFFF
+         'tablebg' = cxFFFFFF
+         'batchbg' = cxFFFFFF
+         'systitlefg' = cx000000
+         'titlefg' = cx000000
+         'proctitlefg' = cx000000
+         'bylinefg' = cx000000
+         'notefg' = cx000000;
+      class Header /
+         color = cx000000
+         backgroundcolor = cxFFFFFF
+         bordercolor = cxB0B7BB
+         bordercollapse = collapse;
+      class RowHeader /
+         color = cx000000
+         backgroundcolor = cxFFFFFF
+         bordercolor = cxB0B7BB
+         bordercollapse = collapse;
+      class Footer /
+         color = cx000000
+         backgroundcolor = cxFFFFFF
+         bordercolor = cxB0B7BB
+         bordercollapse = collapse;
+      class RowFooter /
+         color = cx000000
+         backgroundcolor = cxFFFFFF
+         bordercolor = cxB0B7BB
+         bordercollapse = collapse;
+      class batch /
+         borderwidth = 0px;
+      class Data /
+         font = fonts('DocFont')
+         backgroundcolor = _undef_
+         bordercolor = cx919191
+         bordercollapse = collapse;
+      class DataEmphasis /
+         font = fonts('DocFont')
+         backgroundcolor = _undef_
+         bordercolor = cx919191
+         bordercollapse = collapse;
+   end;
+run;
+
+proc template;
+define tagset Tagsets.StatRep;
    notes "This is the StatRep LaTeX definition";
 
    define event initialize;
@@ -104,16 +162,16 @@ define tagset Tagsets.StatRepLatex;
          put "\renewcommand{\arraystretch}{1.3}" NL NL;
          put %nrstr("%% Headings") NL;
          put %nrstr("\newcommand{\sasheading}[3][c]{{%%") NL;
-         put %nrstr("   \if#1r\flushright\else\if#1l\flushleft\else\center\fi\fi%%") NL;
-         put %nrstr("   {\csname sasS#2\endcsname #3}%%") NL;
-         put %nrstr("   \if#1r\endflushright\else\if#1l\endflushleft\else\endcenter\fi\fi%%") NL;
+         put %nrstr("   \if#1r\flushright\else\if#1l\flushleft\else\centering\fi\fi%%") NL;
+         put %nrstr("   {\csname sasS#2\endcsname #3}\\[0.1\baselineskip]%%") NL;
+         put %nrstr("   \if#1r\endflushright\else\if#1l\endflushleft\else\fi\fi%%") NL;
          put "}}" NL;
          put NL;
-         put "\newcommand{\sasbyline}[2][c]{\sasheading[#1]{byline}{#2}}" NL;
-         put "\newcommand{\sassystemtitle}[2][c]{\sasheading[#1]{systemtitle}{#2}}" NL;
-         put "\newcommand{\sassystemfooter}[2][c]{\sasheading[#1]{systemfooter}{#2}}" NL;
-         put "\newcommand{\sasproctitle}[2][c]{\sasheading[#1]{proctitle}{#2}}" NL;
-         put "\newcommand{\sascaption}[2][l]{\marginpar[#1]{\fbox{\parbox{0.7in}{\sasScaption{#2}}}}}" NL;
+         put "\newcommand{\sasbyline}[2][c]{\sasheading[#1]{Byline}{#2}}" NL;
+         put "\newcommand{\sassystemtitle}[2][c]{\sasheading[#1]{SystemTitle}{#2}}" NL;
+         put "\newcommand{\sassystemfooter}[2][c]{\sasheading[#1]{SystemFooter}{#2}}" NL;
+         put "\newcommand{\sasproctitle}[2][c]{\sasheading[#1]{ProcTitle}{#2}}" NL;
+         put "\newcommand{\sascaption}[2][l]{\marginpar[#1]{\fbox{\parbox{0.7in}{\sasSCaption{#2}}}}}" NL;
          put NL;
          put %nrstr("%% Declare new verbatim type") NL;
          put %nrstr("\DefineVerbatimEnvironment{sasverbatim}{BVerbatim}%%") NL;

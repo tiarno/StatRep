@@ -379,7 +379,7 @@ data _null_;
    h = symget('height');
    if h = ' ' then
       call symputx('h', trim(put(0.75 * input(translate(lowcase(w), '    ',
-                   'incm'), 12.), 12.)) || substr(w, length(w) - 1, 2), 'L');
+                   'incm'), 12.), best12.)) || substr(w, length(w) - 1, 2), 'L');
    else call symputx('h', trim(h), 'L');
 
    options = lowcase(symget('defaultdests'));
@@ -935,8 +935,8 @@ options source &savenote;
                ods listing file="&listingdir/_tmp";
                %end;
             %if %index(&dest, latex) %then %do;
-               ods tagsets.statreplatex 
-                   file="&latexdir/&fname&jh..tex" (notop nobot) 
+               ods tagsets.statrep style=&latexstyle
+                   file="&latexdir/&fname&jh..tex" (notop nobot)
                    stylesheet="sas.sty"(url="sas")
                    newfile=output ;
                %end;
@@ -956,10 +956,10 @@ options source &savenote;
             %end;
 
          ods _all_ close;
-         ods graphics / reset=index imagename="" reset=width;
+         ods graphics / reset=index imagename="" reset=width reset=height;
 
          %if &&_gtype&i ne G and        /* if not graph */
-             %index(&dest, listing) %then %do; 
+             %index(&dest, listing) %then %do;
             /* break up big listing files */
             options nonotes;
 
@@ -1464,11 +1464,11 @@ options &savenote;
 %macro hostdel;
    %if &sysscp = WIN or &sysscp = DNTHOST %then %do;
       options noxwait;
-      x "mkdir &graphicdir &listingdir";
-      x "del %nrstr(%%)CD%nrstr(%%)\&listingdir\*.lst %nrstr(%%)CD%nrstr(%%)\&graphicdir\*.p*";
+      x "mkdir &graphicdir &listingdir &latexdir";
+      x "del %nrstr(%%)CD%nrstr(%%)\&listingdir\*.lst %nrstr(%%)CD%nrstr(%%)\&graphicdir\*.p* %nrstr(%%)CD%nrstr(%%)\&latexdir\*.tex";
    %end;
    %else %do;
-      x "mkdir &graphicdir &listingdir";
-      x "rm &listingdir/*.lst &graphicdir/*.p*";
+      x "mkdir &graphicdir &listingdir &latexdir";
+      x "rm &listingdir/*.lst &graphicdir/*.p* &latexdir/*.tex";
    %end;
 %mend;

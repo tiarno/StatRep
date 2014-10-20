@@ -3,7 +3,7 @@
 \usepackage{mathptmx,upquote,alltt}
 \IfFileExists{helvet.sty}{\usepackage[scaled=0.92]{helvet}}{\relax}
 \IfFileExists{couriers.sty}{\usepackage[scaled=0.95]{couriers}}{\relax}
-\usepackage{float,xspace,framed,xcolor}
+\usepackage{float,graphicx,xspace,framed,xcolor}
 \definecolor{shadecolor}{rgb}{0.97,0.97,0.97}
 \definecolor{lightblue}{rgb}{0.93,0.95,1.0}
 \definecolor{darkblue}{rgb}{0,0,0.6}
@@ -540,6 +540,34 @@ The purpose of the \cs{Graphic} tag is to display graphical output.
 
      The options supported by the \cs{Listing} and \cs{Graphic} tags are used by
      the \StatRep \LaTeX\ package and by the \StatRep SAS macros.
+     
+     The following table lists all options. Subsequent tables provide descriptions
+     for each option and how it is used in LaTeX and in SAS.
+\begin{table}[H]
+\caption{Master List of Output Tag Options}
+     \begin{tabular}{lll}
+     \toprule
+     \textbf{Option Name} & \textbf{Used by} & \textbf{Output Tag}\\
+     \midrule
+\Code{caption=}    &  LaTeX        & Listing, Graphic \\
+\Code{dpi=}        &  SAS          & Graphic \\
+\Code{firstobj=}   &  SAS          & Listing, Graphic \\
+\Code{fontsize=}   &  LaTeX        & Listing (ODS Listing destination) \\
+\Code{height=}     &  SAS          & Graphic \\
+\Code{lastobj=}    &  SAS          & Listing, Graphic \\
+\Code{linesize=}   &  LaTeX, SAS   & Listing (ODS Listing destination) \\
+\Code{objects=}    &  SAS          & Listing, Graphic \\
+\Code{options=}    &  SAS          & Listing, Graphic \\
+\Code{pagesize=}   &  SAS          & Listing \\
+\Code{pattern=}    &  SAS          & Listing, Graphic \\
+\Code{scale=}      &  LaTeX        & Graphic \\
+\Code{store=}      &  LaTeX, SAS   & Listing, Graphic \\
+\Code{style=}      &  SAS          & Listing (ODS LaTeX destination), Graphic \\
+\Code{type=}       &  SAS          & Listing, Graphic \\
+\Code{width=}      &  LaTeX, SAS   & Graphic \\
+\bottomrule
+\end{tabular}
+\end{table}
 
      \subsubsection{Options Used by the \textsf{StatRep} \LaTeX\ Package}
      \index{Listing tag!options}\index{Graphic tag!options}
@@ -707,284 +735,11 @@ In addition, the following options are passed to the \StatRep SAS macros:
 
   \end{description}
 
-\section{\StatRep SAS Macros}\label{macros}
-\index{SAS macros}
-  SAS programs created by the \StatRep package
-  run SAS macros to capture output. The macros depend on the ODS document.
-  The ODS document is a destination or repository for the results
-  (tables, notes, titles, and graphs)
-  that come from SAS procedures. Each procedure step is run only once,
-  and the results are captured in an ODS document.
-  Then the parts of the ODS document are replayed using PROC DOCUMENT.
-
-  When \StatRep encounters a \Code{Sascode} environment,
-  it generates a macro call to create an ODS document from the environment.
-  When \StatRep encounters a \cs{Listing} or \cs{Graphic} tag,
-  it generates a macro call to replay output from that ODS document into an external file.
-
-  For the output that is generated in each \Code{Sascode} block, the SAS macros provide you
-  with a list of all
-  of the objects in the ODS document and a table that displays
-  the objects selected for display. You can
-  review this list in the SAS log.
-  It is important to check these lists to ensure that either all output
-  is included somewhere or any omissions are deliberate.
-
-  The following macros are defined:
-  \begin{itemize}
-  \item The \Code{\%output} and \Code{\%endoutput} macros open and close an ODS document, respectively.
-  When you use \StatRep to automatically generate your program, these macros are called at the
-  beginning and end of a \Code{Sascode} block, respectively.
-  You can manually call the macros at any time within
-  a \Code{Sascode} block by prefixing the call with a null SAS macro comment (\Code{\%*;}).
-  \index{SAS macros!output}\index{SAS macros!endoutput}
-
-  \item The \Code{\%write}  macro writes ODS objects that are contained in an ODS document to
-  one or more external files.
-  When you use \StatRep to automatically generate your program, this macro is called when
-  a \cs{Listing} or \cs{Graphic} tag is encountered. You can manually call the macro
-  at any time within a \Code{Sascode} block by prefixing the call with a null
-  SAS macro comment (\Code{\%*;}).
-  \index{SAS macros!write}
-
-  \item The \Code{\%startlist} and \Code{\%endlist} macros capture printed content
-  (for example, a PROC PRINT or DATA step) to an external file. To use these macros,
-  you must manually call the macro
-  within a \Code{Sascode} block and prefix the call with a null
-  SAS macro comment (\Code{\%*;}).
-  \index{SAS macros!startlist}\index{SAS macros!endlist}
-
-  \item The \Code{\%startlog} and \Code{\%endlog} macros capture content from the
-  SAS log to an external file. To use these macros,
-  you must manually call the macro
-  within a \Code{Sascode} block and prefix the call with a null
-  SAS macro comment (\Code{\%*;}).
-  \index{SAS macros!startlog}\index{SAS macros!endlog}
-  \end{itemize}
-
-
-  \subsection{The \texttt{\%output} and \texttt{\%endoutput} Macros}\label{outputmacro}
-  The \Code{Sascode} environment writes the \Code{\%output} and \Code{\%endoutput} macros to
-  the generated program
-  whenever the \Code{store=} option is specified.
-  However, you can call the macros
-  yourself by omitting the \Code{store=} option in the \Code{Sascode} environment and
-  call the macros within the \Code{Sascode} environment. Each call must be prefixed
-  with a null SAS macro comment (\Code{\%*;}).
-  \index{SAS macros!output}\index{SAS macros!endoutput}
-
-  The \Code{\%output} macro supports two other options (\Code{style=} and \Code{dpi=}) that are used to
-  set parameters for GRSEG graphs. These options are not supported in the
-  \Code{Sascode} environment options. If you want to change the style or DPI for
-  GRSEG graphs, you must call the \Code{\%output} and \Code{\%endoutput} macros manually.
-
-  The following options are supported by the \Code{\%output} macro:
- \begin{description}
- \item[\Code{store=}] specifies the name of the ODS document.
-  This name is used in the \Code{store=} option in the \cs{Listing} and \cs{Graphic} tags
-  or in the \Code{\%write macro}.
-
- \item[\Code{style=}] specifies the style used for GRSEG graphs.
- The default is \Code{HTMLBlue}. See section \ref{grseg} for details.
-
- \item[\Code{dpi=}] specifies the dots per inch (DPI) setting used for GRSEG graphs.
-  The default is 300 DPI. See section \ref{grseg} for details.
- \end{description}
-
-
-  \subsection{The \texttt{\%write} Macro}
-  The \Code{\%write} macro supports the same key-value options as the \cs{Listing} and
-  \cs{Graphic} tags support.
-  The \StatRep package generates the \Code{\%write} macro in the SAS program
-  file whenever the \Code{store=} option is specified in the output tag.
-  However, you can call the macros
-  yourself by omitting the \Code{store=} option in the \cs{Listing} or \cs{Graphic}
-  tag and call the macro within a \Code{Sascode} environment. Each call must be prefixed
-  with a null SAS macro comment (\Code{\%*;}).
-  \index{SAS macros!write}
-See the section \titleref{sasopts} for more information about the options used in the
-\cs{Listing} and \cs{Graphic} tags that are passed to the \Code{\%write} macro.
-
-
-\vspace*{1em}\noindent\textbf{Note:} If you use the macros interactively, be aware that
-these macros open and close ODS destinations,
-enable and disable ODS Graphics, and change ODS options.  Output capture uses the
-LISTING destination, and when the \Code{\%write} macro finishes, only the
-LISTING destination remains open.
-If you need other ODS destinations for your work, you need to reset them
-when you are done with a section of output capture.  For example,
-if you are using the HTML destination
-in the SAS windowing environment, then you need to
-close the LISTING destination and reopen the HTML destination when you finish
-capturing output.
-
- \subsection{The \texttt{\%startlist} and \texttt{\%endlist} Macros}\label{startlist}
-
-  The \Code{\%startlist} and \Code{\%endlist} macros capture printed information
-  from the ODS listing destination. The macros are used when
-  you create output with a procedure that does not support ODS.
-  They are also used when you use the
-  \Code{DATA \_NULL\_} and \Code{PUT \_ODS\_} SAS statements to
-  manually capture output.
-  \index{SAS macros!startlist}\index{SAS macros!endlist}
-
-  These macros are not automatically generated by the \StatRep package.
-  You must call them
-  manually within a \Code{Sascode} environment (with each call preceded
-  by a null SAS macro comment).
-
-  In SAS 9.2, PROC PRINT is not fully integrated into the ODS document,
-  unless you specify PROC PRINT with no options.
-  If you specify PROC PRINT
-  with options, you must use the \Code{\%startlist} and \Code{\%endlist}
-  macros to capture output.
-
-  If you use PROC PRINT in SAS 9.3 or later,
-  you can use the \Code{\%output} and \Code{\%write} macros as you would with
-  any SAS procedure.
-
-  The \Code{\%startlist} macro has one mandatory argument, the filename prefix
-  of the file to contain
-  the output. The argument is also used
-  in the \cs{Listing} tag to insert the output.
-
-  The \Code{\%startlist} macro supports the following options after
-  the filename argument, separated with a comma (,):
-  \begin{description}
-  \item[\Code{linesize=}] specifies the line size.
-  The default is the line size currently in effect.
-  This specification lasts for the duration of this step.
-  The current line size is restored at the end.
-  When you specify the \Code{linesize=} option in the \Code{\%startlist}
-  macro, be sure to make the same specification
-  in the \cs{Listing} tag you use to insert the output.
-
-  \item[\Code{pagesize=}] specifies the size of the output page.
-   The default is the page size currently in effect.
-   This specification lasts for the duration of this step.
-  The current page size is restored at the end.
-  This option is useful for breaking up long listings into smaller parts to allow for page breaks.
-  If a listing output spans more than one SAS page,
-  the output is automatically split into parts and the page breaks
-  can occur only between parts of output.
-  For more information about capturing large outputs, see section \ref{large}.
-  \end{description}
-
- \subsection{The \texttt{\%startlog} and \texttt{\%endlog} Macros}\label{startlog}
-
-  The \Code{\%startlog} and \Code{\%endlog} macros capture SAS notes
-  or error messages from the SAS log. They also capture output
-  from some SAS/IML functions that write to the SAS log rather than using ODS.
-  \index{SAS macros!startlog}\index{SAS macros!endlog}
-
-  These macros are not automatically generated by the \StatRep package.
-  To capture content from the SAS log, you must call these macros
-  manually within a \Code{Sascode} environment (with each call preceded
-  by a null SAS macro comment).
-
-  The \Code{\%startlog} macro has one mandatory argument, the filename prefix
-  of the file to contain the output. The argument is also used in the \cs{Listing}
-  tag to insert the output.
-
-  The \Code{\%endlog} macro supports the following options,
-  separated by a comma (,):
-
-  \begin{description}
-  \item[\Code{code=}] specifies whether program code in the SAS log is included.
-  By default, code is captured (\Code{code=1}). Set \Code{code=0} to exclude code.
-  \item[\Code{range=}] specifies a Boolean expression to select
-  certain observations. For example, you can specify \Code{range=\_n\_ <= 5 }
-  to select the first five lines.  You can specify
-  \Code{range=not index(line, 'ERROR')} to select all lines that do not contain the string
-  `ERROR'. Selection must be based on \Code{\_n\_} or the variable \Code{line}, which
-  contains a single line of the log.
-  \end{description}
-
-  \subsection{Macro Variable Defaults}\label{secdefaults}
-  \index{macro variables}\index{default settings}\index{package!defaults}
-  \index{SAS macros!variables}
-
-  The SAS macro defaults are set globally in the file \Code{statrep.cfg}.
-  See section \ref{custom} for details. You can also reset the
-  defaults within your document by specifying new settings in a \Code{Sascode}
-  environment.
-
-  Table \ref{defaults} shows the description and default values for each
-  macro variable.
-
-  \begin{table}[H]
-  \centering\caption{Default Values for Macro Variables}\label{defaults}
-  \begin{tabular}{llP{2.5in}}
-  \textbf{Macro Variable}    & \textbf{Default} & \textbf{Description}\\
-  \hline
-    \Code{defaultlinesize}  & 80      & Line size for tabular ODS output\\
-    \Code{defaultpagesize}  & 500     & Page size for tabular ODS output\\
-    \Code{defaultstyle}     & Statistical & ODS style for graphical output \\
-    \Code{defaultdpi}       & 300      & Dots per inch (DPI) for graphical output\\
-    \Code{graphtype}        & png      & graphics file format ('png' or 'pdf')\\
-    \Code{odsgraphopts}     &          & string containing ODS graphics options\\
-  \hline
-   \end{tabular}
-  \end{table}
-
-  You can edit the \Code{statrep.cfg} file\index{customizing}\index{statrep.cfg}
-  \index{configuration}%
-  to globally reset the defaults, or you can specify commands to change the default anywhere
-  in your document. For example, the following lines change all of the macro variable
-  default settings for the duration of the program. The \Code{program} option specifies
-  that the code be written only to the generated program and not displayed.
-
-
-\begin{figure}[H]
-\begin{snugshade}
-\begin{verbatim}
-   \begin{Sascode}[program]
-   %let defaultlinesize=96;
-   %let defaultpagesize=50;
-   %let defaultstyle=statistical;
-   %let defaultdpi=100;
-   %let graphtype=pdf;
-   %let odsgraphopts=antialiasmax=10000;
-   \end{Sascode}
-\end{verbatim}
-\end{snugshade}
-\caption{Reset SAS Macro Defaults within Document with SAS}\label{reset}
-\end{figure}
-
-  When you change the \Code{defaultlinesize} in the \Code{statrep.cfg} file, the same value
-  is automatically used by SAS and by the \StatRep package.
-  When you change the \Code{defaultlinesize} inside your document,
-  you change the line size used by SAS in generating
-  outputs; You must also set the line size in the \cs{Listing} tag to match.
-
-  The setting of \Code{defaultpagesize=500} produces a large
-  virtual page so that SAS does not break ODS objects into smaller pieces.
-  When a stream of outputs is typeset, page breaks can occur only between ODS objects or
-  when SAS forces a page break inside an ODS table.
-
-  The macro options and default macro variables work as follows:
-  If an option is specified in a macro, its value is used regardless of
-  the specification in the default macro variables.
-  If an option is not specified in a macro, the default macro variables provide
-  the values.
-
-  In summary, a direct option specification in a macro takes precedence over the default
-  settings, and you can change the default settings by resetting the
-  default macro variables
-  in your document or by editing the \Code{statrep.cfg} file.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Details}
-
-The following sections provide details about how you can use the \StatRep system
-to capture complex output, customize its behavior, and take complete control
-of the generated SAS program.
-
-In most cases, the default behavior and settings satisfy the typical usage requirements.
-In exceptional cases you might find that you need to make changes in how \StatRep behaves.
-The following sections provide you with this information.
 
 
  \section{Customizing \StatRep}\label{custom}
@@ -1007,6 +762,11 @@ the following settings used by the \StatRep package.
      block is continued. The name is used when an output stream breaks across a page.
      The default is \Code{continued}.
 
+    \item[\cs{SRdefaultdests}] specifies the default ODS Destination for tabular
+    outputs. The default is \Code{listing}. You can specify \Code{latex} to produce
+    SAS-generated LaTeX tabular output. See section \ref{latexoutput} for details.
+    \index{LaTeX output}
+    
     \item[\cs{SRdpi}] specifies the default dots per inch (DPI) for SAS to use in generating
     graphical output. The default is \Code{300}.
     \index{dpi}
@@ -1019,6 +779,15 @@ the following settings used by the \StatRep package.
      generated graphical output. You can specify either
      \Code{png} or \Code{pdf}. The default is \Code{png}.
      \index{graphics type}\index{PNG graphics}\index{PDF graphics}
+
+    \item[\cs{SRlatexdir}] specifies the name of the directory that contains the 
+    SAS generated LaTeX tabular output. The default is \Code{tex}.
+    See section \ref{latexoutput} for details.
+    
+    \item[\cs{SRlatexstyle}] specifies the ODS style for SAS to use to generate
+    LaTeX tabular output. The default is \Code{statrep}, a monochromatic style based
+    on the \Code{statistical} ODS style.
+    See section \ref{latexoutput} for details.
 
     \item[\cs{SRodsgraphopts}] specifies a string that is passed as
     ODS GRAPHICS statement options. For a complete explanation of all available options,
@@ -1301,6 +1070,280 @@ run;
   To summarize, the \Code{Datastep} environment is handled identically in either method,
   the \Code{Sascode} environment can optionally produce the \Code{\%output} and \Code{\%endoutput} macros,
   and the \cs{Listing} and \cs{Graphic} tags can optionally produce the \Code{\%write} macros.
+
+\section{\StatRep SAS Macros}\label{macros}
+\index{SAS macros}
+  SAS programs created by the \StatRep package
+  run SAS macros to capture output. The macros depend on the ODS document.
+  The ODS document is a destination or repository for the results
+  (tables, notes, titles, and graphs)
+  that come from SAS procedures. Each procedure step is run only once,
+  and the results are captured in an ODS document.
+  Then the parts of the ODS document are replayed using PROC DOCUMENT.
+
+  When \StatRep encounters a \Code{Sascode} environment,
+  it generates a macro call to create an ODS document from the environment.
+  When \StatRep encounters a \cs{Listing} or \cs{Graphic} tag,
+  it generates a macro call to replay output from that ODS document into an external file.
+
+  For the output that is generated in each \Code{Sascode} block, the SAS macros provide you
+  with a list of all
+  of the objects in the ODS document and a table that displays
+  the objects selected for display. You can
+  review this list in the SAS log.
+  It is important to check these lists to ensure that either all output
+  is included somewhere or any omissions are deliberate.
+
+  The following macros are defined:
+  \begin{itemize}
+  \item The \Code{\%output} and \Code{\%endoutput} macros open and close an ODS document, respectively.
+  When you use \StatRep to automatically generate your program, these macros are called at the
+  beginning and end of a \Code{Sascode} block, respectively.
+  You can manually call the macros at any time within
+  a \Code{Sascode} block by prefixing the call with a null SAS macro comment (\Code{\%*;}).
+  \index{SAS macros!output}\index{SAS macros!endoutput}
+
+  \item The \Code{\%write}  macro writes ODS objects that are contained in an ODS document to
+  one or more external files.
+  When you use \StatRep to automatically generate your program, this macro is called when
+  a \cs{Listing} or \cs{Graphic} tag is encountered. You can manually call the macro
+  at any time within a \Code{Sascode} block by prefixing the call with a null
+  SAS macro comment (\Code{\%*;}).
+  \index{SAS macros!write}
+
+  \item The \Code{\%startlist} and \Code{\%endlist} macros capture printed content
+  (for example, a PROC PRINT or DATA step) to an external file. To use these macros,
+  you must manually call the macro
+  within a \Code{Sascode} block and prefix the call with a null
+  SAS macro comment (\Code{\%*;}).
+  \index{SAS macros!startlist}\index{SAS macros!endlist}
+
+  \item The \Code{\%startlog} and \Code{\%endlog} macros capture content from the
+  SAS log to an external file. To use these macros,
+  you must manually call the macro
+  within a \Code{Sascode} block and prefix the call with a null
+  SAS macro comment (\Code{\%*;}).
+  \index{SAS macros!startlog}\index{SAS macros!endlog}
+  \end{itemize}
+
+
+  \subsection{The \texttt{\%output} and \texttt{\%endoutput} Macros}\label{outputmacro}
+  The \Code{Sascode} environment writes the \Code{\%output} and \Code{\%endoutput} macros to
+  the generated program
+  whenever the \Code{store=} option is specified.
+  However, you can call the macros
+  yourself by omitting the \Code{store=} option in the \Code{Sascode} environment and
+  call the macros within the \Code{Sascode} environment. Each call must be prefixed
+  with a null SAS macro comment (\Code{\%*;}).
+  \index{SAS macros!output}\index{SAS macros!endoutput}
+
+  The \Code{\%output} macro supports two other options (\Code{style=} and \Code{dpi=}) that are used to
+  set parameters for GRSEG graphs. These options are not supported in the
+  \Code{Sascode} environment options. If you want to change the style or DPI for
+  GRSEG graphs, you must call the \Code{\%output} and \Code{\%endoutput} macros manually.
+
+  The following options are supported by the \Code{\%output} macro:
+ \begin{description}
+ \item[\Code{store=}] specifies the name of the ODS document.
+  This name is used in the \Code{store=} option in the \cs{Listing} and \cs{Graphic} tags
+  or in the \Code{\%write macro}.
+
+ \item[\Code{style=}] specifies the style used for GRSEG graphs.
+ The default is \Code{HTMLBlue}. See section \ref{grseg} for details.
+
+ \item[\Code{dpi=}] specifies the dots per inch (DPI) setting used for GRSEG graphs.
+  The default is 300 DPI. See section \ref{grseg} for details.
+ \end{description}
+
+
+  \subsection{The \texttt{\%write} Macro}
+  The \Code{\%write} macro supports the same key-value options as the \cs{Listing} and
+  \cs{Graphic} tags support.
+  The \StatRep package generates the \Code{\%write} macro in the SAS program
+  file whenever the \Code{store=} option is specified in the output tag.
+  However, you can call the macros
+  yourself by omitting the \Code{store=} option in the \cs{Listing} or \cs{Graphic}
+  tag and call the macro within a \Code{Sascode} environment. Each call must be prefixed
+  with a null SAS macro comment (\Code{\%*;}).
+  \index{SAS macros!write}
+See the section \titleref{sasopts} for more information about the options used in the
+\cs{Listing} and \cs{Graphic} tags that are passed to the \Code{\%write} macro.
+
+
+\vspace*{1em}\noindent\textbf{Note:} If you use the macros interactively, be aware that
+these macros open and close ODS destinations,
+enable and disable ODS Graphics, and change ODS options.  Output capture uses the
+LISTING destination, and when the \Code{\%write} macro finishes, only the
+LISTING destination remains open.
+If you need other ODS destinations for your work, you need to reset them
+when you are done with a section of output capture.  For example,
+if you are using the HTML destination
+in the SAS windowing environment, then you need to
+close the LISTING destination and reopen the HTML destination when you finish
+capturing output.
+
+ \subsection{The \texttt{\%startlist} and \texttt{\%endlist} Macros}\label{startlist}
+
+  The \Code{\%startlist} and \Code{\%endlist} macros capture printed information
+  from the ODS listing destination. The macros are used when
+  you create output with a procedure that does not support ODS.
+  They are also used when you use the
+  \Code{DATA \_NULL\_} and \Code{PUT \_ODS\_} SAS statements to
+  manually capture output.
+  \index{SAS macros!startlist}\index{SAS macros!endlist}
+
+  These macros are not automatically generated by the \StatRep package.
+  You must call them
+  manually within a \Code{Sascode} environment (with each call preceded
+  by a null SAS macro comment).
+
+  In SAS 9.2, PROC PRINT is not fully integrated into the ODS document,
+  unless you specify PROC PRINT with no options.
+  If you specify PROC PRINT
+  with options, you must use the \Code{\%startlist} and \Code{\%endlist}
+  macros to capture output.
+
+  If you use PROC PRINT in SAS 9.3 or later,
+  you can use the \Code{\%output} and \Code{\%write} macros as you would with
+  any SAS procedure.
+
+  The \Code{\%startlist} macro has one mandatory argument, the filename prefix
+  of the file to contain
+  the output. The argument is also used
+  in the \cs{Listing} tag to insert the output.
+
+  The \Code{\%startlist} macro supports the following options after
+  the filename argument, separated with a comma (,):
+  \begin{description}
+  \item[\Code{linesize=}] specifies the line size.
+  The default is the line size currently in effect.
+  This specification lasts for the duration of this step.
+  The current line size is restored at the end.
+  When you specify the \Code{linesize=} option in the \Code{\%startlist}
+  macro, be sure to make the same specification
+  in the \cs{Listing} tag you use to insert the output.
+
+  \item[\Code{pagesize=}] specifies the size of the output page.
+   The default is the page size currently in effect.
+   This specification lasts for the duration of this step.
+  The current page size is restored at the end.
+  This option is useful for breaking up long listings into smaller parts to allow for page breaks.
+  If a listing output spans more than one SAS page,
+  the output is automatically split into parts and the page breaks
+  can occur only between parts of output.
+  For more information about capturing large outputs, see section \ref{large}.
+  \end{description}
+
+ \subsection{The \texttt{\%startlog} and \texttt{\%endlog} Macros}\label{startlog}
+
+  The \Code{\%startlog} and \Code{\%endlog} macros capture SAS notes
+  or error messages from the SAS log. They also capture output
+  from some SAS/IML functions that write to the SAS log rather than using ODS.
+  \index{SAS macros!startlog}\index{SAS macros!endlog}
+
+  These macros are not automatically generated by the \StatRep package.
+  To capture content from the SAS log, you must call these macros
+  manually within a \Code{Sascode} environment (with each call preceded
+  by a null SAS macro comment).
+
+  The \Code{\%startlog} macro has one mandatory argument, the filename prefix
+  of the file to contain the output. The argument is also used in the \cs{Listing}
+  tag to insert the output.
+
+  The \Code{\%endlog} macro supports the following options,
+  separated by a comma (,):
+
+  \begin{description}
+  \item[\Code{code=}] specifies whether program code in the SAS log is included.
+  By default, code is captured (\Code{code=1}). Set \Code{code=0} to exclude code.
+  \item[\Code{range=}] specifies a Boolean expression to select
+  certain observations. For example, you can specify \Code{range=\_n\_ <= 5 }
+  to select the first five lines.  You can specify
+  \Code{range=not index(line, 'ERROR')} to select all lines that do not contain the string
+  `ERROR'. Selection must be based on \Code{\_n\_} or the variable \Code{line}, which
+  contains a single line of the log.
+  \end{description}
+
+  \subsection{Macro Variable Defaults}\label{secdefaults}
+  \index{macro variables}\index{default settings}\index{package!defaults}
+  \index{SAS macros!variables}
+
+  The SAS macro defaults are set globally in the file \Code{statrep.cfg}.
+  See section \ref{custom} for details. You can also reset the
+  defaults within your document by specifying new settings in a \Code{Sascode}
+  environment.
+
+  Table \ref{defaults} shows the description and default values for each
+  macro variable.
+
+  \begin{table}[H]
+  \centering\caption{Default Values for Macro Variables}\label{defaults}
+  \begin{tabular}{llP{2.5in}}
+  \textbf{Macro Variable}    & \textbf{Default} & \textbf{Description}\\
+  \hline
+    \Code{defaultlinesize}  & 80      & Line size for tabular ODS output\\
+    \Code{defaultpagesize}  & 500     & Page size for tabular ODS output\\
+    \Code{defaultstyle}     & Statistical & ODS style for graphical output \\
+    \Code{defaultdpi}       & 300      & Dots per inch (DPI) for graphical output\\
+    \Code{graphtype}        & png      & graphics file format ('png' or 'pdf')\\
+    \Code{odsgraphopts}     &          & string containing ODS graphics options\\
+  \hline
+   \end{tabular}
+  \end{table}
+
+  You can edit the \Code{statrep.cfg} file\index{customizing}\index{statrep.cfg}
+  \index{configuration}%
+  to globally reset the defaults, or you can specify commands to change the default anywhere
+  in your document. For example, the following lines change all of the macro variable
+  default settings for the duration of the program. The \Code{program} option specifies
+  that the code be written only to the generated program and not displayed.
+
+
+\begin{figure}[H]
+\begin{snugshade}
+\begin{verbatim}
+   \begin{Sascode}[program]
+   %let defaultlinesize=96;
+   %let defaultpagesize=50;
+   %let defaultstyle=statistical;
+   %let defaultdpi=100;
+   %let graphtype=pdf;
+   %let odsgraphopts=antialiasmax=10000;
+   \end{Sascode}
+\end{verbatim}
+\end{snugshade}
+\caption{Reset SAS Macro Defaults within Document with SAS}\label{reset}
+\end{figure}
+
+  When you change the \Code{defaultlinesize} in the \Code{statrep.cfg} file, the same value
+  is automatically used by SAS and by the \StatRep package.
+  When you change the \Code{defaultlinesize} inside your document,
+  you change the line size used by SAS in generating
+  outputs; You must also set the line size in the \cs{Listing} tag to match.
+
+  The setting of \Code{defaultpagesize=500} produces a large
+  virtual page so that SAS does not break ODS objects into smaller pieces.
+  When a stream of outputs is typeset, page breaks can occur only between ODS objects or
+  when SAS forces a page break inside an ODS table.
+
+  The macro options and default macro variables work as follows:
+  If an option is specified in a macro, its value is used regardless of
+  the specification in the default macro variables.
+  If an option is not specified in a macro, the default macro variables provide
+  the values.
+
+  In summary, a direct option specification in a macro takes precedence over the default
+  settings, and you can change the default settings by resetting the
+  default macro variables
+  in your document or by editing the \Code{statrep.cfg} file.
+
+The following sections provide details about how you can use the \StatRep system
+to capture complex output, customize its behavior, and take complete control
+of the generated SAS program.
+
+In most cases, the default behavior and settings satisfy the typical usage requirements.
+In exceptional cases you might find that you need to make changes in how \StatRep behaves.
+The following sections provide you with this information.
 
 
  \section{ODS Object Selection}\label{selection}
@@ -2580,83 +2623,161 @@ that you copied in installation step 1.
 %%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%
 
-\section{Experimental: The ODS StatRep LaTeX Tagset}
+\section{The ODS \StatRep LaTeX Tagset}\label{latexoutput}
 
-SAS provides an experimental LaTeX tagset for ODS and the StatRep package
-has support for these tables, with some caveats.
+The \StatRep package provides limited support for SAS-generated LaTeX output.
+Three corresponding configuration variables are available. You can change them
+in the file \texttt{statrep.cfg}. 
+For complete details about the configuration file, see
+the section \ref{custom}.
 
-First, you must run the included SAS program \Code{statrep\_latex.tagsets.sas} to
-create the template needed to produce LaTeX tabular output that will work with
-StatRep.
+The variables are as follows:
 
-Second, if you use an ODS style with color, specify the color option
-when you load the \texttt{statrep} package.
+\begin{itemize}
+\item \cs{SRdefaultdests} specifies the type of ODS output to generate.
+The default is \texttt{listing}, which corresponds to the ODS Listing destination.
+\item \cs{SRlatexstyle} specifies the ODS style for SAS-generated LaTeX tables.
+The default is \texttt{statrep}, which is a monochromatic style based on the
+SAS ODS LaTeX tagset. 
+\item \cs{SRlatexdir} specifies the name of the subdirectory into which
+SAS writes the LaTeX output files.
+The default is \texttt{tex}.
+\end{itemize}
+
+To enable the use of LaTeX output in \StatRep, follow these steps.
+\begin{enumerate}
+
+\item Change your \StatRep configuration. The \cs{SRdefaultdests} setting
+selects the default output type; it can have the value \texttt{latex}
+or \texttt{listing}. The default value is \texttt{listing}.
+You can change the value in the \texttt{statrep.cfg} configuration file as follows:
+
+\begin{verbatim}
+   \def\SRdefaultdests{latex}
+\end{verbatim}
+
+Alternatively, you can change the value in your LaTeX document
+after the \StatRep package is loaded and before your document begins:
+
+\begin{verbatim}
+  \documentclass{article}
+  \usepackage{statrep}
+  \def\SRdefaultdests{latex}
+  \begin{document}
+\end{verbatim}
+
+\item Run the included SAS program \Code{statrep\_tagsets.sas}
+before you generate the SAS output for your document. This program creates
+a \texttt{statrep} tagset  and a \texttt{statrep} ODS style.
+When you run the program to generate the output for your document,
+SAS must be able to find the \texttt{statrep} tagset in order to produce LaTeX
+tabular output that is compatible with the \StatRep package.
+
+\end{enumerate}
+
+\subsection{How It Works}
+
+When you first compile your document with \texttt{pdflatex}, the SAS
+program to produce the requested outputs is generated.
+
+When you run the program, SAS checks the type of output requested,
+which is controlled with the \cs{SRdefaultdests} setting.
+If \texttt{latex} is the default output type, LaTeX output
+is written to a subdirectory named \texttt{tex}.
+Each ODS table is written to a separate file within that subdirectory.
+
+When you recompile your document with \texttt{pdflatex}, the
+\cs{Listing} tag displays the requested output objects,
+insuring that your outputs are displayed properly with automatic page breaking.
+
+\subsection{Customization}
+
+\begin{description}
+\item[ODS Style] You can specify an ODS style for your LaTeX output with the \cs{SRlatexstyle}
+setting. The default is \texttt{statrep}, a monochrome style that is generated by the
+SAS program \Code{statrep\_tagsets.sas}.
+Examples of different styles are provided in the section \titleref{styleexamples}.
+
+If you specify an ODS style that uses color, specify the \texttt{color} option
+when you load the \StatRep package.
 
 \begin{verbatim}
 \documentclass{article}
 \usepackage[color]{statrep}
 \end{verbatim}
 
-Third, you must change the \cs{SRdefaultdests} setting. This variable
-selects the default type of tabular output; it can have the value \texttt{latex}
-or \texttt{listing}. The default is \texttt{listing}. You can change this in your
-configuration file or in your LaTeX document.  You change it with the following
-syntax:
+The style setting for LaTeX tables cannot be changed within a document.
+That is, you cannot mix ODS LaTeX styles within a document.
+If you change the style within your document, the last
+style specified is used for all LaTeX outputs.
+
+\item[Mixing Output Types] You can mix output types with the \texttt{dest=}
+option on the \cs{Listing} tag.
+The option overrides the global \cs{SRdefaultdests} setting.
+
+For example, if your \cs{SRdefaultdests} is set to \texttt{latex}, you can
+specify that a particular \cs{Listing} output to be in listing format by
+specifying \texttt{dest=listing} in the \cs{Listing} tag options, as follows:
 
 \begin{verbatim}
-   \SRdefaultdests=latex
+\Listing[store=mydoc, dest=listing, caption={Results}]{outa}
 \end{verbatim}
 
-When you specify \texttt{latex} as the default output type, the
-output files will be written to a subdirectory named \texttt{tex} by default.
-You can change the directory name with the \cs{SRlatexdir} variable.
+\item[Output Directory Name] You can change the name of the directory into which
+SAS writes the outputs with the \cs{SRlatexdir} variable. The default
+subdirectory name is \Code{tex}.
 
-Once you have set \cs{SRdefaultdests} to \texttt{latex}, all tabular output
-will be produced as LaTeX \texttt{tabular} environments, nested within a
-\texttt{longfigure} environment.
+\end{description}
 
-You can also specify the output type within the \cs{Listing} tag which overrides
-the \cs{SRdefaultdests} setting for that specific \cs{Listing}. For example,
-if your \cs{SRdefaultdests} is set to \texttt{listing}, you can force a
-\cs{Listing} output to be in LaTeX format by specifying \texttt{dest=latex}
-in the \cs{Listing} options, as follows:
+\subsection{Caution}
 
-\begin{verbatim}
-   \Listing[store=mydoc, dest=latex, caption={My Analysis}]{myoutput}
-\end{verbatim}
+In some cases the LaTeX tagset produces tables that are too wide
+to fit in the text block. In some cases, you can shift the table to
+the left so the table will fit on the page. You can shift the table
+with the \cs{LFleft} command.
 
-The LaTeX destination may produce tables that are too wide to fit in
-the text block. You can force the table to the left with the
-\cs{LFleft} command. The following example sets the left side of the
-output to begin 1 inch to the left of its normal location (the left
-edge of the text block). Then the output is typeset and the margin is
-set back to its default of 0.
+The following example moves the left margin of the
+output 1 inch to the left of its normal location
+(the start of the text block).
+The output is then typeset and the margin is set back to its default value of 0.
 
 \begin{verbatim}
    \LFleft=-1in
-   \Listing[store=mydoc, dest=latex, caption={My Analysis}]{myoutput}
+   \Listing[store=mydoc, caption={Results}]{outa}
    \LFleft=0in
 \end{verbatim}
 
-Most SAS tables will not require this workaround.
-However, there are others that will be too wide, even with the
-workaround. The only solution in those cases is to use the
-\texttt{listing} format and change the fontsize and linesize to match.
+In some extreme cases, the table will not fit on the page.
+The only solution in those cases is to change back to the
+\texttt{listing} output destination, modifying the fontsize and linesize
+as needed.
 
-\begin{Datastep}
-data one;
-input x y @@;
-1 2 3 4 1 3 2 4 4 3 2 3 1 3 2 4
-;
-\end{Datastep}
+Some ODS styles may not work with the LaTeX tagset. For example,
+some styles specify fonts that are available to SAS but not to LaTeX.
 
-\begin{Sascode}[store=mydoc]
-%*;ods tagsets statreplatex style=htmlblue;
-proc print;
-run;
-\end{Sascode}
+\subsection{Style Examples}\label{styleexamples}
 
-\Listing[dest=latex, caption={My Output}]{myouta}
+\begin{figure}[H]
+\caption{Listing Output}
+\includegraphics{images/listing}
+\end{figure}
+\begin{figure}[H]
+\caption{LaTeX Output, default style}
+\includegraphics{images/default}
+\end{figure}
+\begin{figure}[H]
+\caption{LaTeX Output, \texttt{statistical} style}
+\includegraphics{images/statistical}
+\end{figure}
+\begin{figure}[H]
+\caption{LaTeX Output, \texttt{journal} style}
+\includegraphics{images/journal}
+\end{figure}
+\begin{figure}[H]
+\caption{LaTeX Output, \texttt{htmlblue} style}
+\includegraphics{images/htmlblue}
+\end{figure}
+
 
 \printindex
 \end{document}

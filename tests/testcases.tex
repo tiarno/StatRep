@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
-\usepackage{statrep}
+\usepackage[color]{statrep}
 
 \begin{document}
 
@@ -100,30 +100,41 @@ proc print data=one;
 run;
 \end{Sascode}
 
-\Listing[caption={no option}]{mymiss}
+\Listing[caption={missing file, no option}]{mymiss}
 
-\Listing[store=mydoc, linesize=120, caption={linesize=120}]{myouta}
+\Listing[store=mydoc, caption={vanilla listing}]{myouta}
 
-\Listing[store=mydoc0, fontsize=tiny, caption={fontsize=tiny}]{myoutb}
+\Listing[store=mydoc, fontsize=tiny, caption={fontsize=tiny}]{myoutb}
 
+\Listing[store=mydoc, linesize=96, caption={linesize=96}]{myoutc}
+
+\Listing[store=mydoc, caption={Back to vanilla listing}]{myoutd}
 
 \begin{Sascode}[store=mygdoc]
-title 'store=mygdoc';
+title;
 proc reg data=one;
 model weight=age;
 run;
 \end{Sascode}
 
 
-\Graphic[store=mygdoc, scale=0.4, style=journal, caption={scale=0.4}]{mygouta}
+\Listing[store=mygdoc, dest=latex, caption={vanilla latex dest table}]{mygoutz}
 
-\Graphic[store=mygdoc, width=2in, caption={width=2in}]{mygoutb}
+\Graphic[store=mygdoc, dest=latex, caption={vanilla latex dest graphic}]{mygouty}
 
-\Graphic[store=mygdoc, dpi=100, caption={dpi=100}]{mygoutc}
+\Graphic[store=mygdoc, caption={vanilla graphic}]{mygouta}
 
-\Graphic[store=mygdoc, height=2in, caption={height=2in}]{mygoutd}
+\Graphic[store=mygdoc, scale=0.4, style=journal, caption={style=journal, scale=0.4}]{mygoutb}
 
-\Graphic[store=mygdoc, style=brick, caption={style=brick}]{mygoute}
+\Graphic[store=mygdoc, width=2in, caption={width=2in}]{mygoutc}
+
+\Graphic[store=mygdoc, dpi=100, caption={dpi=100}]{mygoutd}
+
+\Graphic[store=mygdoc, height=2in, caption={height=2in}]{mygoute}
+
+\Graphic[store=mygdoc, style=brick, caption={style=brick}]{mygoutf}
+
+\Graphic[store=mygdoc, caption={Back to vanilla graphic}]{mygoutg}
 
 \end{document}
 
