@@ -102,7 +102,7 @@ run;
 
 \Listing[caption={missing file, no option}]{mymiss}
 
-\Listing[store=mydoc, caption={vanilla listing}]{myouta}
+\Listing[store=mydoc, ]{myouta}
 
 \Listing[store=mydoc, fontsize=tiny, caption={fontsize=tiny}]{myoutb}
 
@@ -119,6 +119,8 @@ run;
 
 
 \Listing[store=mygdoc, dest=latex, caption={vanilla latex dest table}]{mygoutz}
+
+\LFleft=-1in\Listing[dest=latex, caption={Shifted -1in, vanilla latex dest table}]{mygoutz}
 
 \Graphic[store=mygdoc, dest=latex, caption={vanilla latex dest graphic}]{mygouty}
 

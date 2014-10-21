@@ -148,6 +148,10 @@ For complete step-by-step instructions for installation, see section \ref{instal
 
  The \StatRep package supports the following options:\index{package!options}
      \begin{itemize}
+     \item \Code{color} specifies color support for SAS output tables.
+     This option is only used in conjunction with
+     the ODS LaTeX tagset (see section \ref{latexoutput}).
+
      \item \Code{generate} specifies whether a SAS program
      is generated at compile time. \index{generate option}
      It can have a value of \Code{true} or \Code{false}; the default is \Code{true}.
@@ -176,7 +180,8 @@ more information.
 \chapter{Getting Started}\label{gs}
 
 This section provides a simple example of how you can use the \StatRep package
-to produce a document with reproducible results. You can extract the
+to produce a document with reproducible results.
+You can follow along with the actual code: extract the
 \textattachfile[color=0 0 0.6]{example.tex}{example \LaTeX\ file} that
 contains the code in this section if your PDF viewer supports file annotations.
 
@@ -300,10 +305,27 @@ run;
   When you compile your \LaTeX\ document again, the \cs{Listing} and \cs{Graphic} tags
   insert the requested SAS results, handling page breaks automatically.
 
+  The first listing in the example document is shown in Figure \ref{exfig}.
+\definecolor{shadecolor}{rgb}{0.93,0.95,1.0}
+
+\begin{figure}[H]
+\caption{Example listing output}\label{exfig}
+\begin{snugshade}
+\centering
+\includegraphics[width=0.8\textwidth]{images/example_output}
+\end{snugshade}
+\end{figure}
+
+\definecolor{shadecolor}{rgb}{0.97,0.97,0.97}
+
+By default, \StatRep generates listing output from the
+SAS ODS Listing destination. The preceding figure provides an example
+of how the SAS output is displayed in your LaTeX document.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Syntax}
-\section{\StatRep \LaTeX\ Environments and Tags}
+
      The \StatRep package provides two environments and two tags that work
      together to display your SAS code and results and generate the SAS program
      that produces those results.
@@ -330,8 +352,9 @@ run;
 
      The environments and tags are described in detail in the following sections.
 
+\section{Code Environments}
 
-     \subsection{Datastep Environment}\index{Datastep environment}
+\subsection{Datastep Environment}\index{Datastep environment}
 
 The purpose of the \Code{Datastep} environment is to read in data.
 It produces no SAS results.
@@ -443,19 +466,6 @@ Table \ref{scopt} summarizes the \Code{Sascode} environment options.
 & By default, all lines are displayed and written to the program. \\[0.5\baselineskip]
 \Code{store=}      &
          Specifies the name of the ODS document to contain the SAS output.
-         When you specify the \Code{store=} option, the \StatRep package writes the
-         appropriate \Code{\%output} and \Code{\%endoutput} macros to the generated file.
-         \index{SAS macros!output}\index{SAS macros!endoutput}
-         If you are writing the macros yourself, you must omit the \Code{store=} option
-         and call the \Code{\%output} (and optionally the \Code{\%endoutput}) macros from within the
-         \Code{Sascode} environment.
-
-         When you want to display output from the ODS document, you refer
-         to the \Code{store=} name from a \cs{Listing} tag, a \cs{Graphic} tag, or by
-         an explicit call to the \Code{\%write} macro. You can refer to the name in
-         \cs{Listing} and \cs{Graphic} tags\index{SAS macros!write}
-         anywhere in your document, even in sections before, after, and far removed from
-         the \Code{Sascode} block that generated the output.
 \\[0.5\baselineskip]
 
 \Code{program}     & Specifies that  all lines in the environment
@@ -509,13 +519,13 @@ Table \ref{lcmd} summarizes the line commands you can use in the \Code{Sascode} 
   The \Code{Sascode} environment is parsed for line commands before being written
   to the generated program file.
 
-See the section \titleref{scex} for an example.
+See the sections \titleref{scex} and \titleref{scexlc} for examples.
 
 
   By using a combination of environment options and line commands, you have
   complete control over the displayed code and the generated program contents.
 
-     \subsection{Listing and Graphic Tags}
+\section{Outputs}
      \index{SAS ODS outputs}\index{Listing tag}\index{Graphic tag}
 The \cs{Listing} and \cs{Graphic} tags specify the outputs to be displayed.
 The purpose of the \cs{Listing} tag is to display tabular output and notes.
@@ -540,7 +550,7 @@ The purpose of the \cs{Graphic} tag is to display graphical output.
 
      The options supported by the \cs{Listing} and \cs{Graphic} tags are used by
      the \StatRep \LaTeX\ package and by the \StatRep SAS macros.
-     
+
      The following table lists all options. Subsequent tables provide descriptions
      for each option and how it is used in LaTeX and in SAS.
 \begin{table}[H]
@@ -550,6 +560,7 @@ The purpose of the \cs{Graphic} tag is to display graphical output.
      \textbf{Option Name} & \textbf{Used by} & \textbf{Output Tag}\\
      \midrule
 \Code{caption=}    &  LaTeX        & Listing, Graphic \\
+\Code{dest=}       &  LaTeX, SAS   & Listing \\
 \Code{dpi=}        &  SAS          & Graphic \\
 \Code{firstobj=}   &  SAS          & Listing, Graphic \\
 \Code{fontsize=}   &  LaTeX        & Listing (ODS Listing destination) \\
@@ -569,7 +580,7 @@ The purpose of the \cs{Graphic} tag is to display graphical output.
 \end{tabular}
 \end{table}
 
-     \subsubsection{Options Used by the \textsf{StatRep} \LaTeX\ Package}
+     \subsection{Options Used by the \textsf{StatRep} \LaTeX\ Package}
      \index{Listing tag!options}\index{Graphic tag!options}
   The following options are used by the \StatRep \LaTeX\ package.
   \index{caption= option}\index{fontsize= option}\index{linesize= option}%
@@ -577,6 +588,10 @@ The purpose of the \cs{Graphic} tag is to display graphical output.
 
   \begin{description}
      \item[\Code{caption=}] specifies the caption to use for an output.
+
+     \item[\Code{dest=}] specifies the ODS destination to use for generating the output.
+     The default value is \Code{listing}. The other possible value is \Code{latex}, which
+     specifies that Listing output be generated and displayed as LaTeX tables.
 
      \item[\Code{fontsize=}] specifies the \LaTeX\ font size to use to display an output
     (for example, \Code{fontsize=small} or \Code{fontsize=footnotesize}).
@@ -607,7 +622,7 @@ The purpose of the \cs{Graphic} tag is to display graphical output.
 
   \end{description}
 
-  \subsubsection{Options Passed to the  \textsf{StatRep} SAS Macros}\label{sasopts}
+  \subsection{Options Passed to the  \textsf{StatRep} SAS Macros}\label{sasopts}
   \index{SAS macro options}
 The \Code{store=}, \Code{linesize=}, and \Code{width=} options described in the previous
 section are passed to the \StatRep SAS macros.
@@ -615,6 +630,11 @@ section are passed to the \StatRep SAS macros.
 \index{linesize= option}\index{objects= option}\index{options= option}
 In addition, the following options are passed to the \StatRep SAS macros:
   \begin{description}
+
+  \item[\Code{dest=}] specifies the ODS destination to use for generating the output.
+     The default value is \Code{listing}. The other possible value is \Code{latex}, which
+     specifies that Listing output be generated and displayed as LaTeX tables.
+
     \item[\Code{dpi=}] specifies dots per inch (DPI) to use in generating graphs.
   The default is \Code{dpi=300}. A typical alternative is \Code{dpi=100}.
 
@@ -741,6 +761,27 @@ In addition, the following options are passed to the \StatRep SAS macros:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Details}
 
+The preceding pages should provide the information to use the package
+in most scenarios. For more in-depth descriptions and methods for
+customization, see the following sections.
+
+\begin{description}
+\item[Customizing \StatRep] describes several hooks for customizing
+the package and setting system-wide defaults.
+\item[The Program Preamble] provides an overview of how the \StatRep
+package works with the SAS macros; a special file (the program preamble)
+provides a method of communication between the two.
+\item[Two Methods of Writing] describe how you can bypass the automatic
+code generation and use the \StatRep SAS macros directly.
+\item[\StatRep SAS Macros] describe in detail each SAS macro in the
+\StatRep package. You can use these macros yourself for maximum flexibility
+in creating a custom \StatRep document.
+\item[ODS Object Selection] describes how you can use options in the
+\cs{Listing} and \cs{Graphic} tag to specify exactly what output you want
+to display.
+\item[ODS Graphics] describes differences between ODS graphics and
+GRSEG graphics.
+\end{description}
 
  \section{Customizing \StatRep}\label{custom}
  \index{customizing}\index{configuration}
@@ -766,7 +807,7 @@ the following settings used by the \StatRep package.
     outputs. The default is \Code{listing}. You can specify \Code{latex} to produce
     SAS-generated LaTeX tabular output. See section \ref{latexoutput} for details.
     \index{LaTeX output}
-    
+
     \item[\cs{SRdpi}] specifies the default dots per inch (DPI) for SAS to use in generating
     graphical output. The default is \Code{300}.
     \index{dpi}
@@ -780,10 +821,10 @@ the following settings used by the \StatRep package.
      \Code{png} or \Code{pdf}. The default is \Code{png}.
      \index{graphics type}\index{PNG graphics}\index{PDF graphics}
 
-    \item[\cs{SRlatexdir}] specifies the name of the directory that contains the 
+    \item[\cs{SRlatexdir}] specifies the name of the directory that contains the
     SAS generated LaTeX tabular output. The default is \Code{tex}.
     See section \ref{latexoutput} for details.
-    
+
     \item[\cs{SRlatexstyle}] specifies the ODS style for SAS to use to generate
     LaTeX tabular output. The default is \Code{statrep}, a monochromatic style based
     on the \Code{statistical} ODS style.
@@ -884,7 +925,7 @@ If you do not manually write calls to the \StatRep macros (you use the default, 
 there is nothing you need to do---your generated program contains the lines that specify your settings.
 
 The preamble in the generated program includes the preamble file and deletes the contents of the
-output directories (\Code{lst} and   \Code{png}, by default) so that obsolete files are
+output directories (\Code{lst}, \Code{tex}, and \Code{png}, by default) so that obsolete files are
 not included in the document.
 Figure \ref{fig:pgmpreamble} shows an example of the preamble lines
 that are written to the generated program.
@@ -938,13 +979,18 @@ title;
 %let graphicdir=png;
 %let graphtype=png;
 %let odsgraphopts=;
+%let latexdir=tex;
+%let latexstyle=statrep;
+%let defaultdests=listing;
 
 options nodate nonumber
 ls=&defaultlinesize ps=&defaultpagesize
 formchar='|----|+|---+=|-/\<>*';
 
+ods graphics on;
 /* Include SAS macro definitions. */
 %include "statrep_macros.sas" /nosource;
+
 \end{verbatim}
 \end{snugshade}
 \caption{Generated Preamble File}\label{fig:preamble}
@@ -972,8 +1018,7 @@ The \StatRep package uses
   commands within a \Code{Sascode}
   block. Furthermore, any line of code that begins with a null macro
   comment (\Code{\%*;})
-  in the first column is written to
-  the SAS program and is not displayed.
+  is written to the SAS program and is not displayed.
 
 You can use the manual method when you want to do one or more of the following:
 \begin{itemize}
@@ -1287,6 +1332,8 @@ capturing output.
     \Code{defaultdpi}       & 300      & Dots per inch (DPI) for graphical output\\
     \Code{graphtype}        & png      & graphics file format ('png' or 'pdf')\\
     \Code{odsgraphopts}     &          & string containing ODS graphics options\\
+    \Code{defaultdests}     & listing  & \texttt{listing} or \texttt{latex} tabular output\\
+    \Code{latexstyle}       & statrep  & ODS Style for SAS-generated LaTeX output\\
   \hline
    \end{tabular}
   \end{table}
@@ -1336,15 +1383,6 @@ capturing output.
   settings, and you can change the default settings by resetting the
   default macro variables
   in your document or by editing the \Code{statrep.cfg} file.
-
-The following sections provide details about how you can use the \StatRep system
-to capture complex output, customize its behavior, and take complete control
-of the generated SAS program.
-
-In most cases, the default behavior and settings satisfy the typical usage requirements.
-In exceptional cases you might find that you need to make changes in how \StatRep behaves.
-The following sections provide you with this information.
-
 
  \section{ODS Object Selection}\label{selection}
 To select and display ODS objects, you specify options in the \cs{Listing} tag, \cs{Graphic}
@@ -2625,9 +2663,13 @@ that you copied in installation step 1.
 
 \section{The ODS \StatRep LaTeX Tagset}\label{latexoutput}
 
-The \StatRep package provides limited support for SAS-generated LaTeX output.
+The \StatRep package provides limited support for
+SAS-generated LaTeX output\footnote{Since SAS 9.1, SAS\textsuperscript{\textregistered}
+has provided an experimental LaTeX tagset.
+The \texttt{statrep} tagset is a simplified version of that experimental tagset.}.
+
 Three corresponding configuration variables are available. You can change them
-in the file \texttt{statrep.cfg}. 
+in the file \texttt{statrep.cfg}.
 For complete details about the configuration file, see
 the section \ref{custom}.
 
@@ -2638,7 +2680,7 @@ The variables are as follows:
 The default is \texttt{listing}, which corresponds to the ODS Listing destination.
 \item \cs{SRlatexstyle} specifies the ODS style for SAS-generated LaTeX tables.
 The default is \texttt{statrep}, which is a monochromatic style based on the
-SAS ODS LaTeX tagset. 
+SAS ODS LaTeX tagset.
 \item \cs{SRlatexdir} specifies the name of the subdirectory into which
 SAS writes the LaTeX output files.
 The default is \texttt{tex}.
@@ -2672,6 +2714,9 @@ a \texttt{statrep} tagset  and a \texttt{statrep} ODS style.
 When you run the program to generate the output for your document,
 SAS must be able to find the \texttt{statrep} tagset in order to produce LaTeX
 tabular output that is compatible with the \StatRep package.
+
+For details on installing and storing tagsets see this SAS\textsuperscript{\textregistered} Note:
+\url{http://support.sas.com/kb/32/394.html}
 
 \end{enumerate}
 

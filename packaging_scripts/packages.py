@@ -22,6 +22,7 @@ EXTRAS = os.path.join(ROOT, 'extras')
 #
 CTAN = os.path.join(ROOT, 'ctan')
 WORKING = os.path.join(ROOT, 'working')
+TESTS = os.path.join(ROOT, 'tests')
 
 
 def run_pdf(name):

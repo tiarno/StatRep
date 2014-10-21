@@ -329,36 +329,38 @@
   \fi
   }
 \newcommand{\Listing}[2][]{%
-  \setkeys{SR}{#1,type=listing,label=#2}
-  \ifthenelse{\equal{\SR@store}{\@empty}}
-    {\relax}
-    {\SR@write@outoptions}
-  \ifthenelse{\equal{\SR@fontsize}{\@empty}}
-    {\def\SR@fontsize{normalsize}}
-    {\relax}
-  \settowidth{\SR@scratchlength}{\@nameuse\SR@fontsize
+  \setkeys{SR}{#1,type=listing,label=#2}%
+  \ifthenelse{\equal{\SR@store}{\@empty}}%
+    {\relax}%
+    {\SR@write@outoptions}%
+\ifthenelse{\equal{\SR@dest}{\@empty}}%
+    {\def\SR@dest{\SRdefaultdests}}%
+    {\relax}%
+\ifthenelse{\equal{\SR@dest}{listing}}%
+  {\ifthenelse{\equal{\SR@fontsize}{\@empty}}%
+    {\def\SR@fontsize{normalsize}}%
+    {\relax}%
+    \settowidth{\SR@scratchlength}{\@nameuse\SR@fontsize%
                                  \SRverbfont\selectfont~}%
-  \ifthenelse{\equal{\SR@linesize}{\@empty}}
-    {\def\SR@linesize{\SRlinesize}}{\relax}
-
-  \setlength{\SR@verbwidth}{(\SR@linesize\SR@scratchlength)}%
-  \setlength{\SR@scratchlength}{\SR@verbwidth+2\tabcolsep+
+  \ifthenelse{\equal{\SR@linesize}{\@empty}}%
+    {\def\SR@linesize{\SRlinesize}}{\relax}%
+    \setlength{\SR@verbwidth}{(\SR@linesize\SR@scratchlength)}%
+    \setlength{\SR@scratchlength}{\SR@verbwidth+2\tabcolsep+
                                               2\arrayrulewidth}%
+   }% end if dest is listing
+   {\relax}% do nothing if dest is latex.
   \SR@insert{#2}%
+  \setlength{\LFleft}{0in}%
 }
 \newcommand{\Graphic}[2][]{%
   \setkeys{SR}{#1,type=graphic, label=#2}%
-  \ifthenelse{\equal{\SR@store}{\@empty}}
-    {\relax}
-    {\SR@write@outoptions}
-  \SR@insert{#2}%
-}
-
-\newcommand*{\Boxlisting}[1]{%
- \ifthenelse{\equal{\SR@dest}{\@empty}}%
-    {\def\SR@dest{\SRdefaultdests}}%
+  \ifthenelse{\equal{\SR@store}{\@empty}}%
     {\relax}%
-  %
+    {\SR@write@outoptions}%
+  \SR@insert{#2}%
+  \setlength{\LFleft}{0in}%
+}
+\newcommand*{\Boxlisting}[1]{%
   \ifthenelse{\equal{\SR@dest}{listing}}%
      {\global\def\SR@insertname{\SRlistingdir/#1.lst}%
       \IfFileExists{\SR@insertname}%
@@ -383,11 +385,11 @@
      \IfFileExists{\SR@insertname}%
       {%
         \savebox{\SR@filebox}{%
-          \begin{minipage}{\textwidth}
-            \vspace{0.25\baselineskip}
-            \centering\input{\SR@insertname}
-            \vspace{0.25\baselineskip}
-          \end{minipage}
+          \begin{minipage}{\textwidth}%
+            \vspace{0.25\baselineskip}%
+            \centering\input{\SR@insertname}%
+            \vspace{0.25\baselineskip}%
+          \end{minipage}%
         }%
     }%
     {\savebox{\SR@filebox}{\centering\fbox{Missing File \SR@insertname}}%
@@ -395,14 +397,11 @@
     }%
   }%
   \global\setbox\SR@filebox=\box\SR@filebox%
-  \ifthenelse{\equal{\SR@dest}{listing}}%
-    {\relax}%
-    {\setlength{\SR@scratchlength}{\wd\SR@filebox+2\tabcolsep}}%
   \PackageInfo{statrep}{Processing output \SR@insertname}%
 }
 \newcommand*{\Boxgraphic}[1]{%
   \IfFileExists{\SRgraphicdir/#1.\SRgraphtype}%
-    {\global\def\SR@insertname{\SRgraphicdir/#1.\SRgraphtype}}
+    {\global\def\SR@insertname{\SRgraphicdir/#1.\SRgraphtype}}%
     {\global\def\SR@insertname{\@empty}}%
   \ifthenelse{\equal{\SR@insertname}{\@empty}}%
     {\savebox{\SR@filebox}{\fbox{ Missing File \SRgraphicdir/#1.\SRgraphtype}}}%
@@ -420,17 +419,17 @@
   \setlength{\SR@scratchlength}{\wd\SR@filebox+2\tabcolsep}%
 }%
 \def\SR@set@outheadings{%
-  \def\SR@@caption{\caption{\SRcaptionfont\SR@caption}}
-  \def\SR@@captioncontinued{\caption{\SRcaptioncontinuedfont\SRcontinuedname}}
-  \def\SR@@captionskip{\\*[0.5\baselineskip]}
-  \ifthenelse{\equal{\SR@dest}{listing}}
-             {\def\SR@@firsthead{\hline\endLFfirsthead}
-              \def\SR@@conthead{\hline\endLFhead}
-              \def\SR@@endfoot{\hline\endLFfoot}}
+  \def\SR@@caption{\caption{\SRcaptionfont\SR@caption}}%
+  \def\SR@@captioncontinued{\caption{\SRcaptioncontinuedfont\SRcontinuedname}}%
+  \def\SR@@captionskip{\\*[0.5\baselineskip]}%
+  \ifthenelse{\equal{\SR@dest}{listing}}%
+             {\def\SR@@firsthead{\hline\endLFfirsthead}%
+              \def\SR@@conthead{\hline\endLFhead}%
+              \def\SR@@endfoot{\hline\endLFfoot}}%
              %
-             {\def\SR@@firsthead{\endLFfirsthead}
-              \def\SR@@conthead{\endLFhead}
-              \def\SR@@endfoot{\endLFfoot}}
+             {\def\SR@@firsthead{\endLFfirsthead}%
+              \def\SR@@conthead{\endLFhead}%
+              \def\SR@@endfoot{\endLFfoot}}%
    %%%
    %%%
  \renewcommand*{\SR@firsthead}{\SR@@firsthead}%
@@ -438,18 +437,17 @@
  \renewcommand*{\SR@endfoot}{\SR@@endfoot}%
   \ifthenelse{\equal{\SR@caption}{\@empty}}%
     {% CAPTION NOT GIVEN
-     \renewcommand*{\SR@firsthead}{}%
+     \addtocounter{\LFcounter}{-1}%
      \ifSR@continued%
-     \addtocounter{\LFcounter}{-1}
        \renewcommand*{\SR@conthead}{\SR@@captioncontinued%
-                      \SR@@captionskip\SR@@conthead}
+                      \SR@@captionskip\SR@@conthead}%
     \fi%
     }%
     {% CAPTION GIVEN
     \renewcommand*{\SR@firsthead}{\SR@@caption\label{\SR@label}%
                                   \SR@@captionskip\SR@@firsthead}%
     \renewcommand*{\SR@conthead}{\SR@@captioncontinued%
-                                 \SR@@captionskip\SR@@conthead}
+                                 \SR@@captionskip\SR@@conthead}%
     }
 }
 \def\SR@set@outmargin{%
@@ -467,19 +465,21 @@
     \fi%
 }
 \newcommand{\SR@insert}[1]{%
-  \ifthenelse{\equal{\SR@type}{listing}}{\Boxlisting{#1}}{\Boxgraphic{#1}}
   \SR@set@outheadings%
-  \SR@set@outmargin%
+  \ifthenelse{\equal{\SR@type}{listing}}{\Boxlisting{#1}}{\Boxgraphic{#1}}%
+  \ifthenelse{\equal{\SR@dest}{latex}}%
+    {\relax}%
+    {\SR@set@outmargin}%
    \ifthenelse{\equal{\SR@insertname}{\@empty}}%
        {\setboolean{SR@multifile}{false}}%
        {\setboolean{SR@multifile}{true}}%
-     \ifthenelse{\equal{\SR@dest}{listing}}
-       {\longfigure{|c|}}{\longfigure{c}}
+     \ifthenelse{\equal{\SR@dest}{listing}}%
+       {\longfigure{|c|}}{\longfigure{c}}%
         \SR@firsthead\SR@conthead\SR@endfoot%
         \usebox{\SR@filebox}%
         \setcounter{SR@multifilecount}{1}%
         \whiledo{\boolean{SR@multifile}}{%
-          \ifthenelse{\equal{\SR@type}{listing}}
+          \ifthenelse{\equal{\SR@type}{listing}}%
             {\Boxlisting{#1\arabic{SR@multifilecount}}}%
             {\Boxgraphic{#1\arabic{SR@multifilecount}}}%
           \ifthenelse{\equal{\SR@insertname}{\@empty}}%

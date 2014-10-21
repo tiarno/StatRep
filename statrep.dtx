@@ -279,7 +279,7 @@ and the derived files
 %\def\filename{statrep.dtx}
 %\def\fileversion{1.04}
 %\def\filedate{\today}
-%\CheckSum{2157}
+%\CheckSum{2159}
 %\StopEventually{\PrintChanges\PrintIndex}
 %
 % \CharacterTable
@@ -1572,15 +1572,29 @@ and the derived files
 % \subsection{Handling the SAS Output}\label{output}
 %
 % The \cs{Listing} and \cs{Graphic} tags support options that are used
-% in the generated program and in output display. When the |store=| option
+% in the generated program and in output display. 
+% 
+% There are three possible cases for an output request:
+% \begin{itemize}
+% \item The output is of type |graphic|.
+% \item The output is of type |listing| and destination |listing|.
+% \item The output is of type |listing| and destination |latex|.
+% \end{itemize}
+% 
+% When the |store=| option
 % is used in the tags, a line is written to the |%write| macro that passes
 % a subset of the options in the tag to the generated program. The tags also insert
 % the stream of specified outputs in the displayed document.
 %
 % Graphical output is inserted as specified in the \cs{Graphic} tag,
 % captioned, and centered.
-% Listing output is inserted in the same way, but the output is framed.
-% The frame is created with the help of the |longfigure| package and the
+% 
+% Listing output is inserted in the same way, but the output is framed when
+% the destination is |listing|; when the destination is |latex|, the output 
+% (which is in the form of LaTeX tabular environments) is not framed.
+% 
+% The frame for the |listing| destination
+% is created with the help of the |longfigure| package and the
 % \cs{hline} command.
 % If the ODS destination is LaTeX, the resulting output blocks are put into
 % a minipage of \cs{textwidth} width and are not framed.
@@ -1678,6 +1692,26 @@ and the derived files
 %   \end{description}
 % \end{description}
 %
+% \subsubsection{Note on Widths}
+% If the output is a listing and the destination is |listing|, the output
+% will be inserted as verbatim type input. The width is calculated by the linesize and
+% the output centered by adjusting the \cs{LFleft} margin. The width calculation is
+% done once, at the \cs{Listing} command itself.
+% 
+% If the output is a graphic, the output is put into a box at whatever |scale| or
+% |width| the user specified. The width of that box is calculated and the
+% output centered by adjusting the \cs{LFleft} margin. The width calculation cannot
+% be done at the \cs{Graphic} command since the output must be measured first. 
+% It is in the \cs{Boxgraphic} macro that the calculation takes place, which means it
+% happens for each graphic in the output stream. Only the first graphic has an effect;
+% it is only the first graphic in the stream that affects the \cs{LFleft} margin.
+% This is an inefficiency.
+% 
+% If the output is a listing and the destination is |latex|, the output cannot be
+% measured at all. The output is put into a minipage of |textwidth| width and the
+% \cs{LFleft} margin is untouched. The user can therefore set \cs{LFleft} before the
+% \cs{Listing} tag to shift the output if needed.
+%
 %    \subsubsection{The \cs{Listing} Macro}\label{listing}
 %\index{output labels|usage}
 %  \begin{macro}{\Listing}
@@ -1687,35 +1721,51 @@ and the derived files
 %    the output file (without an extension).
 %    \begin{macrocode}
 \newcommand{\Listing}[2][]{%
-  \setkeys{SR}{#1,type=listing,label=#2}
-  \ifthenelse{\equal{\SR@store}{\@empty}}
-    {\relax}
-    {\SR@write@outoptions}
+  \setkeys{SR}{#1,type=listing,label=#2}%
+  \ifthenelse{\equal{\SR@store}{\@empty}}%
+    {\relax}%
+    {\SR@write@outoptions}%
 %    \end{macrocode}
 %    The |type=| option is automatically specified as |listing|; this option
 %    is passed to the generated SAS program.
 %    If the |store=| option is specified, the \cs{SR@write@outoptions} macro is invoked
 %    to write the appropriate SAS macro to the generated file.
+%    \begin{macrocode}
+\ifthenelse{\equal{\SR@dest}{\@empty}}%
+    {\def\SR@dest{\SRdefaultdests}}%
+    {\relax}%
+%    \end{macrocode}
+%    If no value was given for the |dest=| option, set \cs{SR@dest} to the
+%    default value (specified globally as \cs{SRdest}). Now we are guaranteed
+%    to have a value for \cs{SR@dest} (used in the \cs{Boxlisting} and
+%    \cs{SR@insert} macros).
 %
+%    The next block only pertains to the situation where we have a
+%    verbatim listing output from ODS Listing destination. We need to find
+%    the width of the output, which is done by calculating the width of a single
+%    character in the specified font and multiplying that value by the number
+%    of characters per line (linesize).  This line length is saved in the
+%    value \cs{SR@scratchlength} and used to center the output.
+%    \begin{macrocode}
+\ifthenelse{\equal{\SR@dest}{listing}}%
 %    The following statements set the font size:
 %    \begin{macrocode}
-  \ifthenelse{\equal{\SR@fontsize}{\@empty}}
-    {\def\SR@fontsize{normalsize}}
-    {\relax}
+  {\ifthenelse{\equal{\SR@fontsize}{\@empty}}%
+    {\def\SR@fontsize{normalsize}}%
+    {\relax}%
 %    \end{macrocode}
 %    The following statements set \cs{SR@scratchlength} to the width of a
 %    single character (\textasciitilde) by using the
 %    current font size and the verbatim font:
 %    \begin{macrocode}
-  \settowidth{\SR@scratchlength}{\@nameuse\SR@fontsize
+    \settowidth{\SR@scratchlength}{\@nameuse\SR@fontsize%
                                  \SRverbfont\selectfont~}%
 %    \end{macrocode}
 %
-%    The following statements control the line size for ODS Listing output
-% (ODS LaTeX output is handled differently, later on):
+%    The following statements control the line size for ODS Listing output:
 %    \begin{macrocode}
-  \ifthenelse{\equal{\SR@linesize}{\@empty}}
-    {\def\SR@linesize{\SRlinesize}}{\relax}
+  \ifthenelse{\equal{\SR@linesize}{\@empty}}%
+    {\def\SR@linesize{\SRlinesize}}{\relax}%
 %    \end{macrocode}
 %    The value for the key \cs{SR@linesize} is set to \cs{@empty} with each
 %    invocation of the \cs{Listing} command. If no value is specified
@@ -1726,7 +1776,6 @@ and the derived files
 %    The |linesize=| key corresponds to the line size that the SAS program uses to
 %    generate the tabular output. By default it is set to 80; other typical values
 %    are 96 and 120.
-
 %
 %    The following statements set \cs{SR@verbwidth} to the width
 %    of \cs{SR@linesize} number of columns,
@@ -1734,7 +1783,7 @@ and the derived files
 %    width of the contents of a SAS listing output.
 %
 %    \begin{macrocode}
-  \setlength{\SR@verbwidth}{(\SR@linesize\SR@scratchlength)}%
+    \setlength{\SR@verbwidth}{(\SR@linesize\SR@scratchlength)}%
 %    \end{macrocode}
 %    Finally, the following statements
 %    add 2\cs{tabcolsep} and 2\cs{arrayrulewidth} to that width.
@@ -1745,12 +1794,17 @@ and the derived files
 %    measurement is used to calculate the graphic width
 %    (that is, only the first graphic file width is used).}
 %    \begin{macrocode}
-  \setlength{\SR@scratchlength}{\SR@verbwidth+2\tabcolsep+
+    \setlength{\SR@scratchlength}{\SR@verbwidth+2\tabcolsep+
                                               2\arrayrulewidth}%
+   }% end if dest is listing
+   {\relax}% do nothing if dest is latex.
 %    \end{macrocode}
 %    With \cs{SR@verbwidth} calculated, \cs{SR@insert} is called to insert the \cs{Listing}.
+%    When the Listing is being set, the value for the left margin of the longfigure is
+%    calculated. After the Listing is finished, reset the value back to its default, 0.
 %    \begin{macrocode}
   \SR@insert{#2}%
+  \setlength{\LFleft}{0in}%
 }
 %    \end{macrocode}
 %    \end{macro}
@@ -1762,10 +1816,11 @@ and the derived files
 %    \begin{macrocode}
 \newcommand{\Graphic}[2][]{%
   \setkeys{SR}{#1,type=graphic, label=#2}%
-  \ifthenelse{\equal{\SR@store}{\@empty}}
-    {\relax}
-    {\SR@write@outoptions}
+  \ifthenelse{\equal{\SR@store}{\@empty}}%
+    {\relax}%
+    {\SR@write@outoptions}%
   \SR@insert{#2}%
+  \setlength{\LFleft}{0in}%
 }
 %    \end{macrocode}
 %    \begin{macro}{\Graphic}
@@ -1775,33 +1830,24 @@ and the derived files
 %    to write the appropriate SAS macro to the generated file.
 %
 %    Finally, \cs{SR@insert} is called to insert the \cs{Graphic}.
-%
+%    When the Graphic is being set, the value for the left margin of the longfigure is
+%    calculated. After the Graphic is finished, reset the value back to its default, 0.
 %    \end{macro}
 %
 % \subsubsection{The \cs{Boxlisting} Macro}
-% The \cs{Boxlisting} macro creates a box that contains the verbatim content
-% of an external listing file. If the \cs{SRdest} value has been set for this
-% listing, we will use it; otherwise set it to the value given for \cs{SRdefaultdests},
-% which is the global default (set to |listing| by the package itself, but
-% possibly overridden by the user).
+% If the \cs{SRdest} value has been set for this
+% listing, the value for \cs{SR@dest} now contains the value (see the Listing code above).
 %
-% Now if the current destination is |listing|, put the content of the specified file
+% If the current destination is |listing|, the \cs{Boxlisting} macro 
+% creates a box that contains the verbatim content
+% of an external listing file. Put the content of the specified file
 % into a box as verbatim input. If the file doesn't exist, place a marker in the document.
 %
-% If the current destination is |latex|, put the contents of the specified file
-% into a minipage and then into the box. Also set \cs{SR@scratchlen} to the width of
-% the box. Yes, it will always be the text width (for now). Still we need the length since
-% it gets used later to center the enclosing |longfigure|.
-
-% When the destination is |latex|, this length is reset for each piece of output
-% in this Listing. When the destination is |listing| it is set once for the entire Listing,
-% and is not touched here.
+% If the current destination is |latex|,  the \cs{Boxlisting} macro puts
+% the contents of the specified file into a minipage and then into the box.
+% 
 %    \begin{macrocode}
 \newcommand*{\Boxlisting}[1]{%
- \ifthenelse{\equal{\SR@dest}{\@empty}}%
-    {\def\SR@dest{\SRdefaultdests}}%
-    {\relax}%
-  %
   \ifthenelse{\equal{\SR@dest}{listing}}%
      {\global\def\SR@insertname{\SRlistingdir/#1.lst}%
       \IfFileExists{\SR@insertname}%
@@ -1826,11 +1872,11 @@ and the derived files
      \IfFileExists{\SR@insertname}%
       {%
         \savebox{\SR@filebox}{%
-          \begin{minipage}{\textwidth}
-            \vspace{0.25\baselineskip}
-            \centering\input{\SR@insertname}
-            \vspace{0.25\baselineskip}
-          \end{minipage}
+          \begin{minipage}{\textwidth}%
+            \vspace{0.25\baselineskip}%
+            \centering\input{\SR@insertname}%
+            \vspace{0.25\baselineskip}%
+          \end{minipage}%
         }%
     }%
     {\savebox{\SR@filebox}{\centering\fbox{Missing File \SR@insertname}}%
@@ -1838,9 +1884,6 @@ and the derived files
     }%
   }%
   \global\setbox\SR@filebox=\box\SR@filebox%
-  \ifthenelse{\equal{\SR@dest}{listing}}%
-    {\relax}%
-    {\setlength{\SR@scratchlength}{\wd\SR@filebox+2\tabcolsep}}%
   \PackageInfo{statrep}{Processing output \SR@insertname}%
 }
 %    \end{macrocode}
@@ -1877,7 +1920,7 @@ and the derived files
 %    \begin{macrocode}
 \newcommand*{\Boxgraphic}[1]{%
   \IfFileExists{\SRgraphicdir/#1.\SRgraphtype}%
-    {\global\def\SR@insertname{\SRgraphicdir/#1.\SRgraphtype}}
+    {\global\def\SR@insertname{\SRgraphicdir/#1.\SRgraphtype}}%
     {\global\def\SR@insertname{\@empty}}%
   \ifthenelse{\equal{\SR@insertname}{\@empty}}%
     {\savebox{\SR@filebox}{\fbox{ Missing File \SRgraphicdir/#1.\SRgraphtype}}}%
@@ -1941,7 +1984,8 @@ and the derived files
 %
 %  \DescribeMacro{\SR@set@outheadings}
 %  The \cs{SR@set@outheadings} macro sets the contents of the |longfigure|'s first heading,
-%  its ``continued'' heading, and the footer. If the content is a \cs{Listing},
+%  its ``continued'' heading, and the footer. If the content is a \cs{Listing} and the
+%  destination is |listing|,
 %  the |longfigure| is framed (the headings and footers include an
 %  \cs{hline} command).
 %
@@ -1950,23 +1994,23 @@ and the derived files
 %    \end{macrocode}
 %  The following statements define three macros for typing shortcuts:
 %    \begin{macrocode}
-  \def\SR@@caption{\caption{\SRcaptionfont\SR@caption}}
-  \def\SR@@captioncontinued{\caption{\SRcaptioncontinuedfont\SRcontinuedname}}
-  \def\SR@@captionskip{\\*[0.5\baselineskip]}
+  \def\SR@@caption{\caption{\SRcaptionfont\SR@caption}}%
+  \def\SR@@captioncontinued{\caption{\SRcaptioncontinuedfont\SRcontinuedname}}%
+  \def\SR@@captionskip{\\*[0.5\baselineskip]}%
 %    \end{macrocode}
 %
 %    The following statements define a set of \cs{SR@@} macros that are
 %    used as calculators for the actual macros used
 %    at the time of typesetting:
 %    \begin{macrocode}
-  \ifthenelse{\equal{\SR@dest}{listing}}
-             {\def\SR@@firsthead{\hline\endLFfirsthead}
-              \def\SR@@conthead{\hline\endLFhead}
-              \def\SR@@endfoot{\hline\endLFfoot}}
+  \ifthenelse{\equal{\SR@dest}{listing}}%
+             {\def\SR@@firsthead{\hline\endLFfirsthead}%
+              \def\SR@@conthead{\hline\endLFhead}%
+              \def\SR@@endfoot{\hline\endLFfoot}}%
              %
-             {\def\SR@@firsthead{\endLFfirsthead}
-              \def\SR@@conthead{\endLFhead}
-              \def\SR@@endfoot{\endLFfoot}}
+             {\def\SR@@firsthead{\endLFfirsthead}%
+              \def\SR@@conthead{\endLFhead}%
+              \def\SR@@endfoot{\endLFfoot}}%
    %%%
 %    \end{macrocode}
 %    If the \cs{SR@dest} is |listing|, \cs{hline} commands are used for the heading
@@ -1983,11 +2027,10 @@ and the derived files
 %    \begin{macrocode}
   \ifthenelse{\equal{\SR@caption}{\@empty}}%
     {% CAPTION NOT GIVEN
-     \renewcommand*{\SR@firsthead}{}%
+     \addtocounter{\LFcounter}{-1}%
      \ifSR@continued%
-     \addtocounter{\LFcounter}{-1}
        \renewcommand*{\SR@conthead}{\SR@@captioncontinued%
-                      \SR@@captionskip\SR@@conthead}
+                      \SR@@captionskip\SR@@conthead}%
     \fi%
     }%
 %    \end{macrocode}
@@ -2004,7 +2047,7 @@ and the derived files
     \renewcommand*{\SR@firsthead}{\SR@@caption\label{\SR@label}%
                                   \SR@@captionskip\SR@@firsthead}%
     \renewcommand*{\SR@conthead}{\SR@@captioncontinued%
-                                 \SR@@captionskip\SR@@conthead}
+                                 \SR@@captionskip\SR@@conthead}%
     }
 }
 %    \end{macrocode}
@@ -2015,7 +2058,7 @@ and the derived files
 %     \DescribeMacro{\SR@set@outmargin}
 %    The \cs{SR@set@outmargin} macro sets the |longfigure| parameter |LFleft| based
 %    on the output dimensions. The output width is set in the
-%    \cs{Listing} (|listing| destination), \cs{Boxlisting} (|latex| destination),
+%    \cs{Listing} (|listing| destination), 
 %    or \cs{Boxgraphic} macros. The length
 %    parameter \cs{SR@scratchlength} contains the output width.
 %    \index{output centering|usage}%
@@ -2087,16 +2130,19 @@ and the derived files
 %    first output in the stream:
 %    \begin{macrocode}
 \newcommand{\SR@insert}[1]{%
-  \ifthenelse{\equal{\SR@type}{listing}}{\Boxlisting{#1}}{\Boxgraphic{#1}}
   \SR@set@outheadings%
-  \SR@set@outmargin%
+  \ifthenelse{\equal{\SR@type}{listing}}{\Boxlisting{#1}}{\Boxgraphic{#1}}%
+  \ifthenelse{\equal{\SR@dest}{latex}}%
+    {\relax}%
+    {\SR@set@outmargin}%
 %    \end{macrocode}
 %
 %    The width of a \cs{Listing} output is calculated in the \cs{Listing} macro.
 %    The width of a \cs{Graphic} output is calculated in the \cs{Boxgraphic} macro.
 %    Therefore, after boxing an output, the \cs{SR@scratchlength} contains the
 %    width of the output regardless of type. With that information, the margins
-%    that are required for centering are set.
+%    that are required for centering are set. This does not apply to outputs with
+%    |dest=latex|.
 %
 %   The following statements determine whether an output file exists that matches
 %    the argument specified in the output tag; and if so, they
@@ -2112,8 +2158,8 @@ and the derived files
 %    No horizontal or vertical lines (no box) are drawn for graphics or
 %    outputs using the |latex| destination.
 %    \begin{macrocode}
-     \ifthenelse{\equal{\SR@dest}{listing}}
-       {\longfigure{|c|}}{\longfigure{c}}
+     \ifthenelse{\equal{\SR@dest}{listing}}%
+       {\longfigure{|c|}}{\longfigure{c}}%
         \SR@firsthead\SR@conthead\SR@endfoot%
         \usebox{\SR@filebox}%
 %    \end{macrocode}
@@ -2123,7 +2169,7 @@ and the derived files
 %    \begin{macrocode}
         \setcounter{SR@multifilecount}{1}%
         \whiledo{\boolean{SR@multifile}}{%
-          \ifthenelse{\equal{\SR@type}{listing}}
+          \ifthenelse{\equal{\SR@type}{listing}}%
             {\Boxlisting{#1\arabic{SR@multifilecount}}}%
             {\Boxgraphic{#1\arabic{SR@multifilecount}}}%
           \ifthenelse{\equal{\SR@insertname}{\@empty}}%
