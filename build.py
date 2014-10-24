@@ -6,12 +6,12 @@ import subprocess
 import time
 import zipfile
 
-ROOT = os.path.normpath('/u/tiarno/clean')#os.path.join(os.getcwd()))
+ROOT = os.path.join(os.getcwd()))
 SUPPLEMENT = os.path.join(ROOT, 'supplement')
 CONTENT = os.path.join(ROOT, 'content')
 BUILD = os.path.join(ROOT, 'build')
 BENCH = os.path.join(ROOT, 'benchmark')
-SASCMD = 'sdssas -t dev/mva-v920'
+SASCMD = None
 DEVNULL = open(os.devnull, 'wb')
 
 def zipdir(fullpath):
