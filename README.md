@@ -43,10 +43,12 @@ Limited support is provided for SAS-generated LaTeX output, using a special tags
     merchantibility and fitness for a particular purpose.
     See http://www.latex-project.org/lppl.txt for the details of that license.
 
-    This work has the LPPL maintenance status 'maintained'. The Current Maintainer of this work is Tim Arnold (tim dot arnold at sas dot com).
+    This work has the LPPL maintenance status 'maintained'. 
+    The Current Maintainer of this work is Tim Arnold 
+    (tim dot arnold at sas dot com).
 
 # Requirements
 
   * ``pdfLaTeX`` typesetting engine 1.30 or later
-  * LaTeX packages: ``verbatim``, ``graphicx``, ``xkeyval``, ``calc``, ``ifthen``, all part of the a standard LaTeX distribution.
+  * LaTeX packages: ``verbatim``, ``graphicx``, ``xkeyval``, ``calc``, ``ifthen``. These packages are contained in a standard LaTeX distribution, such as **TeXLive** or **MiKTeX**.
   * SAS 9.2 or later
