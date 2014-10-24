@@ -3,9 +3,9 @@
 Creates statrep.dtx and longfigure.dtx in subdirectories of current dir.
 Files present:
 
-    * statrep.wrapper
-    * longfigure.wrapper
-    * longfigure.inc
+  * statrep.wrapper
+  * longfigure.wrapper
+  * longfigure.inc
 
 statrep.wrapper is read and longfigure.inc is inserted to create statrep.dtx
 longfigure.wrapper is read and longfigure.inc is inserted to create longfigure.dtx
