@@ -181,7 +181,7 @@ more information.
 
 This section provides a simple example of how you can use the \StatRep package
 to produce a document with reproducible results.
-You can follow along with the actual code: extract the
+You can follow along with the actual code: extract this
 \textattachfile[color=0 0 0.6]{example.tex}{example \LaTeX\ file} that
 contains the code in this section if your PDF viewer supports file annotations.
 
@@ -230,8 +230,11 @@ run;
   The \cs{Listing} and \cs{Graphic} tags convey information to \LaTeX\ and to SAS.
   The tags specify the names of the output files to insert into the document
   and the captions for the output.
-  Additionally, they specify the names of the output files to create and which
-  ODS objects to capture.\index{Listing tag}\index{Graphic tag}
+  Additionally, the tags specify the names of the output files to
+  create and they can specify which
+  ODS objects to capture. In this example, no objects are specified so all
+  objects are captured.
+  \index{Listing tag}\index{Graphic tag}%
 
 \begin{figure}[H]
 \begin{snugshade}
@@ -2411,11 +2414,12 @@ Table \ref{ziptable} shows the contents:
 \begin{tabular}{ll}
 \hline
 \textbf{Filename}          &  \textbf{Description}\\
-\Code{statrepmanual.pdf}   & The \textit{\StatRep User's Guide} (this manual)\\
+\Code{doc/statrepmanual.pdf}   & The \textit{\StatRep User's Guide} (this manual)\\
+\Code{doc/quickstart.tex}      & A template and tutorial sample \LaTeX\ file\\
+\Code{sas/statrep\_macros.sas} & The \StatRep SAS macros \\
+\Code{sas/statrep\_tagset.sas} & The \StatRep SAS tagset for LaTeX tabular output \\
 \Code{statrep.ins}         & The \LaTeX\ package installer file\\
 \Code{statrep.dtx}         & The \LaTeX\ package itself\\
-\Code{statrep\_macros.sas} & The \StatRep SAS macros \\
-\Code{quickstart.tex}      & A template and tutorial sample \LaTeX\ file\\
 \hline
 \end{tabular}
 \end{table}
@@ -2792,7 +2796,7 @@ The output is then typeset and the margin is set back to its default value of 0.
    \LFleft=0in
 \end{verbatim}
 
-In some extreme cases, the table will not fit on the page.
+In some cases, the table will not fit on the page at all.
 The only solution in those cases is to change back to the
 \texttt{listing} output destination, modifying the fontsize and linesize
 as needed.
