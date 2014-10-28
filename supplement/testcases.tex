@@ -104,6 +104,8 @@ run;
 
 \Listing[store=mydoc, ]{myouta}
 
+\Listing[store=mydoc, dest=latex]{myoutaa}
+
 \Listing[store=mydoc, fontsize=tiny, caption={fontsize=tiny}]{myoutb}
 
 \Listing[store=mydoc, linesize=96, caption={linesize=96}]{myoutc}
@@ -137,6 +139,37 @@ run;
 \Graphic[store=mygdoc, style=brick, caption={style=brick}]{mygoutf}
 
 \Graphic[store=mygdoc, caption={Back to vanilla graphic}]{mygoutg}
+
+
+\begin{Datastep}[first=5, last=3]
+data Wine;
+   input WineType $ VisitLength @@;
+   datalines;
+white  80 white  98 white 115 white  89 white 103
+white  91 white 119 white  31 white 109 white  95
+white  71 white 105 white  66 white 141 white  79
+white 113 white  69 white 120 white  87 red    93
+red    87 red   106 red    76 red   121 red   143
+red    81 red    97 red    74 red   107 red   112
+red    67 red   107 red    72 red   116 red    99
+red   104 red    91 red   132 red    78 red   107
+red   101 red    92
+;
+\end{Datastep}
+
+
+\begin{Sascode}[store=wineA]
+ods graphics on;
+proc anova data=Wine;
+   class WineType;
+   model VisitLength = WineType;
+run;
+ods graphics off;
+\end{Sascode}
+
+\Listing[store=wineA, dest=latex,
+   objects=ClassLevels NObs OverallANOVA,
+   caption={Analysis of Variance for Visit Length}]{tsta}
 
 \end{document}
 

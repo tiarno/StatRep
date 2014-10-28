@@ -163,7 +163,7 @@ define tagset Tagsets.StatRep;
          put %nrstr("%% Headings") NL;
          put %nrstr("\newcommand{\sasheading}[3][c]{{%%") NL;
          put %nrstr("   \if#1r\flushright\else\if#1l\flushleft\else\centering\fi\fi%%") NL;
-         put %nrstr("   {\csname sasS#2\endcsname #3}\\[0.1\baselineskip]%%") NL;
+         put %nrstr("   {\csname sasS#2\endcsname #3}\mbox{}\\[0.1\baselineskip]%%") NL;
          put %nrstr("   \if#1r\endflushright\else\if#1l\endflushleft\else\fi\fi%%") NL;
          put "}}" NL;
          put NL;
