@@ -156,7 +156,7 @@ red   104 red    91 red   132 red    78 red   107
 red   101 red    92
 ;
 \end{Datastep}
-
+%$
 
 \begin{Sascode}[store=wineA]
 ods graphics on;
@@ -170,6 +170,55 @@ ods graphics off;
 \Listing[store=wineA, dest=latex,
    objects=ClassLevels NObs OverallANOVA,
    caption={Analysis of Variance for Visit Length}]{tsta}
+
+\Listing[store=wineA, 
+   objects=ClassLevels NObs OverallANOVA,
+   caption={Analysis of Variance for Visit Length}]{tstab}
+
+
+\begin{Datastep}
+proc format;
+   value $sex 'F' = 'Female' 'M' = 'Male';
+data one;
+   set sashelp.class;
+   format sex $sex.;
+run;
+\end{Datastep}
+%$
+
+\begin{Sascode}[store=class]
+%*; ods graphics on;
+proc reg;
+    model weight = height age;
+run;
+\end{Sascode}
+
+
+
+\Listing[store=class,
+         caption={Regression Analysis}]{rega}
+
+\Listing[store=class, dest=latex,
+         caption={Regression Analysis}]{regab}
+
+\Graphic[store=class, 
+         caption={Graphs for Regression Analysis}]{regb}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \end{document}
 
