@@ -1,0 +1,10 @@
+#Whitelisted Files for benchmark
+#
+# PDF Files
+!example.pdf
+!quickstart.pdf
+!testcases.pdf
+#
+# Generated Package Files
+!longfigure.sty
+!statrep.sty
