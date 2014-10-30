@@ -52,3 +52,57 @@ Limited support is provided for SAS-generated LaTeX output, using a special tags
   * ``pdfLaTeX`` typesetting engine 1.30 or later
   * LaTeX packages: ``verbatim``, ``graphicx``, ``xkeyval``, ``calc``, ``ifthen``. These packages are contained in a standard LaTeX distribution, such as **TeXLive** or **MiKTeX**.
   * SAS 9.2 or later
+
+
+# Note on Packaging
+
+This github repo is meant for packaging the ``StatRep`` and ``longfigure`` packages. To create the packages, 
+ 1. put the ``benchmark``, ``content``, and ``supplement`` directories along with ``build.py`` into a clean working directory. 
+ 2. Execute the ``build.py`` script to create a new ``build`` directory.
+
+Inside the ``build`` directory there will be subdirectories called ``ctan``, ``sas`` that contain the files to be distributed at those locations. There are also directories ``test`` and ``work`` that were used to create the new distributions.
+
+Inside the distribution directories are the zip files. For the ``sas`` distribution, the ``*.sty`` files are included so people don't have to do any extra steps. Here is the layout of the zip file for the distribution (``statrep.zip``):
+
+    README
+    LICENSE
+    statrep.dtx
+    statrep.ins
+    statrep.sty
+    longfigure.sty
+    doc/
+        images/
+        quickstart.tex
+        statrepmanual.tex
+        statrepmanual.pdf -- with example.tex attached inside
+        statrep.pdf
+    sas/
+        statrep_macros.sas
+        statrep_tagset.sas
+
+The CTAN folks don't want the extra ``*.sty`` files since they are normally just created by compiling the ``*.dtx`` file, so we omit them for the CTAN version. The layout for this version (``statrep.zip``) appears as follows:
+
+    README
+    LICENSE
+    statrep.dtx
+    statrep.ins
+    doc/
+        images/
+        quickstart.tex
+        statrepmanual.tex
+        statrepmanual.pdf -- with example.tex attached inside
+        statrep.pdf
+    sas/
+        statrep_macros.sas
+        statrep_tagset.sas
+
+The ``longfigure`` package is simple and exists only in the ``ctan`` directory. The layout of the zip file looks like this (``longfigure.zip``):
+
+    README
+    LICENSE
+    longfigure.dtx
+    longfigure.ins
+    longfigure.pdf
+
+
+
