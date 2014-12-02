@@ -923,10 +923,12 @@ options source &savenote;
                 %if %nrbquote(&width)  ne %then width=&width;
                 %if %nrbquote(&height) ne %then height=&height;
                 %if %nrbquote(&graphtype) eq pdf %then outputfmt=pdf;;
-            goptions dev=&gdevice fileonly gsfname=gsasfile gsfmode=replace
+            %if %sysprod(graph) = 1 %then %do;
+                goptions dev=&gdevice fileonly gsfname=gsasfile gsfmode=replace
                      hsize=%if %nrbquote(&width) ne %then &width;
                      %else 6.4in;
                      vsize=&h border;
+            %end;
             filename gsasfile "&graphicdir/&fname&jl..&graphtype";
             %put NOTE: Writing Graph file: &graphicdir/&fname&jl..&graphtype;
             %end;
@@ -937,7 +939,7 @@ options source &savenote;
             %if %index(&dest, latex) %then %do;
                ods tagsets.statrep style=&latexstyle
                    file="&latexdir/&fname&jh..tex" (notop nobot)
-                   stylesheet="sas.sty"(url="sas")
+                   stylesheet="&rootdir/sas.sty"
                    newfile=output ;
                %end;
           %end;
@@ -965,7 +967,7 @@ options source &savenote;
 
             data _null_;
                retain kl &jl;
-               length fn $ 40;
+               length fn $ 200;
                infile "&listingdir/_tmp" lrecl=%eval(&ls+1) pad;
                input line $char%eval(&ls+1).;
                page = substr(line, 1, 1) eq '0C'x;
@@ -1246,7 +1248,9 @@ data _null_; rc = fdelete('__f'); run;
 ods document name  = &label(write) cat=sasuser.__&label;
 
 * Specify 300 DPI for GRSEG graphics (gdevice = png or png300).;
-goptions dev=&gdevice fileonly gsfname=gsasfile gsfmode=replace border;
+%if %sysprod(graph) = 1 %then %do;
+   goptions dev=&gdevice fileonly gsfname=gsasfile gsfmode=replace border;
+%end;
 filename gsasfile "&graphicdir/_tmp.&graphtype";
 options &savenote;
 %mend;
@@ -1457,18 +1461,32 @@ options &savenote;
 
 *------------------------------------------------------------------------;
 
-* This macro deletes the contents of the listingdir and graphicdir
-  directories. It decides which operating system command to give
-  based on the SYSSCP macro variable.;
+* this macro creates a directory if needed and deletes files with the
+given extension to insure the directory exists and is empty of output files.;
 
-%macro hostdel;
-   %if &sysscp = WIN or &sysscp = DNTHOST %then %do;
-      options noxwait;
-      x "mkdir &graphicdir &listingdir &latexdir";
-      x "del %nrstr(%%)CD%nrstr(%%)\&listingdir\*.lst %nrstr(%%)CD%nrstr(%%)\&graphicdir\*.p* %nrstr(%%)CD%nrstr(%%)\&latexdir\*.tex";
-   %end;
-   %else %do;
-      x "mkdir &graphicdir &listingdir &latexdir";
-      x "rm &listingdir/*.lst &graphicdir/*.p* &latexdir/*.tex";
-   %end;
-%mend;
+%macro cleandir(dir,ext);
+   %local saveopts;
+   %let saveopts = %sysfunc(getoption(dlcreatedir)) %sysfunc(getoption(notes));
+   options dlcreatedir nonotes;
+   data _null_;
+      length ext $ 5 dir file $ 200;
+      ext = '.' || upcase(symget('ext'));
+      dir = symget('dir');
+      rc  = filename('dirref', dir);
+      did = dopen('dirref');
+      if rc or not did then do;
+         put 'ERROR: Directory ' dir 'not found.';
+        stop;
+         end;
+      do i = 1 to dnum(did); /* Loops through entire directory */
+         file = dread(did, i);
+         if index(upcase(file), ext) then do; /* file ends in dot extension */
+            rc = filename('fref', cats(dir, '/', file));
+            rc = fdelete('fref');
+            end;
+         end;
+      rc = dclose(did);
+      run;
+   options &saveopts;
+%mend cleandir;
+
