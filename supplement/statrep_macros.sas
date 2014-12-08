@@ -1461,32 +1461,51 @@ options &savenote;
 
 *------------------------------------------------------------------------;
 
-* this macro creates a directory if needed and deletes files with the
+* 'this macro creates a directory if needed and deletes files with the
 given extension to insure the directory exists and is empty of output files.;
 
-%macro cleandir(dir,ext);
-   %local saveopts;
-   %let saveopts = %sysfunc(getoption(dlcreatedir)) %sysfunc(getoption(notes));
-   options dlcreatedir nonotes;
-   data _null_;
-      length ext $ 5 dir file $ 200;
-      ext = '.' || upcase(symget('ext'));
-      dir = symget('dir');
-      rc  = filename('dirref', dir);
-      did = dopen('dirref');
-      if rc or not did then do;
-         put 'ERROR: Directory ' dir 'not found.';
-        stop;
-         end;
-      do i = 1 to dnum(did); /* Loops through entire directory */
-         file = dread(did, i);
-         if index(upcase(file), ext) then do; /* file ends in dot extension */
-            rc = filename('fref', cats(dir, '/', file));
-            rc = fdelete('fref');
+%macro cleandir(droot, dname, ext);
+    %local saveopts;
+    %let saveopts = %sysfunc(getoption(notes));
+    options nonotes;
+    data _null_;
+        length ext $ 5 ;
+        droot = symget('droot');
+        dname = symget('dname');
+        ext   = catx('.', upcase(symget('ext')));
+        dpath = catx('/', droot, dname);
+
+        rc = filename('dref', dpath);
+        rc = fexist('dref');
+        if rc eq 0 then do;
+            dpath = dcreate(dname, droot);
+            rc2 = filename('dreff', dpath);
+            rc2 = fexist('dreff');
+            if rc2 eq 0 then do;
+                put 'ERROR: Directory ' dpath ' not created.';
+                stop;
             end;
-         end;
-      rc = dclose(did);
-      run;
-   options &saveopts;
+            else do;
+                put 'NOTE: Directory ' dpath ' created.';
+            end;
+        end;
+        else do;
+            rc  = filename('dreff', dpath);
+            did = dopen('dreff');
+            if rc or not did then do;
+                put 'ERROR: Directory ' dpath 'not found.';
+                stop;
+            end;
+            do i = 1 to dnum(did); /* Loops through entire directory */
+                file = dread(did, i);
+                if index(upcase(file), ext) then do; /* file ends in dot extension */
+                    rc = filename('fref', catx('/', dpath, file));
+                    rc = fdelete('fref');
+                end;
+            end;
+            rc = dclose(did);
+        end;
+    run;
+    options &saveopts;
 %mend cleandir;
 

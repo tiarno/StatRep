@@ -279,7 +279,7 @@ and the derived files
 %\def\filename{statrep.dtx}
 %\def\fileversion{1.04}
 %\def\filedate{\today}
-%\CheckSum{2159}
+%\CheckSum{2174}
 %\StopEventually{\PrintChanges\PrintIndex}
 %
 % \CharacterTable
@@ -743,6 +743,7 @@ and the derived files
 % \DescribeMacro{\SRdpi}\DescribeMacro{\SRstyle}\DescribeMacro{\SRodsgraphopts}
 % \DescribeMacro{\SRlatexstyle}
 %    \begin{macrocode}
+\def\SRrootdir{.}
 \def\SRlinesize{80}
 \def\SRpagesize{500}
 \def\SRdpi{300}
@@ -762,10 +763,10 @@ and the derived files
 %          |statrep_tagset.sas|.
 %    \end{itemize}
 %    \begin{macrocode}
-\def\SRgraphicdir{png}
+\def\SRgraphicdir{\SRrootdir/png}
 \def\SRgraphtype{png}
-\def\SRlistingdir{lst}
-\def\SRlatexdir{tex}
+\def\SRlistingdir{\SRrootdir/lst}
+\def\SRlatexdir{\SRrootdir/tex}
 \def\SRdefaultdests{listing}
 %    \end{macrocode}
 % \DescribeMacro{\SRgraphicdir}\DescribeMacro{\SRgraphtype}\DescribeMacro{\SRlistingdir}
@@ -787,7 +788,11 @@ and the derived files
 \def\SRprogramname{\jobname_SR.sas}
 \def\SRpreamblename{\jobname_SR_preamble.sas}
 \def\SRmacroinclude{\@percentchar include "\SRmacropath" /nosource;}
-\def\SRsasprogramline{\@percentchar hostdel;}%
+\def\SRsasprogramline{%
+\@percentchar cleandir(\SRrootdir, tex, tex);^^J%
+\@percentchar cleandir(\SRrootdir, png, png);^^J%
+\@percentchar cleandir(\SRrootdir, lst, lst);^^J%
+}
 %    \end{macrocode}
 % \DescribeMacro{\SRprogramname}
 % \DescribeMacro{\SRmacroinclude}\DescribeMacro{\SRprogramline}
@@ -801,21 +806,10 @@ and the derived files
 %    \item \cs{SRprogramline} specifies the first lines to include in
 %    the generated SAS program
 %    after the \cs{SRmacroinclude} line. The following default value calls a SAS
-%    macro that removes the contents of the listing and graphic directories.
+%    macro that removes the contents of the listing, tex, and graphic directories.
 %    The directories are created with
 %    each SAS run that includes the macros themselves (via x commands).
 %  \end{itemize}
-% \iffalse
-%<*example>
-% \fi
-\begin{snugshade}
-\begin{verbatim}
-   %hostdel
-\end{verbatim}
-\end{snugshade}
-% \iffalse
-%</example>
-% \fi
 %
 %    \begin{macrocode}
 \def\SRparindent{3em}
@@ -903,6 +897,7 @@ and the derived files
   \immediate\openout\SR@tempfile@stream\SRpreamblename%
   \SR@writepgm\SR@tempfile@stream{\SR@preambletext}
   \SR@writepgm\SR@tempfile@stream{/* Set and invoke macro variable defaults. */}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let rootdir=\SRrootdir;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultlinesize=\SRlinesize;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultpagesize=\SRpagesize;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultdpi=\SRdpi;}
@@ -935,7 +930,7 @@ and the derived files
 %    \begin{macrocode}
   \immediate\openout\SR@program@stream\SRprogramname
   \SR@writepgm\SR@program@stream{\SR@preambletext}
-  \SR@writepgm\SR@program@stream{\@percentchar include "\SRpreamblename" /nosource;}
+  \SR@writepgm\SR@program@stream{\@percentchar include "\SRrootdir/\SRpreamblename" /nosource;}
   \SR@writepgm\SR@program@stream{/* Remove all output files. */}
   \SR@writepgm\SR@program@stream{\SRsasprogramline}
   \SR@writepgm\SR@program@stream{}
@@ -1572,15 +1567,15 @@ and the derived files
 % \subsection{Handling the SAS Output}\label{output}
 %
 % The \cs{Listing} and \cs{Graphic} tags support options that are used
-% in the generated program and in output display. 
-% 
+% in the generated program and in output display.
+%
 % There are three possible cases for an output request:
 % \begin{itemize}
 % \item The output is of type |graphic|.
 % \item The output is of type |listing| and destination |listing|.
 % \item The output is of type |listing| and destination |latex|.
 % \end{itemize}
-% 
+%
 % When the |store=| option
 % is used in the tags, a line is written to the |%write| macro that passes
 % a subset of the options in the tag to the generated program. The tags also insert
@@ -1588,11 +1583,11 @@ and the derived files
 %
 % Graphical output is inserted as specified in the \cs{Graphic} tag,
 % captioned, and centered.
-% 
+%
 % Listing output is inserted in the same way, but the output is framed when
-% the destination is |listing|; when the destination is |latex|, the output 
+% the destination is |listing|; when the destination is |latex|, the output
 % (which is in the form of LaTeX tabular environments) is not framed.
-% 
+%
 % The frame for the |listing| destination
 % is created with the help of the |longfigure| package and the
 % \cs{hline} command.
@@ -1697,16 +1692,16 @@ and the derived files
 % will be inserted as verbatim type input. The width is calculated by the linesize and
 % the output centered by adjusting the \cs{LFleft} margin. The width calculation is
 % done once, at the \cs{Listing} command itself.
-% 
+%
 % If the output is a graphic, the output is put into a box at whatever |scale| or
 % |width| the user specified. The width of that box is calculated and the
 % output centered by adjusting the \cs{LFleft} margin. The width calculation cannot
-% be done at the \cs{Graphic} command since the output must be measured first. 
+% be done at the \cs{Graphic} command since the output must be measured first.
 % It is in the \cs{Boxgraphic} macro that the calculation takes place, which means it
 % happens for each graphic in the output stream. Only the first graphic has an effect;
 % it is only the first graphic in the stream that affects the \cs{LFleft} margin.
 % This is an inefficiency.
-% 
+%
 % If the output is a listing and the destination is |latex|, the output cannot be
 % measured at all. The output is put into a minipage of |textwidth| width and the
 % \cs{LFleft} margin is untouched. The user can therefore set \cs{LFleft} before the
@@ -1838,14 +1833,14 @@ and the derived files
 % If the \cs{SRdest} value has been set for this
 % listing, the value for \cs{SR@dest} now contains the value (see the Listing code above).
 %
-% If the current destination is |listing|, the \cs{Boxlisting} macro 
+% If the current destination is |listing|, the \cs{Boxlisting} macro
 % creates a box that contains the verbatim content
 % of an external listing file. Put the content of the specified file
 % into a box as verbatim input. If the file doesn't exist, place a marker in the document.
 %
 % If the current destination is |latex|,  the \cs{Boxlisting} macro puts
 % the contents of the specified file into a minipage and then into the box.
-% 
+%
 %    \begin{macrocode}
 \newcommand*{\Boxlisting}[1]{%
   \ifthenelse{\equal{\SR@dest}{listing}}%
@@ -2058,7 +2053,7 @@ and the derived files
 %     \DescribeMacro{\SR@set@outmargin}
 %    The \cs{SR@set@outmargin} macro sets the |longfigure| parameter |LFleft| based
 %    on the output dimensions. The output width is set in the
-%    \cs{Listing} (|listing| destination), 
+%    \cs{Listing} (|listing| destination),
 %    or \cs{Boxgraphic} macros. The length
 %    parameter \cs{SR@scratchlength} contains the output width.
 %    \index{output centering|usage}%
