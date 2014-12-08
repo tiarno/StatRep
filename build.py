@@ -89,6 +89,11 @@ class Tester(object):
         p.wait()
         self.tests = 0
         self.passed = 0
+        names = ['statrep', 'longfigure']
+        for name in names:
+            src = os.path.join(BUILD, 'work', name, '%s.sty' % name)
+            tgt = os.path.join(BENCH, '%s.sty' % name)
+            shutil.copy(src, tgt)
 
     def test(self):
         names = ['example', 'quickstart', 'testcases']
@@ -102,24 +107,8 @@ class Tester(object):
             pdf('%s.tex' % name, self.cwd)
 
     def diff(self):
-        names = ['statrep', 'longfigure']
-        for name in names:
-            self.tests += 1
-            bench = os.path.join(BENCH, '%s.sty' % name)
-            tgt = os.path.join(BUILD, 'test', '%s.sty' % name)
-            with open(bench) as f0:
-                b = f0.read()
-            with open(tgt) as f1:
-                t = f1.read()
-            if b != t:
-                print 'Diff for %s.sty' % name
-            else:
-                self.passed += 1
-
         names = ['testcases', 'example', 'quickstart']
         for name in names:
-            bench = os.path.join(BENCH, '%s.pdf' % name)
-            tgt = os.path.join(BUILD, 'test', '%s.pdf' % name)
             cmd = str('gs -sDEVICE=jpeg -dNOPAUSE -dBATCH -dSAFER ')
             cmd += str('-sOutputFile=%s%%08d.jpg %s.pdf' % (name[0], name))
 
