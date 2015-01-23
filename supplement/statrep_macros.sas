@@ -905,94 +905,98 @@ options source &savenote;
 
 * Render each group of data objects.;
 %if not &onlylist %then %do;
-   ods _all_ close;
-   ods graphics / reset=index imagename="";
+  ods _all_ close;
+  ods graphics / reset=index imagename="";
 
-   %let kl = 0; %let kh = 0;
-   %do i = 1 %to &ngroups;
+  %let kl = 0; %let kh = 0;
+  %do i = 1 %to &ngroups;
 
-      %if %symexist(_list&i) %then %do;
-         %if &kl eq 0 %then %let jl = ; %else %let jl = &kl;
-         %if &kh eq 0 %then %let jh = ; %else %let jh = &kh;
-         %let kl = %eval(&kl + 1);
-         %let kh = %eval(&kh + 1);
+    %if %symexist(_list&i) %then %do;
+      %if &kl eq 0 %then %let jl = ; %else %let jl = &kl;
+      %if &kh eq 0 %then %let jh = ; %else %let jh = &kh;
+      %let kl = %eval(&kl + 1);
+      %let kh = %eval(&kh + 1);
 
-         %if &&_gtype&i eq G %then %do; /* if graph replay */
-            ods listing style=&style image_dpi=&dpi gpath="&graphicdir";
-            ods graphics / reset=index imagename="&fname&jl" &odsgraphopts
-                %if %nrbquote(&width)  ne %then width=&width;
-                %if %nrbquote(&height) ne %then height=&height;
-                %if %nrbquote(&graphtype) eq pdf %then outputfmt=pdf;;
-            %if %sysprod(graph) = 1 %then %do;
-                goptions dev=&gdevice fileonly gsfname=gsasfile gsfmode=replace
-                     hsize=%if %nrbquote(&width) ne %then &width;
-                     %else 6.4in;
-                     vsize=&h border;
-            %end;
-            filename gsasfile "&graphicdir/&fname&jl..&graphtype";
-            %put NOTE: Writing Graph file: &graphicdir/&fname&jl..&graphtype;
-            %end;
-         %else %do;
-            %if %index(&dest, listing) %then %do;
-               ods listing file="&listingdir/_tmp";
-               %end;
-            %if %index(&dest, latex) %then %do;
-               ods tagsets.statrep style=&latexstyle
-                   file="&latexdir/&fname&jh..tex" (notop nobot)
-                   stylesheet="&rootdir/sas.sty"
-                   newfile=output ;
-               %end;
+      %if &&_gtype&i eq G %then %do; /* if graph replay */
+        %if  %nrbquote(&graphtype) eq pdf %then %do;
+          %if (%nrbquote(&sysver) < 9.3) %then %do;
+            %put WARNING: ODS PDF Graphics are unavailable in SAS 9.2;
+            %put WARNING: Generating PNG format in "png" directory.;
+            %let graphtype=png;
+            %let graphicdir=png;
           %end;
+        %end;
 
-         %if not %index(&flow, notes) %then %do; options nonotes; %end;
+        ods listing style=&style image_dpi=&dpi gpath="&graphicdir";
+        ods graphics / reset=index imagename="&fname&jl" &odsgraphopts
+        %if %nrbquote(&width)  ne %then width=&width;
+        %if %nrbquote(&height) ne %then height=&height;
+        %if %nrbquote(&graphtype) eq pdf %then outputfmt=pdf;;
 
-         proc document name=&store;
-            replay ^(where=(&&_list&i)) / levels=all;
-            run; quit;
-
-         %if &syserr > 4 %then %let error = 1; %if &error %then %goto endit;
-         options &savenote;
-
-         %if &&_gtype&i eq G %then %do; /* if graph replay */
-            filename gsasfile "&graphicdir/_tmp.&graphtype";
-            %end;
-
-         ods _all_ close;
-         ods graphics / reset=index imagename="" reset=width reset=height;
-
-         %if &&_gtype&i ne G and        /* if not graph */
-             %index(&dest, listing) %then %do;
-            /* break up big listing files */
-            options nonotes;
-
-            data _null_;
-               retain kl &jl;
-               length fn $ 200;
-               infile "&listingdir/_tmp" lrecl=%eval(&ls+1) pad;
-               input line $char%eval(&ls+1).;
-               page = substr(line, 1, 1) eq '0C'x;
-               if _n_ eq 1 or page then do;
-                  fn = "&listingdir/&fname";
-                  if page then line = substr(line, 2);
-                  if kl then fn = compress(fn || put(kl, 5.) || '.lst');
-                        else fn = compress(fn || '.lst');
-                  kl + 1;
-                  call symputx('kl', kl, 'L');
-                  put 'Note: Writing Listing file  : ' fn;
-                  end;
-               file x filevar=fn nopad;
-               l = length(line);
-               put line $varying. l;
-               if _error_ then call symputx('error', '1', 'L');
-               run;
-
-            %if &syserr > 4 %then %let error = 1; %if &error %then %goto endit;
-            options &savenote;
-            %end;
-         %end;
+        %if %sysprod(graph) = 1 %then %do;
+          goptions dev=&gdevice fileonly gsfname=gsasfile gsfmode=replace
+            hsize=
+            %if %nrbquote(&width) ne %then &width;
+            %else 6.4in;
+            vsize=&h border;
+        %end;
+        filename gsasfile "&graphicdir/&fname&jl..&graphtype";
+        %put NOTE: Writing Graph file: &graphicdir/&fname&jl..&graphtype;
       %end;
-   ods listing;
-   %end;
+      %else %do;
+        %if %index(&dest, listing) %then %do;
+          ods listing file="&listingdir/_tmp";
+        %end;
+        %if %index(&dest, latex) %then %do;
+          ods tagsets.statrep style=&latexstyle
+            file="&latexdir/&fname&jh..tex" (notop nobot)
+            stylesheet="&rootdir/sas.sty"
+            newfile=output ;
+        %end;
+      %end;
+      %if not %index(&flow, notes) %then %do; options nonotes; %end;
+      proc document name=&store;
+        replay ^(where=(&&_list&i)) / levels=all;
+      run; quit;
+      %if &syserr > 4 %then %let error = 1;
+      %if &error %then %goto endit;
+      options &savenote;
+      %if &&_gtype&i eq G %then %do; /* if graph replay */
+        filename gsasfile "&graphicdir/_tmp.&graphtype";
+      %end;
+      ods _all_ close;
+      ods graphics / reset=index imagename="" reset=width reset=height;
+      %if &&_gtype&i ne G and        /* if not graph */
+        %index(&dest, listing) %then %do;
+        /* break up big listing files */
+        options nonotes;
+        data _null_;
+          retain kl &jl;
+          length fn $ 200;
+          infile "&listingdir/_tmp" lrecl=%eval(&ls+1) pad;
+          input line $char%eval(&ls+1).;
+          page = substr(line, 1, 1) eq '0C'x;
+          if _n_ eq 1 or page then do;
+            fn = "&listingdir/&fname";
+            if page then line = substr(line, 2);
+            if kl then fn = compress(fn || put(kl, 5.) || '.lst');
+            else fn = compress(fn || '.lst');
+            kl + 1;
+            call symputx('kl', kl, 'L');
+            put 'Note: Writing Listing file  : ' fn;
+          end;
+          file x filevar=fn nopad;
+          l = length(line);
+          put line $varying. l;
+          if _error_ then call symputx('error', '1', 'L');
+        run;
+        %if &syserr > 4 %then %let error = 1; %if &error %then %goto endit;
+          options &savenote;
+      %end;
+    %end;
+  %end;
+  ods listing;
+%end;
 
 %if &ngroups eq 0 %then %do;
    %put ERROR: No objects selected.;
@@ -1472,8 +1476,15 @@ given extension to insure the directory exists and is empty of output files.;
         length ext $ 5 ;
         droot = symget('droot');
         dname = symget('dname');
-        ext   = catx('.', upcase(symget('ext')));
-        dpath = catx('/', droot, dname);
+        ext   = cats('.', upcase(symget('ext')));
+        dpath = cats(droot, '/', dname);
+
+        rc = filename('dref', droot);
+        rc = fexist('dref');
+        if rc eq 0 then do;
+            put 'ERROR: Directory ' droot 'not found.';
+            stop;
+        end;
 
         rc = filename('dref', dpath);
         rc = fexist('dref');
@@ -1482,11 +1493,11 @@ given extension to insure the directory exists and is empty of output files.;
             rc2 = filename('dreff', dpath);
             rc2 = fexist('dreff');
             if rc2 eq 0 then do;
-                put 'ERROR: Directory ' dpath ' not created.';
+                put 'ERROR: Directory ' dpath 'not created.';
                 stop;
             end;
             else do;
-                put 'NOTE: Directory ' dpath ' created.';
+                put 'Note: Directory ' dpath 'created.';
             end;
         end;
         else do;
@@ -1499,7 +1510,7 @@ given extension to insure the directory exists and is empty of output files.;
             do i = 1 to dnum(did); /* Loops through entire directory */
                 file = dread(did, i);
                 if index(upcase(file), ext) then do; /* file ends in dot extension */
-                    rc = filename('fref', catx('/', dpath, file));
+                    rc = filename('fref', cats(dpath, '/', file));
                     rc = fdelete('fref');
                 end;
             end;
@@ -1508,4 +1519,5 @@ given extension to insure the directory exists and is empty of output files.;
     run;
     options &saveopts;
 %mend cleandir;
+
 
