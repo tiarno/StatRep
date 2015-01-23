@@ -244,7 +244,7 @@ and the derived files
 %</internal>
 %<*statrep>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{statrep}[2014/10/30 v1.05 The statrep package]
+\ProvidesPackage{statrep}[2015/01/15 v1.06 The statrep package]
 %</statrep>
 %<*driver>
 \documentclass[11pt]{ltxdoc}
@@ -277,7 +277,7 @@ and the derived files
 %</driver>
 %\fi
 %\def\filename{statrep.dtx}
-%\def\fileversion{1.04}
+%\def\fileversion{1.06}
 %\def\filedate{\today}
 %\CheckSum{2174}
 %\StopEventually{\PrintChanges\PrintIndex}
@@ -304,6 +304,8 @@ and the derived files
 %\changes{v1.02}{2014/06/16}{Added options for graphtype and odsgraphopts}
 %\changes{v1.03}{2014/06/19}{Added support for PDF graphics}
 %\changes{v1.04}{2014/09/08}{Fixed ligatures appearing in Listings}
+%\changes{v1.05}{2014/10/27}{Added support SAS-generated LaTeX table output}
+%\changes{v1.06}{2015/01/15}{Added support for root directory specification}
 %\GetFileInfo{statrep.sty}
 %
 %
@@ -742,6 +744,7 @@ and the derived files
 % \DescribeMacro{\SRlinesize}\DescribeMacro{\SRpagesize}
 % \DescribeMacro{\SRdpi}\DescribeMacro{\SRstyle}\DescribeMacro{\SRodsgraphopts}
 % \DescribeMacro{\SRlatexstyle}
+%\changes{v1.06}{2015/01/15}{Added rootdir for SAS/Studio support.}
 %    \begin{macrocode}
 \def\SRrootdir{.}
 \def\SRlinesize{80}
@@ -758,7 +761,7 @@ and the derived files
 %    \item \cs{SRpagesize} specifies the default pagesize to use for listing output.
 %    \item \cs{SRdpi} specifies the default DPI setting to use for GRSEG and ODS graphics.
 %    \item \cs{SRstyle} specifies the default ODS output style to use for ODS graphics.
-%    \item \cs{SRlatestyle} specifies the ODS output style to use for LaTeX tabular output.
+%    \item \cs{SRlatexstyle} specifies the ODS output style to use for LaTeX tabular output.
 %          The default is |statrep|, which is provided in the supplmental file
 %          |statrep_tagset.sas|.
 %    \end{itemize}
@@ -784,6 +787,7 @@ and the derived files
 %    The possible values are |listing| and |latex|. The default is |listing|.
 %    \end{itemize}
 %\changes{v1.01}{2012/05/23}{Changed SRsasprogramline to call hostdel SAS macro}
+%\changes{v1.06}{2015/01/15}{Changed hostdel macro to cleandir for SAS/Studio support.}
 %    \begin{macrocode}
 \def\SRprogramname{\jobname_SR.sas}
 \def\SRpreamblename{\jobname_SR_preamble.sas}
@@ -792,7 +796,7 @@ and the derived files
 \@percentchar cleandir(\SRrootdir, tex, tex);^^J%
 \@percentchar cleandir(\SRrootdir, png, png);^^J%
 \@percentchar cleandir(\SRrootdir, lst, lst);^^J%
-}
+}%
 %    \end{macrocode}
 % \DescribeMacro{\SRprogramname}
 % \DescribeMacro{\SRmacroinclude}\DescribeMacro{\SRprogramline}
@@ -898,16 +902,16 @@ and the derived files
   \SR@writepgm\SR@tempfile@stream{\SR@preambletext}
   \SR@writepgm\SR@tempfile@stream{/* Set and invoke macro variable defaults. */}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let rootdir=\SRrootdir;}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultstyle=\SRstyle;}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let latexstyle=\SRlatexstyle;}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let graphtype=\SRgraphtype;}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let graphicdir=\SRgraphicdir;}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let listingdir=\SRlistingdir;}
+  \SR@writepgm\SR@tempfile@stream{\@percentchar let latexdir=\SRlatexdir;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultlinesize=\SRlinesize;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultpagesize=\SRpagesize;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultdpi=\SRdpi;}
-  \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultstyle=\SRstyle;}
-  \SR@writepgm\SR@tempfile@stream{\@percentchar let listingdir=\SRlistingdir;}
-  \SR@writepgm\SR@tempfile@stream{\@percentchar let graphicdir=\SRgraphicdir;}
-  \SR@writepgm\SR@tempfile@stream{\@percentchar let graphtype=\SRgraphtype;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let odsgraphopts=\SRodsgraphopts;}
-  \SR@writepgm\SR@tempfile@stream{\@percentchar let latexdir=\SRlatexdir;}
-  \SR@writepgm\SR@tempfile@stream{\@percentchar let latexstyle=\SRlatexstyle;}
   \SR@writepgm\SR@tempfile@stream{\@percentchar let defaultdests=\SRdefaultdests;}
   \SR@writepgm\SR@tempfile@stream{}
   \SR@writepgm\SR@tempfile@stream{options nodate nonumber}
