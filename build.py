@@ -146,8 +146,10 @@ class Packager(object):
             os.unlink(os.path.join(BENCH, fname))
 
 
-        unixlines('content');unixlines('supplement')
-        chmods('content');chmods('supplement')
+        unixlines('content');
+        unixlines('supplement')
+        chmods('content');
+        chmods('supplement')
         self.makedirs()
         self.getcontent()
 
