@@ -279,7 +279,7 @@ and the derived files
 %\def\filename{statrep.dtx}
 %\def\fileversion{1.06}
 %\def\filedate{\today}
-%\CheckSum{2174}
+%\CheckSum{2169}
 %\StopEventually{\PrintChanges\PrintIndex}
 %
 % \CharacterTable
@@ -1848,7 +1848,7 @@ and the derived files
 %    \begin{macrocode}
 \newcommand*{\Boxlisting}[1]{%
   \ifthenelse{\equal{\SR@dest}{listing}}%
-     {\global\def\SR@insertname{\SRlistingdir/#1.lst}%
+     {\global\def\SR@insertname{lst/#1.lst}%
       \IfFileExists{\SR@insertname}%
         {%
           \savebox{\SR@filebox}{%
@@ -1867,7 +1867,7 @@ and the derived files
         {\savebox{\SR@filebox}{\fbox{Missing File \SR@insertname}}%
          \global\def\SR@insertname{\@empty}}%
     }%
-    {\global\def\SR@insertname{\SRlatexdir/#1.tex}%
+    {\global\def\SR@insertname{tex/#1.tex}%
      \IfFileExists{\SR@insertname}%
       {%
         \savebox{\SR@filebox}{%
@@ -1918,11 +1918,11 @@ and the derived files
 % graphic file.
 %    \begin{macrocode}
 \newcommand*{\Boxgraphic}[1]{%
-  \IfFileExists{\SRgraphicdir/#1.\SRgraphtype}%
-    {\global\def\SR@insertname{\SRgraphicdir/#1.\SRgraphtype}}%
+  \IfFileExists{png/#1.\SRgraphtype}%
+    {\global\def\SR@insertname{png/#1.\SRgraphtype}}%
     {\global\def\SR@insertname{\@empty}}%
   \ifthenelse{\equal{\SR@insertname}{\@empty}}%
-    {\savebox{\SR@filebox}{\fbox{ Missing File \SRgraphicdir/#1.\SRgraphtype}}}%
+    {\savebox{\SR@filebox}{\fbox{ Missing File png/#1.\SRgraphtype}}}%
     {%
       \ifthenelse{\equal{\SR@scale}{\@empty}}%
         {\ifthenelse{\equal{\SR@width}{\@empty}}%
