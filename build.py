@@ -222,7 +222,10 @@ class Packager(object):
         for name in ['statrep', 'longfigure']:
             shutil.copy(os.path.join(SUPPLEMENT, 'LICENSE'),
                         os.path.join(cwd, name, 'LICENSE'))
-            for fname in ['README.', '%s.dtx' % name, '%s.ins' % name]:
+
+            shutil.copy(os.path.join(self.work, name, 'README.'),
+                        os.path.join(cwd, name, 'README'))
+            for fname in ['%s.dtx' % name, '%s.ins' % name]:
                 shutil.copy(os.path.join(self.work, name, fname),
                             os.path.join(cwd, name, fname))
 
@@ -264,11 +267,12 @@ if __name__ == '__main__':
     t = Tester()
     t.test()
     t.diff()
+    zipdir(os.path.join(p.ctan, 'statrep'))
+    zipdir(os.path.join(p.sas, 'statrep'))
+
     if t.tests == t.passed:
         for fname in [x for x in os.listdir(BENCH) if x.endswith('.jpg')]:
             os.unlink(os.path.join(BENCH, fname))
-        zipdir(os.path.join(p.ctan, 'statrep'))
-        zipdir(os.path.join(p.sas, 'statrep'))
         print 'Ready for upload. See %s' % BUILD
 
 
