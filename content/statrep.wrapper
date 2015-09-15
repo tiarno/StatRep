@@ -153,7 +153,7 @@ statrep_macros.sas
 statrep_tagset.sas
 statrepmanual.tex
 
-Copyright (c) 2014 SAS Institute Inc.
+Copyright (c) 2015 SAS Institute Inc.
 
 Permission is granted to copy, distribute, and/or modify this software
 under the terms of the LaTeX Project Public License (LPPL), version 1.3.
@@ -211,7 +211,7 @@ E-mail: tim.arnold@sas.com
 ----------------------------------------------------------------
 \endpreamble
 \postamble
-Copyright (C) 2014 by SAS Institute Inc. <tim.arnold@sas.com>
+Copyright (C) 2015 by SAS Institute Inc. <tim.arnold@sas.com>
 
 This work consists of the files
     statrep.dtx,
@@ -244,7 +244,7 @@ and the derived files
 %</internal>
 %<*statrep>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{statrep}[2015/01/15 v1.07 The statrep package]
+\ProvidesPackage{statrep}[2015/09/15 v1.07 The statrep package]
 %</statrep>
 %<*driver>
 \documentclass[11pt]{ltxdoc}
