@@ -244,7 +244,7 @@ and the derived files
 %</internal>
 %<*statrep>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{statrep}[2015/01/15 v1.06 The statrep package]
+\ProvidesPackage{statrep}[2015/01/15 v1.07 The statrep package]
 %</statrep>
 %<*driver>
 \documentclass[11pt]{ltxdoc}
@@ -277,9 +277,9 @@ and the derived files
 %</driver>
 %\fi
 %\def\filename{statrep.dtx}
-%\def\fileversion{1.06}
+%\def\fileversion{1.07}
 %\def\filedate{\today}
-%\CheckSum{2169}
+%\CheckSum{2172}
 %\StopEventually{\PrintChanges\PrintIndex}
 %
 % \CharacterTable
@@ -306,6 +306,7 @@ and the derived files
 %\changes{v1.04}{2014/09/08}{Fixed ligatures appearing in Listings}
 %\changes{v1.05}{2014/10/27}{Added support SAS-generated LaTeX table output}
 %\changes{v1.06}{2015/01/15}{Added support for root directory specification}
+%\changes{v1.07}{2015/09/15}{Fixed bug with losing margins after an output}
 %\GetFileInfo{statrep.sty}
 %
 %
@@ -2152,13 +2153,14 @@ and the derived files
        {\setboolean{SR@multifile}{false}}%
        {\setboolean{SR@multifile}{true}}%
 %    \end{macrocode}
+% \changes{v1.07}{2015/09/15}{encapsulates longfigure with bgroup/egroup}
 %    The following statements center a listing or a graphic and
 %    put a vertical line on each side of a listing (|listing| destination).
 %    No horizontal or vertical lines (no box) are drawn for graphics or
 %    outputs using the |latex| destination.
 %    \begin{macrocode}
      \ifthenelse{\equal{\SR@dest}{listing}}%
-       {\longfigure{|c|}}{\longfigure{c}}%
+       {\bgroup\longfigure{|c|}}{\bgroup\longfigure{c}}%
         \SR@firsthead\SR@conthead\SR@endfoot%
         \usebox{\SR@filebox}%
 %    \end{macrocode}
@@ -2177,7 +2179,7 @@ and the derived files
           \stepcounter{SR@multifilecount}%
           \setboolean{SR@multifile}{true}}%
         }%
-      \endlongfigure%
+      \endlongfigure\egroup%
     \unsloppy%
 }
 %    \end{macrocode}
@@ -2244,6 +2246,3 @@ and the derived files
 % \fi
 %\Finale
 %\endinput
-
-
-

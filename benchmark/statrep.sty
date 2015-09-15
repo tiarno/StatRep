@@ -13,7 +13,7 @@
 %% E-mail: tim.arnold@sas.com
 %% ----------------------------------------------------------------
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{statrep}[2015/01/15 v1.06 The statrep package]
+\ProvidesPackage{statrep}[2015/01/15 v1.07 The statrep package]
 \RequirePackage{verbatim}
 \RequirePackage{graphicx}
 \RequirePackage{xkeyval}
@@ -368,7 +368,7 @@
 }
 \newcommand*{\Boxlisting}[1]{%
   \ifthenelse{\equal{\SR@dest}{listing}}%
-     {\global\def\SR@insertname{\SRlistingdir/#1.lst}%
+     {\global\def\SR@insertname{lst/#1.lst}%
       \IfFileExists{\SR@insertname}%
         {%
           \savebox{\SR@filebox}{%
@@ -387,7 +387,7 @@
         {\savebox{\SR@filebox}{\fbox{Missing File \SR@insertname}}%
          \global\def\SR@insertname{\@empty}}%
     }%
-    {\global\def\SR@insertname{\SRlatexdir/#1.tex}%
+    {\global\def\SR@insertname{tex/#1.tex}%
      \IfFileExists{\SR@insertname}%
       {%
         \savebox{\SR@filebox}{%
@@ -406,11 +406,11 @@
   \PackageInfo{statrep}{Processing output \SR@insertname}%
 }
 \newcommand*{\Boxgraphic}[1]{%
-  \IfFileExists{\SRgraphicdir/#1.\SRgraphtype}%
-    {\global\def\SR@insertname{\SRgraphicdir/#1.\SRgraphtype}}%
+  \IfFileExists{png/#1.\SRgraphtype}%
+    {\global\def\SR@insertname{png/#1.\SRgraphtype}}%
     {\global\def\SR@insertname{\@empty}}%
   \ifthenelse{\equal{\SR@insertname}{\@empty}}%
-    {\savebox{\SR@filebox}{\fbox{ Missing File \SRgraphicdir/#1.\SRgraphtype}}}%
+    {\savebox{\SR@filebox}{\fbox{ Missing File png/#1.\SRgraphtype}}}%
     {%
       \ifthenelse{\equal{\SR@scale}{\@empty}}%
         {\ifthenelse{\equal{\SR@width}{\@empty}}%
@@ -480,7 +480,7 @@
        {\setboolean{SR@multifile}{false}}%
        {\setboolean{SR@multifile}{true}}%
      \ifthenelse{\equal{\SR@dest}{listing}}%
-       {\longfigure{|c|}}{\longfigure{c}}%
+       {\bgroup\longfigure{|c|}}{\bgroup\longfigure{c}}%
         \SR@firsthead\SR@conthead\SR@endfoot%
         \usebox{\SR@filebox}%
         \setcounter{SR@multifilecount}{1}%
@@ -494,7 +494,7 @@
           \stepcounter{SR@multifilecount}%
           \setboolean{SR@multifile}{true}}%
         }%
-      \endlongfigure%
+      \endlongfigure\egroup%
     \unsloppy%
 }
 %% Copyright (C) 2014 by SAS Institute Inc. <tim.arnold@sas.com>

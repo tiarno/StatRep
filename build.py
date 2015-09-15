@@ -256,7 +256,9 @@ class Packager(object):
 
 if __name__ == '__main__':
     p = Packager()
+    print('writing')
     p.write_dtx()
+    print('running')
     p.run_dtx()
     p.makemanual()
     print '-'*30
@@ -274,8 +276,3 @@ if __name__ == '__main__':
         for fname in [x for x in os.listdir(BENCH) if x.endswith('.jpg')]:
             os.unlink(os.path.join(BENCH, fname))
         print 'Ready for upload. See %s' % BUILD
-
-
-
-
-
